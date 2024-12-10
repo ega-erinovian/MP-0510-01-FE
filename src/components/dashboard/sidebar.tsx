@@ -39,7 +39,7 @@ const items = [
     subitems: [
       {
         title: "Event List",
-        url: "/dashboard/organizer/1/event-list",
+        url: "/dashboard/1/event-list",
       },
     ],
   },
@@ -49,7 +49,7 @@ const items = [
     subitems: [
       {
         title: "Transaction List",
-        url: "/dashboard/organizer/1/transactions-list",
+        url: "/dashboard/1/transactions-list",
       },
     ],
   },
@@ -59,11 +59,11 @@ const items = [
     subitems: [
       {
         title: "Voucher List",
-        url: "/dashboard/organizer/1/vouchers-list",
+        url: "/dashboard/1/vouchers-list",
       },
       {
         title: "Create Voucher",
-        url: "/dashboard/organizer/1/create-voucher",
+        url: "/dashboard/1/create-voucher",
       },
     ],
   },
@@ -85,11 +85,11 @@ export function OrganizerSidebar() {
                 <SidebarMenuButton
                   asChild
                   className={
-                    pathname === "/dashboard/organizer/1"
+                    pathname === "/dashboard/1"
                       ? "bg-[#e8e9ea] hover:bg-[#d6d7d9]"
                       : "hover:bg-[#e8e9ea]"
                   }>
-                  <Link href="/dashboard/organizer/1">
+                  <Link href="/dashboard/1">
                     <Layout />
                     <span className="font-semibold">Dashboard</span>
                   </Link>
