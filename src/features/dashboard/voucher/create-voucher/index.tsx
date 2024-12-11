@@ -4,19 +4,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-import { useState } from "react";
-import { Check, ChevronsUpDown } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { useFormik } from "formik";
-import { CreateVoucherSchema } from "./schemas";
-import useCreateVoucher from "@/hooks/vouchers/useCreateVoucher";
-import { Loader } from "@/components/ui/loader";
+import Loading from "@/components/dashboard/Loading";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
 import useGetEvents from "@/hooks/event/useGetEvents";
+import useCreateVoucher from "@/hooks/vouchers/useCreateVoucher";
+import { cn } from "@/lib/utils";
+import { useFormik } from "formik";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { useState } from "react";
+import { CreateVoucherSchema } from "./schemas";
 
 const CreateVoucherComponent = () => {
   const { mutateAsync: createVoucher, isPending } = useCreateVoucher();
@@ -25,7 +25,7 @@ const CreateVoucherComponent = () => {
   const { data: events, isLoading } = useGetEvents();
   const [searchQuery, setSearchQuery] = useState("");
 
-  const filteredEvents = events?.filter((event) =>
+  const filteredEvents = events?.filter((event: any) =>
     event.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -48,17 +48,7 @@ const CreateVoucherComponent = () => {
   });
 
   if (isLoading) {
-    return (
-      <div className="h-screen w-full flex flex-col items-center justify-center gap-4">
-        <Loader className="h-12 w-12 text-primary" />
-        <div className="text-center">
-          <h2 className="text-lg font-semibold mb-2">Loading Form...</h2>
-          <p className="text-muted-foreground">
-            Please wait while we fetch some data
-          </p>
-        </div>
-      </div>
-    );
+    return <Loading text="Form" />;
   }
 
   return (
@@ -125,7 +115,7 @@ const CreateVoucherComponent = () => {
                   className="w-full justify-between">
                   {selectedEvent
                     ? events?.find(
-                        (event) => event.id.toString() === selectedEvent
+                        (event: any) => event.id.toString() === selectedEvent
                       )?.title
                     : "Select event..."}
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -146,7 +136,7 @@ const CreateVoucherComponent = () => {
                       No events found.
                     </p>
                   )}
-                  {filteredEvents?.map((event) => (
+                  {filteredEvents?.map((event: any) => (
                     <button
                       name="eventId"
                       type="button"
