@@ -32,6 +32,7 @@
     "react-toastify": "^10.0.6",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
+    "use-debounce": "^10.0.4",
     "yup": "^1.5.0",
     "yup-password": "^0.4.0"
   },

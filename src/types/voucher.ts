@@ -1,4 +1,4 @@
-type VoucherType = {
+export interface VoucherType {
   id: number;
   eventId: number;
   code: string;
@@ -18,4 +18,4 @@ type VoucherType = {
     availableSeats: number;
     userId: number;
   };
-};
+}
