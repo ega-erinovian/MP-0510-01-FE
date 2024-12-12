@@ -1,7 +1,8 @@
 import DashboardLayout from "@/components/DashboardLayout";
-import VouchersList from "@/features/dashboard/voucher/vouchers-list";
+import VouchersList from "@/features/dashboard/voucher";
+import React from "react";
 
-const OrganizerVouchersList = () => {
+const Vouchers = () => {
   return (
     <DashboardLayout>
       <VouchersList />
@@ -9,4 +10,4 @@ const OrganizerVouchersList = () => {
   );
 };
 
-export default OrganizerVouchersList;
+export default Vouchers;

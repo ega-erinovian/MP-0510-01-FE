@@ -39,7 +39,7 @@ const items = [
     subitems: [
       {
         title: "Event List",
-        url: "/dashboard/1/event-list",
+        url: "/dashboard/events",
       },
     ],
   },
@@ -49,7 +49,7 @@ const items = [
     subitems: [
       {
         title: "Transaction List",
-        url: "/dashboard/1/transactions-list",
+        url: "/dashboard/transactions",
       },
     ],
   },
@@ -59,17 +59,17 @@ const items = [
     subitems: [
       {
         title: "Voucher List",
-        url: "/dashboard/1/vouchers-list",
+        url: "/dashboard/vouchers",
       },
       {
         title: "Create Voucher",
-        url: "/dashboard/1/create-voucher",
+        url: "/dashboard/vouchers/create",
       },
     ],
   },
 ];
 
-export function OrganizerSidebar() {
+const DashboardSidebar = () => {
   const pathname = usePathname();
 
   return (
@@ -77,7 +77,7 @@ export function OrganizerSidebar() {
       <SidebarContent className="pt-4 ps-2">
         <SidebarGroup>
           <SidebarGroupLabel className="text-2xl font-bold mb-4 ">
-            EventZen
+            EventIn
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -166,4 +166,6 @@ export function OrganizerSidebar() {
       </SidebarFooter>
     </Sidebar>
   );
-}
+};
+
+export default DashboardSidebar;
