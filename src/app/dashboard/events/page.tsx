@@ -1,7 +1,8 @@
 import DashboardLayout from "@/components/DashboardLayout";
-import EventList from "@/features/dashboard/event/event-list";
+import EventList from "@/features/dashboard/event";
+import React from "react";
 
-const EventPage = () => {
+const Events = () => {
   return (
     <DashboardLayout>
       <EventList />
@@ -9,4 +10,4 @@ const EventPage = () => {
   );
 };
 
-export default EventPage;
+export default Events;
