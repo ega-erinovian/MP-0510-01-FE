@@ -1,22 +1,12 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 import {
   Table,
   TableBody,
@@ -25,318 +15,186 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import globalFilterFn from "@/utils/globalFilterFn";
-import {
-  ColumnDef,
-  useReactTable,
-  SortingState,
-  ColumnFiltersState,
-  VisibilityState,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-} from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
+import { VoucherType } from "@/types/voucher";
+import { MoreHorizontal } from "lucide-react";
 import Link from "next/link";
-import { FC, useState, useEffect } from "react";
+import { FC } from "react";
 
-interface VoucherTableInterface {
-  data: VoucherType[];
-  isLoading: boolean;
+interface VouchersTableProps {
+  vouchers: VoucherType[];
+  sortBy: string;
+  sortOrder: string;
+  onSortChange: (sortBy: string, sortOrder: string) => void;
+  onSearch: (search: string) => void;
+  search: string;
+  totalPages: number;
+  onChangePage: (page: number) => void;
+  page: number;
+  onChangeTake: (take: number) => void;
+  take: number;
 }
 
-const columns: ColumnDef<VoucherType>[] = [
-  {
-    accessorKey: "id",
-    header: ({ column }) => <SortableHeaderButton column={column} label="ID" />,
-    cell: ({ row }) => <div className="capitalize">{row.getValue("id")}</div>,
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-    accessorFn: (row) => row.isUsed,
-    cell: ({ row }) =>
-      row.original.isUsed ? (
-        <div className="capitalize bg-red-300 rounded-full text-red-700 font-semibold py-2 px-4 w-fit">
-          Used
-        </div>
-      ) : (
-        <div className="capitalize bg-green-200 rounded-full text-green-800 font-semibold py-2 px-4 w-fit">
-          Available
-        </div>
-      ),
-  },
-  {
-    accessorKey: "eventTitle",
-    header: "Event",
-    accessorFn: (row) => row.event.title,
-    cell: ({ row }) => (
-      <div className="capitalize">{row.original.event.title}</div>
-    ),
-  },
-  {
-    accessorKey: "code",
-    header: "Code",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("code")}</div>,
-  },
-  {
-    accessorKey: "discAmount",
-    header: ({ column }) => (
-      <SortableHeaderButton column={column} label="Amount" />
-    ),
-    cell: ({ row }) => <CurrencyCell value={Number(row.original.amount)} />,
-    sortingFn: (a, b) => a.original.amount - b.original.amount,
-  },
-  {
-    accessorKey: "expiresAt",
-    header: ({ column }) => (
-      <SortableHeaderButton column={column} label="Exp" />
-    ),
-    cell: ({ row }) => <DateCell date={row.getValue("expiresAt")} />,
-  },
-  {
-    accessorKey: "actions",
-    header: "Action",
-    cell: ({ row }) => <ActionMenu row={row} />,
-  },
-];
-
-const SortableHeaderButton: FC<{ column: any; label: string }> = ({
-  column,
-  label,
-}) => (
-  <Button
-    variant="ghost"
-    className="px-2"
-    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-    {label} <ArrowUpDown />
-  </Button>
-);
-
-const DateCell: FC<{ date: string }> = ({ date }) => {
-  const formattedDate = new Intl.DateTimeFormat("en-ID", {
-    dateStyle: "full",
-    timeStyle: "short",
-    timeZone: "Asia/Jakarta",
-  }).format(new Date(date));
-  return <div className="capitalize">{formattedDate}</div>;
-};
-
-const CurrencyCell: FC<{ value: number }> = ({ value }) => (
-  <div>
-    {value.toLocaleString("id-ID", { style: "currency", currency: "IDR" })}
-  </div>
-);
-
-const ActionMenu: FC<{ row: any }> = ({ row }) => (
-  <DropdownMenu>
-    <DropdownMenuTrigger asChild>
-      <Button variant="ghost" className="h-8 w-8 p-0">
-        <span className="sr-only">Open menu</span>
-        <MoreHorizontal />
-      </Button>
-    </DropdownMenuTrigger>
-    <DropdownMenuContent align="end">
-      <Link href={`/organizer/1/edit-voucher?id=${row.original.id}`}>
-        <DropdownMenuItem>Edit Voucher</DropdownMenuItem>
-      </Link>
-      <Link href={`/organizer/1/delete-voucher?id=${row.original.id}`}>
-        <DropdownMenuItem>Delete Voucher</DropdownMenuItem>
-      </Link>
-    </DropdownMenuContent>
-  </DropdownMenu>
-);
-
-const VoucherTable: FC<VoucherTableInterface> = ({ data, isLoading }) => {
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [globalFilter, setGlobalFilter] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState("all-vouchers");
-
-  useEffect(() => {
-    if (selectedStatus === "all-vouchers") {
-      setColumnFilters([]);
-    } else if (selectedStatus === "used") {
-      setColumnFilters([{ id: "status", value: true }]);
-    } else if (selectedStatus === "active") {
-      setColumnFilters([{ id: "status", value: false }]);
-    }
-  }, [selectedStatus]);
-
-  const table = useReactTable({
-    data,
-    columns,
-    state: { sorting, columnFilters, columnVisibility, globalFilter },
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    onColumnVisibilityChange: setColumnVisibility,
-    globalFilterFn: globalFilterFn,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-  });
-
-  return (
-    <div className="w-full">
-      <HeaderSection
-        isLoading={isLoading}
-        data={data}
-        globalFilter={globalFilter}
-        setGlobalFilter={setGlobalFilter}
-        table={table}
-        selectedStatus={selectedStatus}
-        setSelectedStatus={setSelectedStatus}
-      />
-      <TableSection table={table} isLoading={isLoading} />
-      <PaginationControls table={table} />
-    </div>
-  );
-};
-
-const HeaderSection: FC<{
-  isLoading: boolean;
-  data: VoucherType[];
-  globalFilter: string;
-  setGlobalFilter: (value: string) => void;
-  table: any;
-  selectedStatus: string;
-  setSelectedStatus: (status: string) => void;
-}> = ({
-  isLoading,
-  data,
-  globalFilter,
-  setGlobalFilter,
-  table,
-  selectedStatus,
-  setSelectedStatus,
+const VouchersTable: FC<VouchersTableProps> = ({
+  vouchers,
+  sortBy,
+  sortOrder,
+  search,
+  onSortChange,
+  onSearch,
+  totalPages,
+  onChangePage,
+  page,
+  onChangeTake,
+  take,
 }) => {
+  const voucherTableCols = [
+    "id",
+    "status",
+    "event",
+    "code",
+    "amount",
+    "expires at",
+    "actions",
+  ];
+
+  const pages = Array.from({ length: Math.ceil(totalPages) }, (_, i) => i + 1);
+
   return (
-    <div className="w-full flex items-center justify-between py-4">
-      <p className="text-2xl font-semibold">
-        {isLoading ? "Loading vouchers..." : `${data.length} Vouchers`}
-      </p>
-      <div className="flex items-center gap-4">
-        <Input
-          placeholder="Search..."
-          value={globalFilter}
-          onChange={(e) => setGlobalFilter(e.target.value)}
-          className="max-w-sm w-[300px]"
-        />
-        <ColumnVisibilityDropdown table={table} />
-        <StatusFilters
-          selectedStatus={selectedStatus}
-          setSelectedStatus={setSelectedStatus}
-        />
+    <div>
+      <div className="flex items-center justify-between gap-4 mb-4">
+        <div className="flex justify-between items-center relative w-96">
+          <Input
+            value={search}
+            placeholder="Search vouchers..."
+            onChange={(e) => onSearch(e.target.value)}
+          />
+        </div>
+        <div className="flex items-center gap-4">
+          <label htmlFor="sortBy" className="text-lg">
+            Sort By:
+          </label>
+          <select
+            id="sortBy"
+            value={sortBy}
+            onChange={(e) => onSortChange(e.target.value, sortOrder)}
+            className="border rounded px-2 py-1">
+            <option value="id">ID</option>
+            <option value="amount">Amount</option>
+            <option value="expiresAt">Expire Date</option>
+          </select>
+          <select
+            value={sortOrder}
+            onChange={(e) => onSortChange(sortBy, e.target.value)}
+            className="border rounded px-2 py-1">
+            <option value="asc">Ascending</option>
+            <option value="desc">Descending</option>
+          </select>
+        </div>
+      </div>
+
+      <Table>
+        <TableHeader>
+          <TableRow>
+            {voucherTableCols.map((col) => (
+              <TableHead key={col} className="font-semibold capitalize">
+                {col}
+              </TableHead>
+            ))}
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {vouchers.map((voucher) => (
+            <TableRow key={voucher.id}>
+              <TableCell className="font-medium">{voucher.id}</TableCell>
+              <TableCell className="font-medium">
+                {voucher.isUsed ? (
+                  <div className="capitalize bg-red-300 rounded-full text-red-700 font-semibold py-2 px-4 w-fit">
+                    Used
+                  </div>
+                ) : (
+                  <div className="capitalize bg-green-200 rounded-full text-green-800 font-semibold py-2 px-4 w-fit">
+                    Available
+                  </div>
+                )}
+              </TableCell>
+              <TableCell className="font-medium">
+                {voucher.event.title}
+              </TableCell>
+              <TableCell className="font-medium">{voucher.code}</TableCell>
+              <TableCell className="font-medium">
+                {voucher.amount.toLocaleString("id-ID", {
+                  style: "currency",
+                  currency: "IDR",
+                })}
+              </TableCell>
+              <TableCell className="font-medium">
+                {new Intl.DateTimeFormat("en-ID", {
+                  dateStyle: "full",
+                  timeStyle: "short",
+                  timeZone: "Asia/Jakarta",
+                }).format(new Date(voucher.expiresAt))}
+              </TableCell>
+              <TableCell>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="h-8 w-8 p-0">
+                      <span className="sr-only">Open menu</span>
+                      <MoreHorizontal />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <Link
+                      href={`/dashboard/vouchers/voucher-attendee?id=${voucher.id}`}>
+                      <DropdownMenuItem>Attendee List</DropdownMenuItem>
+                    </Link>
+                    <Separator />
+                    <Link
+                      href={`/dashboard/vouchers/edit-voucher?id=${voucher.id}`}>
+                      <DropdownMenuItem>Edit Voucher</DropdownMenuItem>
+                    </Link>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+
+      <div className="mt-6 flex justify-between items-center">
+        {/* Items per page selection */}
+        <div>
+          <label className="mr-2">Items per page</label>
+          <select
+            value={take}
+            onChange={(e) => onChangeTake(Number(e.target.value))}
+            className="p-2 border border-gray-300 rounded">
+            {[10, 20, 50].map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="flex items-center">
+          <Button
+            variant="ghost"
+            onClick={() => onChangePage(page - 1)}
+            disabled={page === 1}>
+            Previous
+          </Button>
+          <span className="mx-2">
+            Page {page} of {Math.ceil(totalPages)}
+          </span>
+          <Button
+            variant="ghost"
+            onClick={() => onChangePage(page + 1)}
+            disabled={page === Math.ceil(totalPages)}>
+            Next
+          </Button>
+        </div>
       </div>
     </div>
   );
 };
 
-const StatusFilters: FC<{
-  selectedStatus: string;
-  setSelectedStatus: (status: string) => void;
-}> = ({ selectedStatus, setSelectedStatus }) => (
-  <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-    <SelectTrigger className="w-[140px] text-black">
-      <SelectValue placeholder="Select Status" />
-    </SelectTrigger>
-    <SelectContent>
-      <SelectGroup>
-        <SelectItem value="all-vouchers">All Vouchers</SelectItem>
-        <SelectItem value="used">Used</SelectItem>
-        <SelectItem value="active">Available</SelectItem>
-      </SelectGroup>
-    </SelectContent>
-  </Select>
-);
-
-const ColumnVisibilityDropdown: FC<{ table: any }> = ({ table }) => (
-  <DropdownMenu>
-    <DropdownMenuTrigger asChild>
-      <Button variant="outline" className="ml-auto">
-        Columns <ChevronDown />
-      </Button>
-    </DropdownMenuTrigger>
-    <DropdownMenuContent align="end">
-      {table
-        .getAllColumns()
-        .filter((column: any) => column.getCanHide())
-        .map((column: any) => (
-          <DropdownMenuCheckboxItem
-            key={column.id}
-            className="capitalize"
-            checked={column.getIsVisible()}
-            onCheckedChange={(value) => column.toggleVisibility(!!value)}>
-            {column.id}
-          </DropdownMenuCheckboxItem>
-        ))}
-    </DropdownMenuContent>
-  </DropdownMenu>
-);
-
-const TableSection: FC<{ table: any; isLoading: boolean }> = ({
-  table,
-  isLoading,
-}) => (
-  <div className="rounded-md border">
-    {isLoading ? (
-      <div className="p-6 text-center">Loading...</div>
-    ) : (
-      <Table>
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup: any) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header: any) => (
-                <TableHead key={header.id}>
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                </TableHead>
-              ))}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows.map((row: any) => (
-            <TableRow key={row.id}>
-              {row.getVisibleCells().map((cell: any) => (
-                <TableCell key={cell.id}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    )}
-  </div>
-);
-
-const PaginationControls: FC<{ table: any }> = ({ table }) => (
-  <div className="flex justify-between py-4">
-    <div className="flex gap-2">
-      <Button
-        onClick={() => table.previousPage()}
-        disabled={!table.getCanPreviousPage()}>
-        Previous
-      </Button>
-      <Button
-        onClick={() => table.nextPage()}
-        disabled={!table.getCanNextPage()}>
-        Next
-      </Button>
-    </div>
-    <div className="text-sm">
-      Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
-    </div>
-  </div>
-);
-
-export default VoucherTable;
+export default VouchersTable;
