@@ -10,24 +10,25 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import useGetEvents from "@/hooks/api/event/useGetEvents";
-import useCreateVoucher from "@/hooks/api/vouchers/useCreateVoucher";
 import { cn } from "@/lib/utils";
 import { useFormik } from "formik";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { useState } from "react";
 import { CreateVoucherSchema } from "./schemas";
+import useGetEvents from "@/hooks/api/event/useGetEvents";
+import { useDebounce } from "use-debounce";
+import useCreateVoucher from "@/hooks/api/vouchers/useCreateVoucher";
 
 const CreateVoucherComponent = () => {
   const { mutateAsync: createVoucher, isPending } = useCreateVoucher();
   const [selectedEvent, setSelectedEvent] = useState<string>("");
   const [open, setOpen] = useState(false);
-  const { data: events, isLoading } = useGetEvents();
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch] = useDebounce(searchQuery, 1000);
 
-  const filteredEvents = events?.filter((event: any) =>
-    event.title.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const { data: events, isLoading } = useGetEvents({
+    search: debouncedSearch || "",
+  });
 
   const formik = useFormik({
     initialValues: {
@@ -47,7 +48,7 @@ const CreateVoucherComponent = () => {
     },
   });
 
-  if (isLoading) {
+  if (isLoading && searchQuery === "") {
     return <Loading text="Form" />;
   }
 
@@ -55,6 +56,82 @@ const CreateVoucherComponent = () => {
     <div className="h-screen w-full flex items-center justify-center">
       <form onSubmit={formik.handleSubmit}>
         <div className="grid w-[500px] items-center gap-6">
+          <h1 className="text-3xl font-bold">Create A Voucher</h1>
+          <div className="flex flex-col space-y-1.5">
+            <Label>Event</Label>
+            <Popover open={open} onOpenChange={setOpen}>
+              {isPending && searchQuery !== "" ? (
+                <PopoverTrigger asChild disabled={true}>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={open}
+                    className="w-full justify-between">
+                    Searching Event...
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+              ) : (
+                <PopoverTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={open}
+                    className="w-full justify-between">
+                    {selectedEvent
+                      ? events?.data.find(
+                          (event: any) => event.id.toString() === selectedEvent
+                        )?.title
+                      : "Select event..."}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+              )}
+
+              <PopoverContent className="w-[500px] p-0" align="start">
+                <div className="border-b px-3 py-2">
+                  <input
+                    className="w-full bg-transparent outline-none placeholder:text-muted-foreground"
+                    placeholder="Search events..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
+                <div className="max-h-[300px] overflow-y-auto">
+                  {events?.data.length === 0 && (
+                    <p className="p-4 text-sm text-muted-foreground">
+                      No events found.
+                    </p>
+                  )}
+                  {events?.data.map((event: any) => (
+                    <button
+                      name="eventId"
+                      type="button"
+                      key={event.id}
+                      onClick={() => {
+                        setSelectedEvent(event.id.toString());
+                        setOpen(false);
+                        formik.setFieldValue("eventId", event.id); // Update Formik field
+                      }}
+                      className={cn(
+                        "flex w-full items-center justify-between px-3 py-2 hover:bg-accent",
+                        selectedEvent === event.id.toString() && "bg-accent"
+                      )}>
+                      {event.title}
+                      {selectedEvent === event.id.toString() && (
+                        <Check className="h-4 w-4" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </PopoverContent>
+            </Popover>
+            {!!formik.touched.eventId && selectedEvent === "" ? (
+              <p className="text-xs text-red-500">{formik.errors.eventId}</p>
+            ) : null}
+          </div>
           <div className="flex flex-col space-y-1.5">
             <Label htmlFor="code">Code</Label>
             <Input
@@ -101,67 +178,6 @@ const CreateVoucherComponent = () => {
             {!!formik.touched.expiresAt && !!formik.errors.expiresAt && (
               <p className="text-xs text-red-500">{formik.errors.expiresAt}</p>
             )}
-          </div>
-
-          <div className="flex flex-col space-y-1.5">
-            <Label>Event</Label>
-            <Popover open={open} onOpenChange={setOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  type="button"
-                  variant="outline"
-                  role="combobox"
-                  aria-expanded={open}
-                  className="w-full justify-between">
-                  {selectedEvent
-                    ? events?.find(
-                        (event: any) => event.id.toString() === selectedEvent
-                      )?.title
-                    : "Select event..."}
-                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-[500px] p-0" align="start">
-                <div className="border-b px-3 py-2">
-                  <input
-                    className="w-full bg-transparent outline-none placeholder:text-muted-foreground"
-                    placeholder="Search events..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                </div>
-                <div className="max-h-[300px] overflow-y-auto">
-                  {filteredEvents?.length === 0 && (
-                    <p className="p-4 text-sm text-muted-foreground">
-                      No events found.
-                    </p>
-                  )}
-                  {filteredEvents?.map((event: any) => (
-                    <button
-                      name="eventId"
-                      type="button"
-                      key={event.id}
-                      onClick={() => {
-                        setSelectedEvent(event.id.toString());
-                        setOpen(false);
-                        formik.setFieldValue("eventId", event.id); // Update Formik field
-                      }}
-                      className={cn(
-                        "flex w-full items-center justify-between px-3 py-2 hover:bg-accent",
-                        selectedEvent === event.id.toString() && "bg-accent"
-                      )}>
-                      {event.title}
-                      {selectedEvent === event.id.toString() && (
-                        <Check className="h-4 w-4" />
-                      )}
-                    </button>
-                  ))}
-                </div>
-              </PopoverContent>
-            </Popover>
-            {!!formik.touched.eventId && selectedEvent === "" ? (
-              <p className="text-xs text-red-500">{formik.errors.eventId}</p>
-            ) : null}
           </div>
 
           <div className="flex justify-end mt-4">
