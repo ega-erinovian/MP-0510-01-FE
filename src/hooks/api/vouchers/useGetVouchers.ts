@@ -1,29 +1,25 @@
-"use client";
+import { axiosInstance } from "@/lib/axios";
+import { PageableResponse, PaginationQueries } from "@/types/pagination";
+import { VoucherType } from "@/types/voucher";
+import { useQuery } from "@tanstack/react-query";
 
-import axios from "axios";
-import { useState, useEffect } from "react";
+interface GetVoucherQuery extends PaginationQueries {
+  search?: string;
+  eventId?: number;
+}
 
-const useGetVouchers = () => {
-  const [data, setData] = useState<VoucherType[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+const useGetVouchers = (queries: GetVoucherQuery) => {
+  return useQuery({
+    queryKey: ["vouchers", queries],
+    queryFn: async () => {
+      const { data } = await axiosInstance.get<PageableResponse<VoucherType>>(
+        "/vouchers",
+        { params: queries }
+      );
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        const { data } = await axios.get("http://localhost:8000/vouchers");
-        setData(data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  return { data, isLoading };
+      return data;
+    },
+  });
 };
 
 export default useGetVouchers;
