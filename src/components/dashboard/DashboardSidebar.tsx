@@ -63,7 +63,7 @@ const items = [
       },
       {
         title: "Create Voucher",
-        url: "/dashboard/vouchers/create",
+        url: "/dashboard/vouchers/create-voucher",
       },
     ],
   },
@@ -85,11 +85,11 @@ const DashboardSidebar = () => {
                 <SidebarMenuButton
                   asChild
                   className={
-                    pathname === "/dashboard/1"
+                    pathname === "/dashboard/"
                       ? "bg-[#e8e9ea] hover:bg-[#d6d7d9]"
                       : "hover:bg-[#e8e9ea]"
                   }>
-                  <Link href="/dashboard/1">
+                  <Link href="/dashboard/">
                     <Layout />
                     <span className="font-semibold">Dashboard</span>
                   </Link>
@@ -138,7 +138,7 @@ const DashboardSidebar = () => {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem className="mb-2">
-            <Link href="/dashboard/organizer/1/profile">
+            <Link href="/dashboard/profile">
               <SidebarMenuButton asChild className="h-full">
                 <div className="flex items-center gap-4">
                   <div className="relative w-10 h-10 ">
@@ -156,7 +156,7 @@ const DashboardSidebar = () => {
           </SidebarMenuItem>
           <SidebarMenuItem className="mb-2">
             <SidebarMenuButton asChild className="font-semibold">
-              <Link href="/dashboard/auth/login">
+              <Link href="/auth/login">
                 <LogOut />
                 <span>Logout</span>
               </Link>

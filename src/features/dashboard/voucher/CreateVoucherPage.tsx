@@ -10,8 +10,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import useGetEvents from "@/hooks/event/useGetEvents";
-import useCreateVoucher from "@/hooks/vouchers/useCreateVoucher";
+import useGetEvents from "@/hooks/api/event/useGetEvents";
+import useCreateVoucher from "@/hooks/api/vouchers/useCreateVoucher";
 import { cn } from "@/lib/utils";
 import { useFormik } from "formik";
 import { Check, ChevronsUpDown } from "lucide-react";
