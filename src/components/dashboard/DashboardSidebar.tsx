@@ -63,7 +63,7 @@ const items = [
       },
       {
         title: "Create Voucher",
-        url: "/dashboard/vouchers/create-voucher",
+        url: "/dashboard/vouchers/create",
       },
     ],
   },
