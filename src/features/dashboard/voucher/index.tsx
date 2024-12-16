@@ -1,21 +1,20 @@
 "use client";
 
-import { useState } from "react";
-import Loading from "@/components/dashboard/Loading";
-import useGetEvents from "@/hooks/api/event/useGetEvents";
-import { useDebounce } from "use-debounce";
 import DataNotFound from "@/components/dashboard/DataNotFound";
-import VouchersTable from "./components/VoucherTable";
-import useGetVouchers from "@/hooks/api/vouchers/useGetVouchers";
+import Loading from "@/components/dashboard/Loading";
+import { Input } from "@/components/ui/input";
+import useGetVouchers from "@/hooks/api/voucher/useGetVouchers";
+import { useState } from "react";
+import { useDebounce } from "use-debounce";
+import VoucherTable from "./components/VoucherTable";
 
-const EventList = () => {
+const VoucherList = () => {
   const [page, setPage] = useState<number>(1);
   const [sortBy, setSortBy] = useState<string>("id");
   const [sortOrder, setSortOrder] = useState<string>("desc");
   const [search, setSearch] = useState<string>("");
   const [debouncedSearch] = useDebounce(search, 1000);
   const [take, setTake] = useState<number>(10);
-  const [eventId, setEventId] = useState<number | undefined>(undefined);
 
   const { data, isPending, error } = useGetVouchers({
     page,
@@ -23,7 +22,6 @@ const EventList = () => {
     sortOrder,
     search: debouncedSearch || "",
     take,
-    eventId,
   });
 
   const onChangePage = (page: number) => {
@@ -44,46 +42,63 @@ const EventList = () => {
     setSearch(query);
   };
 
-  if (isPending) {
-    return <Loading text="Vouchers" />;
-  }
-
   if (error) {
     return (
-      <DataNotFound text="Error fetching vouchers" resetSearch={onSearch} />
+      <DataNotFound text="Error fetching transactions" resetSearch={onSearch} />
     );
   }
-
-  if (!data || data.data.length === 0) {
-    return (
-      <DataNotFound
-        text={`no data matched with: ${search}`}
-        resetSearch={onSearch}
-      />
-    );
-  }
-
-  console.log(data);
 
   return (
     <div className="mx-auto p-8">
       <h1 className="text-9xl mb-8 font-bold">Voucher List</h1>
+      <div className="flex items-center justify-between gap-4 mb-4">
+        <div className="flex justify-between items-center relative w-96">
+          <Input
+            value={search}
+            placeholder="Search Event or Voucher's Code (Case Sensitive)"
+            onChange={(e) => onSearch(e.target.value)}
+            disabled={isPending}
+          />
+        </div>
+        <div className="flex items-center gap-4">
+          <label htmlFor="sortBy" className="text-lg">
+            Sort By:
+          </label>
+          <select
+            id="sortBy"
+            value={sortBy}
+            onChange={(e) => onSortChange(e.target.value, sortOrder)}
+            className="border rounded px-2 py-1"
+            disabled={isPending}>
+            <option value="id">ID</option>
+            <option value="amount">Amount</option>
+            <option value="expiresAt">Expire Date</option>
+          </select>
+          <select
+            value={sortOrder}
+            onChange={(e) => onSortChange(sortBy, e.target.value)}
+            className="border rounded px-2 py-1"
+            disabled={isPending}>
+            <option value="asc">Ascending</option>
+            <option value="desc">Descending</option>
+          </select>
+        </div>
+      </div>
 
-      <VouchersTable
-        vouchers={data.data}
-        sortBy={sortBy}
-        sortOrder={sortOrder}
-        onSortChange={onSortChange}
-        onSearch={onSearch}
-        totalPages={data.meta.total / take}
-        search={search}
-        onChangePage={onChangePage}
-        page={page}
-        onChangeTake={onChangeTake}
-        take={take}
-      />
+      {isPending ? (
+        <Loading text="Vouchers" />
+      ) : (
+        <VoucherTable
+          vouchers={data.data}
+          totalPages={data.meta.total / take}
+          onChangePage={onChangePage}
+          page={page}
+          onChangeTake={onChangeTake}
+          take={take}
+        />
+      )}
     </div>
   );
 };
 
-export default EventList;
+export default VoucherList;

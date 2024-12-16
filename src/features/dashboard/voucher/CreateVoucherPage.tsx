@@ -15,9 +15,9 @@ import { useFormik } from "formik";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { useState } from "react";
 import { CreateVoucherSchema } from "./schemas";
+import useCreateVoucher from "@/hooks/api/voucher/useCreateVoucher";
 import useGetEvents from "@/hooks/api/event/useGetEvents";
 import { useDebounce } from "use-debounce";
-import useCreateVoucher from "@/hooks/api/vouchers/useCreateVoucher";
 
 const CreateVoucherPage = () => {
   const { mutateAsync: createVoucher, isPending } = useCreateVoucher();

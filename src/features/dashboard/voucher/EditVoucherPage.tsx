@@ -29,11 +29,11 @@ import { cn } from "@/lib/utils";
 
 // Hooks
 import useGetEvents from "@/hooks/api/event/useGetEvents";
+import useGetVoucher from "@/hooks/api/voucher/useGetVoucher";
+import useUpdateVoucher from "@/hooks/api/voucher/useUpdateVoucher";
 import { updateVoucherSchema } from "./schemas";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import useUpdateVoucher from "@/hooks/api/vouchers/useUpdateVoucher";
-import useGetVoucher from "@/hooks/api/vouchers/useGetVoucher";
 
 // Types
 interface Event {
@@ -165,7 +165,7 @@ const EditVoucherPage = ({ id }: EditVoucherPageProps) => {
   }
 
   if (isVoucherLoading || isEventsLoading || !isFormReady) {
-    return <Loading text="Voucher Data" />;
+    return <Loading text="Voucher Data..." />;
   }
 
   return (
