@@ -1,11 +1,9 @@
 import { axiosInstance } from "@/lib/axios";
 import { PageableResponse, PaginationQueries } from "@/types/pagination";
-import { VoucherType } from "@/types/voucher";
 import { useQuery } from "@tanstack/react-query";
 
 interface GetVoucherQuery extends PaginationQueries {
   search?: string;
-  eventId?: number;
 }
 
 const useGetVouchers = (queries: GetVoucherQuery) => {
