@@ -1,10 +1,10 @@
 import DashboardLayout from "@/components/DashboardLayout";
-import CreateVoucherComponent from "@/features/dashboard/voucher/CreateVoucherPage";
+import CreateVoucherPage from "@/features/dashboard/voucher/CreateVoucherPage";
 
 const CreateVoucher = () => {
   return (
     <DashboardLayout>
-      <CreateVoucherComponent />
+      <CreateVoucherPage />
     </DashboardLayout>
   );
 };

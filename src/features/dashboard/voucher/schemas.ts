@@ -9,3 +9,11 @@ export const CreateVoucherSchema = Yup.object().shape({
   expiresAt: Yup.date().required("Expire date is required"),
   eventId: Yup.number().required("Event ID is required"),
 });
+
+export const updateVoucherSchema = Yup.object().shape({
+  code: Yup.string().min(4),
+  amount: Yup.number().min(1000),
+  expiresAt: Yup.date(),
+  eventId: Yup.number(),
+  isUsed: Yup.boolean(),
+});

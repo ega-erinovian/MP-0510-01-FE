@@ -15,10 +15,23 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { VoucherType } from "@/types/voucher";
 import { MoreHorizontal } from "lucide-react";
 import Link from "next/link";
-import { FC } from "react";
+import { FC, useState } from "react";
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Loader2 } from "lucide-react";
+import { VoucherType } from "@/types/voucher";
+import useDeleteVoucher from "@/hooks/api/vouchers/useDeleteVoucher";
 
 interface VouchersTableProps {
   vouchers: VoucherType[];
@@ -57,10 +70,54 @@ const VouchersTable: FC<VouchersTableProps> = ({
     "actions",
   ];
 
-  const pages = Array.from({ length: Math.ceil(totalPages) }, (_, i) => i + 1);
+  const [selectedVoucherId, setSelectedVoucherId] = useState<number | null>(
+    null
+  );
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const deleteVoucherMutation = useDeleteVoucher(selectedVoucherId || 0);
+
+  const handleDeleteClick = (voucherId: number) => {
+    setSelectedVoucherId(voucherId);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (selectedVoucherId) {
+      await deleteVoucherMutation.mutateAsync();
+      setIsDeleteDialogOpen(false);
+      setSelectedVoucherId(null);
+    }
+  };
 
   return (
-    <div>
+    <div className="w-full">
+      <AlertDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the
+              voucher.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleteVoucherMutation.isPending}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmDelete}
+              className="bg-red-500 hover:bg-red-600 gap-2"
+              disabled={deleteVoucherMutation.isPending}>
+              {deleteVoucherMutation.isPending && (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              )}
+              {deleteVoucherMutation.isPending ? "Deleting..." : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       <div className="flex items-center justify-between gap-4 mb-4">
         <div className="flex justify-between items-center relative w-96">
           <Input
@@ -137,21 +194,27 @@ const VouchersTable: FC<VouchersTableProps> = ({
               <TableCell>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="h-8 w-8 p-0">
+                    <Button
+                      variant="ghost"
+                      className="h-8 w-8 p-0"
+                      disabled={
+                        deleteVoucherMutation.isPending &&
+                        selectedVoucherId === voucher.id
+                      }>
                       <span className="sr-only">Open menu</span>
-                      <MoreHorizontal />
+                      <MoreHorizontal className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <Link
-                      href={`/dashboard/vouchers/voucher-attendee?id=${voucher.id}`}>
-                      <DropdownMenuItem>Attendee List</DropdownMenuItem>
+                    <Link href={`/dashboard/vouchers/edit/${voucher.id}`}>
+                      <DropdownMenuItem>Edit</DropdownMenuItem>
                     </Link>
                     <Separator />
-                    <Link
-                      href={`/dashboard/vouchers/edit-voucher?id=${voucher.id}`}>
-                      <DropdownMenuItem>Edit Voucher</DropdownMenuItem>
-                    </Link>
+                    <DropdownMenuItem
+                      className="text-red-600 cursor-pointer hover:bg-red-300 hover:text-red-600"
+                      onClick={() => handleDeleteClick(voucher.id)}>
+                      Delete
+                    </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </TableCell>

@@ -1,5 +1,4 @@
 import { axiosInstance } from "@/lib/axios";
-import { CategoryType } from "@/types/category";
 import { useQuery } from "@tanstack/react-query";
 
 const useGetCategories = () => {
