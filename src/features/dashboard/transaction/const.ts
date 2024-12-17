@@ -10,6 +10,15 @@ export const transactionTableCols = [
   "actions",
 ];
 
+export const transactionStatus = [
+  "UNPAID",
+  "CONFIRMING",
+  "DONE",
+  "REJECTED",
+  "EXPIRED",
+  "CANCELED",
+];
+
 export const getStatusColor = (status: string) => {
   switch (status) {
     case "UNPAID":

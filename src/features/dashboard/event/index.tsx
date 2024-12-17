@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import Loading from "@/components/dashboard/Loading";
+import useGetEvents from "@/hooks/api/event/useGetEvents";
+import EventsTable from "./components/EventTable";
 import { useDebounce } from "use-debounce";
 import DataNotFound from "@/components/dashboard/DataNotFound";
-import EventTable from "./components/EventTable";
-import useGetEvents from "@/hooks/api/event/useGetEvents";
 import useGetCategories from "@/hooks/api/category/useGetCategories";
 
 const EventList = () => {
@@ -74,9 +74,9 @@ const EventList = () => {
 
   return (
     <div className="mx-auto p-8">
-      <h1 className="text-9xl mb-8 font-bold">Event List</h1>
+      <h1 className="text-9xl mb-8 font-bold">Events</h1>
 
-      <EventTable
+      <EventsTable
         events={data.data}
         sortBy={sortBy}
         sortOrder={sortOrder}
