@@ -50,7 +50,7 @@ const VoucherList = () => {
 
   return (
     <div className="mx-auto p-8">
-      <h1 className="text-9xl mb-8 font-bold">Voucher List</h1>
+      <h1 className="text-9xl mb-8 font-bold">Vouchers</h1>
       <div className="flex items-center justify-between gap-4 mb-4">
         <div className="flex justify-between items-center relative w-96">
           <Input

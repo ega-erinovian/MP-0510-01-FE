@@ -12,22 +12,25 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { useFormik } from "formik";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { Check, ChevronsUpDown, Loader2 } from "lucide-react"; // Added Loader2 icon for the loader
 import { useState } from "react";
 import { CreateVoucherSchema } from "./schemas";
 import useCreateVoucher from "@/hooks/api/voucher/useCreateVoucher";
 import useGetEvents from "@/hooks/api/event/useGetEvents";
 import { useDebounce } from "use-debounce";
+import { useRouter } from "next/navigation";
 
 const CreateVoucherPage = () => {
+  const router = useRouter();
   const { mutateAsync: createVoucher, isPending } = useCreateVoucher();
   const [selectedEvent, setSelectedEvent] = useState<string>("");
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [debouncedSearch] = useDebounce(searchQuery, 1000);
+  const [debouncedSearch] = useDebounce(searchQuery, 1000); // Debounce for 1 second
 
+  // Fetch events only if searchQuery has finished typing (after debounce)
   const { data: events, isLoading } = useGetEvents({
-    search: debouncedSearch || "",
+    search: debouncedSearch.length > 0 ? debouncedSearch : "", // Trigger fetch only after debounce
   });
 
   const formik = useFormik({
@@ -40,17 +43,16 @@ const CreateVoucherPage = () => {
     validationSchema: CreateVoucherSchema,
     onSubmit: async (values) => {
       const formattedExpiresAt = new Date(values.expiresAt).toISOString();
-
       await createVoucher({
         ...values,
         expiresAt: formattedExpiresAt,
       });
+      router.push("/dashboard/vouchers");
     },
   });
 
-  if (isLoading && searchQuery === "") {
-    return <Loading text="Form" />;
-  }
+  // Don't render events or search results until debounceSearch has finished
+  const showEvents = debouncedSearch.length > 0 && !isLoading;
 
   return (
     <div className="h-screen w-full flex items-center justify-center">
@@ -91,40 +93,47 @@ const CreateVoucherPage = () => {
               )}
 
               <PopoverContent className="w-[500px] p-0" align="start">
-                <div className="border-b px-3 py-2">
+                <div className="border-b px-3 py-2 relative">
                   <input
                     className="w-full bg-transparent outline-none placeholder:text-muted-foreground"
                     placeholder="Search events..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
-                </div>
-                <div className="max-h-[300px] overflow-y-auto">
-                  {events?.data.length === 0 && (
-                    <p className="p-4 text-sm text-muted-foreground">
-                      No events found.
-                    </p>
+                  {/* Loader Spinner */}
+                  {isLoading && debouncedSearch.length > 0 && (
+                    <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground animate-spin" />
                   )}
-                  {events?.data.map((event: any) => (
-                    <button
-                      name="eventId"
-                      type="button"
-                      key={event.id}
-                      onClick={() => {
-                        setSelectedEvent(event.id.toString());
-                        setOpen(false);
-                        formik.setFieldValue("eventId", event.id); // Update Formik field
-                      }}
-                      className={cn(
-                        "flex w-full items-center justify-between px-3 py-2 hover:bg-accent",
-                        selectedEvent === event.id.toString() && "bg-accent"
-                      )}>
-                      {event.title}
-                      {selectedEvent === event.id.toString() && (
-                        <Check className="h-4 w-4" />
-                      )}
-                    </button>
-                  ))}
+                </div>
+                <div>
+                  {debouncedSearch.length > 0 &&
+                    !isLoading &&
+                    events?.data?.length === 0 && (
+                      <p className="p-4 text-sm text-muted-foreground">
+                        No events found.
+                      </p>
+                    )}
+                  {showEvents &&
+                    events?.data.map((event: any) => (
+                      <button
+                        name="eventId"
+                        type="button"
+                        key={event.id}
+                        onClick={() => {
+                          setSelectedEvent(event.id.toString());
+                          setOpen(false);
+                          formik.setFieldValue("eventId", event.id); // Update Formik field
+                        }}
+                        className={cn(
+                          "flex w-full items-center justify-between px-3 py-2 hover:bg-accent",
+                          selectedEvent === event.id.toString() && "bg-accent"
+                        )}>
+                        {event.title}
+                        {selectedEvent === event.id.toString() && (
+                          <Check className="h-4 w-4" />
+                        )}
+                      </button>
+                    ))}
                 </div>
               </PopoverContent>
             </Popover>

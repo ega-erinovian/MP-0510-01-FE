@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -17,9 +19,23 @@ import {
 import { TransactionType } from "@/types/transaction";
 import { CircleAlert, MoreHorizontal } from "lucide-react";
 import Link from "next/link";
-import { FC } from "react";
-import { getStatusColor, transactionTableCols } from "../const";
+import { FC, useState } from "react";
+import {
+  getStatusColor,
+  transactionStatus,
+  transactionTableCols,
+} from "../const";
 import TransactionDeleteDialog from "./TransactionDeleteDialog";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import TransactionEditDialog from "./TransactionEditDialog";
 
 interface TransactionsTableProps {
   transactions: TransactionType[];
@@ -116,10 +132,11 @@ const TransactionsTable: FC<TransactionsTableProps> = ({
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <Link
-                      href={`/dashboard/transactions/edit/${transaction.id}`}>
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
-                    </Link>
+                    <TransactionEditDialog
+                      id={transaction.id}
+                      status={transaction.status}
+                      email={transaction.user.email}
+                    />
                     <Separator />
                     <TransactionDeleteDialog id={transaction.id} />
                   </DropdownMenuContent>
