@@ -20,6 +20,7 @@ import Link from "next/link";
 import { FC } from "react";
 import TransactionDeleteDialog from "./VoucherDeleteDialog";
 import { voucherTableCols } from "../const";
+import { VoucherType } from "@/types/voucher";
 
 interface VoucherTableProps {
   vouchers: VoucherType[];
