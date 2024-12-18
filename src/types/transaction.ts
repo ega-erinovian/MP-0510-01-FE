@@ -14,6 +14,12 @@ export interface TransactionType {
     fullName: string;
     email: string;
     phoneNumber: string;
+    reviews: {
+      id: number;
+      rating: number;
+      comment: string;
+      eventId: number;
+    }[];
   };
   event: {
     title: string;
