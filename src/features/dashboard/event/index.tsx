@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import Loading from "@/components/dashboard/Loading";
-import useGetEvents from "@/hooks/api/event/useGetEvents";
-import EventsTable from "./components/EventTable";
-import { useDebounce } from "use-debounce";
 import DataNotFound from "@/components/dashboard/DataNotFound";
+import Loading from "@/components/dashboard/Loading";
+import { Input } from "@/components/ui/input";
 import useGetCategories from "@/hooks/api/category/useGetCategories";
+import useGetEvents from "@/hooks/api/event/useGetEvents";
+import { useState } from "react";
+import { useDebounce } from "use-debounce";
+import EventsTable from "./components/EventTable";
 
 const EventList = () => {
   const [page, setPage] = useState<number>(1);
@@ -17,7 +18,11 @@ const EventList = () => {
   const [take, setTake] = useState<number>(10);
   const [categoryId, setCategoryId] = useState<number | undefined>(undefined);
 
-  const { data, isPending, error } = useGetEvents({
+  const {
+    data: events,
+    isPending,
+    error,
+  } = useGetEvents({
     page,
     sortBy,
     sortOrder,
@@ -35,7 +40,7 @@ const EventList = () => {
 
   const onChangeTake = (newTake: number) => {
     setTake(newTake);
-    setPage(1); // Reset to first page when items per page changes
+    setPage(1);
   };
 
   const onSortChange = (column: string, order: string) => {
@@ -48,50 +53,80 @@ const EventList = () => {
   };
 
   const onCategoryChange = (categoryId: number | undefined) => {
-    setCategoryId(categoryId); // Set selected category
+    setCategoryId(categoryId);
   };
 
-  if (isPending) {
-    return <Loading text="Events" />;
-  }
-
-  if (isPendingCategories) {
-    return <Loading text="Events" />;
-  }
-
   if (error) {
-    return <DataNotFound text="Error fetching event" resetSearch={onSearch} />;
-  }
-
-  if (!data || data.data.length === 0) {
-    return (
-      <DataNotFound
-        text={`no data matched with: ${search}`}
-        resetSearch={onSearch}
-      />
-    );
+    return <DataNotFound text="Error fetching events" resetSearch={onSearch} />;
   }
 
   return (
     <div className="mx-auto p-8">
       <h1 className="text-9xl mb-8 font-bold">Events</h1>
+      <div className="flex items-center justify-between gap-4 mb-4">
+        <div className="flex justify-between items-center relative w-96">
+          <Input
+            value={search}
+            placeholder="Search vouchers..."
+            onChange={(e) => onSearch(e.target.value)}
+            disabled={isPending}
+          />
+        </div>
+        <div className="flex items-center gap-4">
+          <label htmlFor="sortBy" className="text-lg">
+            Sort By:
+          </label>
+          <select
+            id="sortBy"
+            value={sortBy}
+            onChange={(e) => onSortChange(e.target.value, sortOrder)}
+            className="border rounded px-2 py-1"
+            disabled={isPending}>
+            <option value="id">ID</option>
+            <option value="startDate">Start Date</option>
+            <option value="endDate">End Date</option>
+            <option value="price">Price</option>
+            <option value="availableSeats">Available Seats</option>
+          </select>
+          <select
+            value={sortOrder}
+            onChange={(e) => onSortChange(sortBy, e.target.value)}
+            className="border rounded px-2 py-1"
+            disabled={isPending}>
+            <option value="asc">Ascending</option>
+            <option value="desc">Descending</option>
+          </select>
+        </div>
+        <div>
+          <select
+            onChange={(e) =>
+              onCategoryChange(Number(e.target.value) || undefined)
+            }
+            value={categoryId || ""}
+            className="p-2 border border-gray-300 rounded"
+            disabled={isPendingCategories}>
+            <option value="">All Categories</option>
+            {categories?.map((category: any) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
 
-      <EventsTable
-        events={data.data}
-        sortBy={sortBy}
-        sortOrder={sortOrder}
-        onSortChange={onSortChange}
-        onSearch={onSearch}
-        totalPages={data.meta.total / take}
-        search={search}
-        onChangePage={onChangePage}
-        page={page}
-        onChangeTake={onChangeTake}
-        take={take}
-        categories={categories}
-        categoryId={categoryId}
-        onCategoryChange={onCategoryChange}
-      />
+      {isPending ? (
+        <Loading text="Events" />
+      ) : (
+        <EventsTable
+          events={events?.data || []}
+          totalPages={Math.ceil((events?.meta?.total || 0) / take)}
+          onChangePage={onChangePage}
+          page={page}
+          onChangeTake={onChangeTake}
+          take={take}
+        />
+      )}
     </div>
   );
 };

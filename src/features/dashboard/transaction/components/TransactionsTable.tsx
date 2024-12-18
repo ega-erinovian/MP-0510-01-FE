@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
@@ -19,22 +18,9 @@ import {
 import { TransactionType } from "@/types/transaction";
 import { CircleAlert, MoreHorizontal } from "lucide-react";
 import Link from "next/link";
-import { FC, useState } from "react";
-import {
-  getStatusColor,
-  transactionStatus,
-  transactionTableCols,
-} from "../const";
+import { FC } from "react";
+import { getStatusColor, transactionTableCols } from "../const";
 import TransactionDeleteDialog from "./TransactionDeleteDialog";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import TransactionEditDialog from "./TransactionEditDialog";
 
 interface TransactionsTableProps {
