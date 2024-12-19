@@ -7,12 +7,13 @@ import useGetTransactions from "@/hooks/api/transaction/useGetTransactions";
 import { useState } from "react";
 import { useDebounce } from "use-debounce";
 import TranscationsTable from "./components/TransactionsTable";
+import { useQueryState } from "nuqs";
 
 const TransactionList = () => {
   const [page, setPage] = useState<number>(1);
   const [sortBy, setSortBy] = useState<string>("id");
   const [sortOrder, setSortOrder] = useState<string>("desc");
-  const [search, setSearch] = useState<string>("");
+  const [search, setSearch] = useQueryState("search", { defaultValue: "" });
   const [debouncedSearch] = useDebounce(search, 1000);
   const [take, setTake] = useState<number>(10);
 
@@ -20,7 +21,7 @@ const TransactionList = () => {
     page,
     sortBy,
     sortOrder,
-    search: debouncedSearch || "",
+    search: debouncedSearch,
     take,
   });
 

@@ -7,12 +7,13 @@ import useGetVouchers from "@/hooks/api/voucher/useGetVouchers";
 import { useState } from "react";
 import { useDebounce } from "use-debounce";
 import VoucherTable from "./components/VoucherTable";
+import { useQueryState } from "nuqs";
 
 const VoucherList = () => {
   const [page, setPage] = useState<number>(1);
   const [sortBy, setSortBy] = useState<string>("id");
   const [sortOrder, setSortOrder] = useState<string>("desc");
-  const [search, setSearch] = useState<string>("");
+  const [search, setSearch] = useQueryState("search", { defaultValue: "" });
   const [debouncedSearch] = useDebounce(search, 1000);
   const [take, setTake] = useState<number>(10);
 
