@@ -9,14 +9,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import useGetReviews from "@/hooks/api/review/useGetReviews";
 import { TransactionType } from "@/types/transaction";
 import { CircleAlert } from "lucide-react";
 import { FC } from "react";
 
 interface AttendeeListTableProps {
   title: string;
-  attendees: TransactionType[];
+  transactions: TransactionType[];
   totalPages: number;
   onChangePage: (page: number) => void;
   page: number;
@@ -25,14 +24,14 @@ interface AttendeeListTableProps {
 }
 
 const AttendeeListTable: FC<AttendeeListTableProps> = ({
-  attendees,
+  transactions,
   totalPages,
   onChangePage,
   page,
   onChangeTake,
   take,
 }) => {
-  if (!attendees || attendees.length === 0) {
+  if (!transactions || transactions.length === 0) {
     return (
       <div className="h-[50vh] w-full flex flex-col items-center justify-center gap-4">
         <CircleAlert className="fill-red-500 text-white w-16 h-16" />
@@ -53,31 +52,19 @@ const AttendeeListTable: FC<AttendeeListTableProps> = ({
             <TableHead className="font-semibold capitalize">
               Ticket QTY
             </TableHead>
-            <TableHead className="font-semibold capitalize">Rating</TableHead>
-            <TableHead className="font-semibold capitalize">Review</TableHead>
+            <TableHead className="font-semibold capitalize">Email</TableHead>
+            <TableHead className="font-semibold capitalize">
+              Phone Number
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {attendees.map((attendee, idx) => (
+          {transactions.map((transaction, idx) => (
             <TableRow key={idx}>
-              <TableCell className="font-medium">
-                {attendee.user.fullName}
-              </TableCell>
-              <TableCell className="font-medium">{attendee.qty}</TableCell>
-              <TableCell className="font-medium">
-                {
-                  attendee.user.reviews.find(
-                    (review) => review.eventId === attendee.eventId
-                  )?.rating
-                }
-              </TableCell>
-              <TableCell className="font-medium">
-                {
-                  attendee.user.reviews.find(
-                    (review) => review.eventId === attendee.eventId
-                  )?.comment
-                }
-              </TableCell>
+              <TableCell>{transaction.user.fullName}</TableCell>
+              <TableCell>{transaction.qty}</TableCell>
+              <TableCell>{transaction.user.email}</TableCell>
+              <TableCell>{transaction.user.phoneNumber}</TableCell>
             </TableRow>
           ))}
         </TableBody>

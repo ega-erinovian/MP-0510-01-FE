@@ -4,15 +4,18 @@ import DataNotFound from "@/components/dashboard/DataNotFound";
 import Loading from "@/components/dashboard/Loading";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-} from "@/components/ui/table-dialog";
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import useGetTransactions from "@/hooks/api/transaction/useGetTransactions";
-import { useRouter } from "next/navigation";
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
 import AttendeeListTable from "./AttendeeListTable";
+import { Input } from "@/components/ui/input";
+import { useQueryState } from "nuqs";
 
 interface AttendeeListProps {
   id: number;
@@ -20,13 +23,13 @@ interface AttendeeListProps {
 }
 
 const AttendeeListDialog: FC<AttendeeListProps> = ({ id, title }) => {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [page, setPage] = useState<number>(1);
   const [sortBy, setSortBy] = useState<string>("id");
   const [sortOrder, setSortOrder] = useState<string>("desc");
-  const [search, setSearch] = useState<string>("");
-  const [debouncedSearch] = useDebounce(search, 1000);
   const [take, setTake] = useState<number>(10);
+  const [search, setSearch] = useQueryState("search", { defaultValue: "" });
+  const [debouncedSearch] = useDebounce(search, 1000);
 
   const {
     data: transactions,
@@ -36,10 +39,15 @@ const AttendeeListDialog: FC<AttendeeListProps> = ({ id, title }) => {
     page,
     sortBy,
     sortOrder,
-    search: debouncedSearch || "",
     take,
+    search: debouncedSearch || "",
+    status: "DONE",
     eventId: id,
   });
+
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch]);
 
   const onChangePage = (page: number) => {
     setPage(page);
@@ -47,7 +55,7 @@ const AttendeeListDialog: FC<AttendeeListProps> = ({ id, title }) => {
 
   const onChangeTake = (newTake: number) => {
     setTake(newTake);
-    setPage(1); // Reset to first page when items per page changes
+    setPage(1);
   };
 
   const onSortChange = (column: string, order: string) => {
@@ -55,70 +63,91 @@ const AttendeeListDialog: FC<AttendeeListProps> = ({ id, title }) => {
     setSortOrder(order);
   };
 
-  const onSearch = (query: string) => {
-    setSearch(query);
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value);
   };
 
   if (error) {
     return (
-      <DataNotFound text="Error fetching attendees" resetSearch={onSearch} />
+      <DataNotFound
+        text="Error fetching attendees"
+        resetSearch={() => setSearch("")}
+      />
     );
   }
 
   return (
-    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-      <DialogTrigger asChild>
-        <Button
-          className="w-full"
-          variant="outline"
-          onClick={() => setIsDialogOpen(true)}>
+    <Sheet open={isOpen} onOpenChange={setIsOpen}>
+      <SheetTrigger asChild>
+        <div className="w-full py-2 px-4 hover:bg-zinc-100 cursor-pointer">
           Attendee List
-        </Button>
-      </DialogTrigger>
-      <DialogContent>
-        <div className="mx-auto p-8 w-full">
-          <h1 className="text-7xl mb-8 font-bold">{title}</h1>
-          <div className="flex items-center justify-end gap-4 mb-4">
-            <div className="flex items-center gap-4">
-              <label htmlFor="sortBy" className="text-lg">
-                Sort By:
-              </label>
-              <select
-                id="sortBy"
-                value={sortBy}
-                onChange={(e) => onSortChange(e.target.value, sortOrder)}
-                className="border rounded px-2 py-1"
-                disabled={isPending}>
-                <option value="id">ID</option>
-                <option value="qty">QTY</option>
-              </select>
-              <select
-                value={sortOrder}
-                onChange={(e) => onSortChange(sortBy, e.target.value)}
-                className="border rounded px-2 py-1"
-                disabled={isPending}>
-                <option value="asc">Ascending</option>
-                <option value="desc">Descending</option>
-              </select>
+        </div>
+      </SheetTrigger>
+      <SheetContent
+        side="right"
+        className="w-full sm:max-w-2xl md:max-w-4xl lg:max-w-6xl"
+        onClick={(e) => e.stopPropagation()} // Prevent event bubbling
+      >
+        <SheetTitle className="text-5xl font-bold">{title}</SheetTitle>
+        <SheetDescription></SheetDescription>
+        <div className="h-full flex flex-col">
+          <div className="p-6">
+            <div className="space-y-4">
+              {/* <div className="w-full">
+                <Input
+                  type="text"
+                  value={search}
+                  placeholder="Search attendees..."
+                  onChange={handleSearchChange}
+                  onFocus={(e) => e.stopPropagation()}
+                  className="w-full"
+                />
+              </div> */}
+              <div className="flex flex-wrap items-center gap-4">
+                <label
+                  htmlFor="sortBy"
+                  className="text-sm font-medium whitespace-nowrap">
+                  Sort By:
+                </label>
+                <select
+                  id="sortBy"
+                  value={sortBy}
+                  onChange={(e) => onSortChange(e.target.value, sortOrder)}
+                  className="min-w-24 rounded-md border bg-transparent px-2 py-1.5 text-sm shadow-sm"
+                  disabled={isPending}>
+                  <option value="id">ID</option>
+                  <option value="qty">QTY</option>
+                </select>
+                <select
+                  value={sortOrder}
+                  onChange={(e) => onSortChange(sortBy, e.target.value)}
+                  className="min-w-24 rounded-md border bg-transparent px-2 py-1.5 text-sm shadow-sm"
+                  disabled={isPending}>
+                  <option value="asc">Ascending</option>
+                  <option value="desc">Descending</option>
+                </select>
+              </div>
             </div>
           </div>
 
-          {isPending ? (
-            <Loading text="Attendees" />
-          ) : (
-            <AttendeeListTable
-              title={title}
-              attendees={transactions.data}
-              totalPages={transactions.meta.total / take}
-              onChangePage={onChangePage}
-              page={page}
-              onChangeTake={onChangeTake}
-              take={take}
-            />
-          )}
+          <div className="flex-1 overflow-auto px-6">
+            {isPending ? (
+              <Loading text="Attendees" />
+            ) : (
+              <AttendeeListTable
+                title={title}
+                transactions={transactions.data}
+                totalPages={Math.ceil(transactions.meta.total / take)}
+                onChangePage={onChangePage}
+                page={page}
+                onChangeTake={onChangeTake}
+                take={take}
+              />
+            )}
+          </div>
         </div>
-      </DialogContent>
-    </Dialog>
+      </SheetContent>
+    </Sheet>
   );
 };
 

@@ -8,15 +8,18 @@ import useGetEvents from "@/hooks/api/event/useGetEvents";
 import { useState } from "react";
 import { useDebounce } from "use-debounce";
 import EventsTable from "./components/EventTable";
+import { useQueryState } from "nuqs";
 
 const EventList = () => {
   const [page, setPage] = useState<number>(1);
   const [sortBy, setSortBy] = useState<string>("id");
   const [sortOrder, setSortOrder] = useState<string>("desc");
-  const [search, setSearch] = useState<string>("");
+  const [search, setSearch] = useQueryState("search", { defaultValue: "" });
   const [debouncedSearch] = useDebounce(search, 1000);
   const [take, setTake] = useState<number>(10);
-  const [categoryId, setCategoryId] = useState<number | undefined>(undefined);
+  const [categoryId, setCategoryId] = useQueryState("categoryId", {
+    defaultValue: "",
+  });
 
   const {
     data: events,
@@ -28,7 +31,7 @@ const EventList = () => {
     sortOrder,
     search: debouncedSearch || "",
     take,
-    categoryId,
+    categoryId: parseInt(categoryId),
   });
 
   const { data: categories, isPending: isPendingCategories } =
@@ -52,7 +55,7 @@ const EventList = () => {
     setSearch(query);
   };
 
-  const onCategoryChange = (categoryId: number | undefined) => {
+  const onCategoryChange = (categoryId: string) => {
     setCategoryId(categoryId);
   };
 
@@ -99,9 +102,7 @@ const EventList = () => {
         </div>
         <div>
           <select
-            onChange={(e) =>
-              onCategoryChange(Number(e.target.value) || undefined)
-            }
+            onChange={(e) => onCategoryChange(e.target.value)}
             value={categoryId || ""}
             className="p-2 border border-gray-300 rounded"
             disabled={isPendingCategories}>

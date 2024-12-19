@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 
 interface GetTransactionQuery extends PaginationQueries {
   search?: string;
+  status?: string;
   eventId?: number;
 }
 
