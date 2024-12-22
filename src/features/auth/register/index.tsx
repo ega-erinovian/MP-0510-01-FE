@@ -21,11 +21,13 @@ import useCheckReferral from "@/hooks/api/user/useCheckReferral";
 import useUpdateUser from "@/hooks/api/user/useUpdateUser";
 import useRandomCode from "@/hooks/useRandomCode";
 import { useFormik } from "formik";
-import { Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, FC, useEffect, useRef, useState } from "react";
 import { useDebounce } from "use-debounce";
 import { registerSchema } from "./schemas";
+import Image from "next/image";
+import { Trash2 } from "lucide-react";
+import Link from "next/link";
 
 interface RegisterComponentProps {
   role: string;
@@ -177,6 +179,43 @@ const RegisterComponent: FC<RegisterComponentProps> = ({ role }) => {
         <CardContent>
           <form onSubmit={formik.handleSubmit}>
             <div className="grid w-full items-center gap-4">
+              {selectedImage && (
+                <div className="w-full flex justify-center">
+                  <div className="relative h-[150px] w-[150px]">
+                    <img
+                      src={selectedImage}
+                      alt="profile-picture-preview"
+                      className="object-cover rounded-full w-full h-full"
+                    />
+                  </div>
+                </div>
+              )}
+              <div className="flex flex-col space-y-1.5">
+                <Label>Profile Picture</Label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    ref={profilePictureReff}
+                    type="file"
+                    accept="image/*"
+                    onChange={onChangeProfilePicture}
+                  />
+                  {selectedImage && (
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      onClick={removeProfilePicture}
+                      className="py-1 px-2 z-50">
+                      <Trash2 />
+                    </Button>
+                  )}
+                </div>
+                {!!formik.touched.profilePicture &&
+                !!formik.errors.profilePicture ? (
+                  <p className="text-xs text-red-500">
+                    {formik.errors.profilePicture}
+                  </p>
+                ) : null}
+              </div>
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="fullName">
                   {role === "customer" ? "Full Name" : "Organization Name"}
@@ -350,44 +389,17 @@ const RegisterComponent: FC<RegisterComponentProps> = ({ role }) => {
                 <p className="text-xs text-red-500">{formik.errors.cityId}</p>
               )}
 
-              {selectedImage && (
-                <>
-                  <div className="relative h-[150px] w-[200px]">
-                    <img
-                      src={selectedImage}
-                      alt="profile-picture-preview"
-                      className="object-cover rounded w-full h-full"
-                    />
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      onClick={removeProfilePicture}
-                      className="absolute top-0 -right-10 py-1 px-2 z-50">
-                      <Trash2 />
-                    </Button>
-                  </div>
-                </>
-              )}
-
-              <div className="flex flex-col space-y-1.5">
-                <Label>Profile Picture</Label>
-                <Input
-                  ref={profilePictureReff}
-                  type="file"
-                  accept="image/*"
-                  onChange={onChangeProfilePicture}
-                />
-                {!!formik.touched.profilePicture &&
-                !!formik.errors.profilePicture ? (
-                  <p className="text-xs text-red-500">
-                    {formik.errors.profilePicture}
-                  </p>
-                ) : null}
-              </div>
-
               <Input id="role" type="hidden" value={convertedRole!} />
 
-              <div className="flex justify-end">
+              <div className="flex justify-between items-center">
+                <p className="text-center text-xs">
+                  Already Have An Account?{" "}
+                  <Link
+                    href="/auth/login"
+                    className="font-semibold hover:text-sky-500">
+                    Sign In
+                  </Link>
+                </p>
                 <Button type="submit" disabled={isPending}>
                   {isPending ? "Loading..." : "Submit"}
                 </Button>

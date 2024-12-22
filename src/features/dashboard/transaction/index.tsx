@@ -8,8 +8,11 @@ import { useState } from "react";
 import { useDebounce } from "use-debounce";
 import TranscationsTable from "./components/TransactionsTable";
 import { useQueryState } from "nuqs";
+import { useSession } from "next-auth/react";
 
 const TransactionList = () => {
+  const { data: sessionData } = useSession(); // dari next-auth
+  const user = sessionData?.user;
   const [page, setPage] = useState<number>(1);
   const [sortBy, setSortBy] = useState<string>("id");
   const [sortOrder, setSortOrder] = useState<string>("desc");
@@ -23,6 +26,7 @@ const TransactionList = () => {
     sortOrder,
     search: debouncedSearch,
     take,
+    userId: Number(user?.id),
   });
 
   const onChangePage = (page: number) => {

@@ -7,6 +7,7 @@ interface GetTransactionQuery extends PaginationQueries {
   search?: string;
   status?: string;
   eventId?: number;
+  userId?: number;
 }
 
 const useGetTransactions = (queries: GetTransactionQuery) => {

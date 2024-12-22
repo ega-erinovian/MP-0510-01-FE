@@ -34,29 +34,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-// Types
-interface Event {
-  id: number;
-  title: string;
-}
-
-interface Voucher {
-  id: number;
-  code: string;
-  amount: number;
-  expiresAt: string;
-  eventId: number;
-  isUsed: boolean;
-}
-
-interface FormValues {
-  code: string;
-  amount: number;
-  expiresAt: string;
-  eventId: number;
-  isUsed: boolean;
-}
+import { useSession } from "next-auth/react";
 
 interface EditVoucherPageProps {
   id: string;
@@ -64,14 +42,12 @@ interface EditVoucherPageProps {
 
 // Constants
 const DEBOUNCE_DELAY = 500;
-const ERROR_MESSAGES = {
-  REQUIRED: "This field is required",
-  INVALID_AMOUNT: "Amount must be greater than 0",
-  INVALID_DATE: "Expiration date must be in the future",
-};
 
 const EditVoucherPage = ({ id }: EditVoucherPageProps) => {
   const router = useRouter();
+  const { data: sessionData } = useSession(); // dari next-auth
+  const user = sessionData?.user;
+
   const [selectedEvent, setSelectedEvent] = useState<string>("");
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -94,7 +70,8 @@ const EditVoucherPage = ({ id }: EditVoucherPageProps) => {
     isLoading: isEventsLoading,
     error: eventsError,
   } = useGetEvents({
-    search: debouncedSearch,
+    search: debouncedSearch.length > 0 ? debouncedSearch : "", // Trigger fetch only after debounce
+    userId: Number(user?.id),
   });
 
   const formik = useFormik({
