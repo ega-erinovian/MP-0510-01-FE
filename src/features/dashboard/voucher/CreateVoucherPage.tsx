@@ -4,23 +4,28 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
+import Loading from "@/components/dashboard/Loading";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import useGetEvents from "@/hooks/api/event/useGetEvents";
-import useCreateVoucher from "@/hooks/api/voucher/useCreateVoucher";
 import { cn } from "@/lib/utils";
 import { useFormik } from "formik";
 import { Check, ChevronsUpDown, Loader2 } from "lucide-react"; // Added Loader2 icon for the loader
-import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { toast } from "react-toastify";
-import { useDebounce } from "use-debounce";
 import { CreateVoucherSchema } from "./schemas";
+import useCreateVoucher from "@/hooks/api/voucher/useCreateVoucher";
+import useGetEvents from "@/hooks/api/event/useGetEvents";
+import { useDebounce } from "use-debounce";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
+import { useSession } from "next-auth/react";
 
 const CreateVoucherPage = () => {
+  const { data: sessionData } = useSession(); // dari next-auth
+  const user = sessionData?.user;
+
   const router = useRouter();
   const { mutateAsync: createVoucher, isPending } = useCreateVoucher();
   const [selectedEvent, setSelectedEvent] = useState<string>("");
@@ -31,6 +36,7 @@ const CreateVoucherPage = () => {
   // Fetch events only if searchQuery has finished typing (after debounce)
   const { data: events, isLoading } = useGetEvents({
     search: debouncedSearch.length > 0 ? debouncedSearch : "", // Trigger fetch only after debounce
+    userId: Number(user?.id),
   });
 
   const formik = useFormik({

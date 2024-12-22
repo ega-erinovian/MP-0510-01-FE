@@ -9,8 +9,12 @@ import { useState } from "react";
 import { useDebounce } from "use-debounce";
 import EventsTable from "./components/EventTable";
 import { useQueryState } from "nuqs";
+import { useSession } from "next-auth/react";
 
 const EventList = () => {
+  const { data } = useSession(); // dari next-auth
+  const user = data?.user;
+
   const [page, setPage] = useState<number>(1);
   const [sortBy, setSortBy] = useState<string>("id");
   const [sortOrder, setSortOrder] = useState<string>("desc");
@@ -32,6 +36,7 @@ const EventList = () => {
     search: debouncedSearch || "",
     take,
     categoryId: parseInt(categoryId),
+    userId: Number(user?.id),
   });
 
   const { data: categories, isPending: isPendingCategories } =

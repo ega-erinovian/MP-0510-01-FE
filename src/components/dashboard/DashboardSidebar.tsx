@@ -29,7 +29,9 @@ import {
 } from "@/components/ui/sidebar";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { signOut, useSession } from "next-auth/react";
+import { Button } from "../ui/button";
 
 // Menu items.
 const items = [
@@ -71,6 +73,15 @@ const items = [
 
 const DashboardSidebar = () => {
   const pathname = usePathname();
+
+  const { data } = useSession(); // dari next-auth
+
+  const user = data?.user;
+
+  const logout = () => {
+    // Logout pakai next-auth
+    signOut();
+  };
 
   return (
     <Sidebar>
@@ -135,35 +146,43 @@ const DashboardSidebar = () => {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem className="mb-2">
-            <Link href="/dashboard/profile">
-              <SidebarMenuButton asChild className="h-full">
-                <div className="flex items-center gap-4">
-                  <div className="relative w-10 h-10 ">
-                    <Image
-                      src="https://images.unsplash.com/36/xIsiRLngSRWN02yA2BbK_submission-photo-7.jpg?q=80&w=2065&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                      alt="world-map"
-                      className="object-cover rounded-full"
-                      fill
-                    />
+      {!!user?.id && (
+        <SidebarFooter>
+          <SidebarMenu>
+            <SidebarMenuItem className="mb-2">
+              <Link href="/dashboard/profile">
+                <SidebarMenuButton asChild className="h-full">
+                  <div className="flex items-center gap-2">
+                    <div className="relative w-10 h-10 ">
+                      <Image
+                        src={`${
+                          user.profilePicture ??
+                          "https://res.cloudinary.com/dpeljv2vu/image/upload/v1734840028/blank-profile-picture-973460_640_enmtle.webp"
+                        }`}
+                        alt="world-map"
+                        className="object-cover rounded-full"
+                        fill
+                      />
+                    </div>
+                    <span className="font-bold">{`${user.fullName}`}</span>
                   </div>
-                  <span className="font-bold">PK Entertainment</span>
-                </div>
-              </SidebarMenuButton>
-            </Link>
-          </SidebarMenuItem>
-          <SidebarMenuItem className="mb-2">
-            <SidebarMenuButton asChild className="font-semibold">
-              <Link href="/auth/login">
-                <LogOut />
-                <span>Logout</span>
+                </SidebarMenuButton>
               </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
+            </SidebarMenuItem>
+            <SidebarMenuItem className="mb-2">
+              <SidebarMenuButton asChild className="font-semibold">
+                <Button
+                  onClick={logout}
+                  variant={"ghost"}
+                  className="flex items-center justify-start">
+                  <LogOut />
+                  <span>Logout</span>
+                </Button>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarFooter>
+      )}
     </Sidebar>
   );
 };

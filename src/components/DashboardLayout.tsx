@@ -1,9 +1,9 @@
 "use client";
 
-import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import React from "react";
-import { ReactNode } from "react";
+import React, { ReactNode } from "react";
+import DashboardSidebar from "./dashboard/DashboardSidebar";
+import AuthGuard from "./hoc/AuthGuardOrganizer";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -20,4 +20,4 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   );
 };
 
-export default DashboardLayout;
+export default AuthGuard(DashboardLayout);
