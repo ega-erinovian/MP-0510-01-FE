@@ -12,7 +12,7 @@ const MaintenanceComponent = async () => {
           Dear customer, This page is under maintenance. Please come back later.
         </h1>
         {!session?.user && (
-          <Link href={"/auth/login"}>
+          <Link href={"/login"}>
             <Button>Sign In</Button>
           </Link>
         )}

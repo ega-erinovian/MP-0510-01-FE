@@ -64,18 +64,25 @@ const LoginComponent = () => {
               <Button type="submit" className="mt-4" disabled={isPending}>
                 {isPending ? "Loading..." : "Login"}
               </Button>
-              <div className="text-center text-xs space-y-2">
+              <Link
+                href="/forgot-password"
+                className="text-gray-700 hover:text-sky-500 text-center text-xs w-full">
+                <Button className="w-full" variant="outline">
+                  Forgot Password
+                </Button>
+              </Link>
+              <div className="text-center text-xs space-y-2 mt-4">
                 <p>Don't Have Any Account?</p>
                 <p>
                   <Link
-                    href="/auth/register/customer"
+                    href="/register/customer"
                     className="font-semibold hover:text-sky-500">
                     I Want to Buy Ticket
                   </Link>
                 </p>
                 <p>
                   <Link
-                    href="/auth/register/organizer"
+                    href="/register/organizer"
                     className="font-semibold hover:text-sky-500">
                     I Want to Organize Events
                   </Link>
