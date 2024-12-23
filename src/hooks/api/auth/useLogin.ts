@@ -26,7 +26,7 @@ const useLogin = () => {
       await signIn("credentials", { ...data, redirect: false });
 
       if (data.role === "ORGANIZER") {
-        router.replace("/dashboard/events");
+        router.replace("/dashboard");
       } else if (data.role === "CUSTOMER") {
         router.replace("/");
       }

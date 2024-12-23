@@ -11,7 +11,7 @@ export default function AuthGuard(Component: any) {
 
     useEffect(() => {
       if (status === "unauthenticated") {
-        router.push("/auth/login");
+        router.push("/login");
       }
 
       if (session) {
