@@ -18,8 +18,9 @@ import {
 import { EventType } from "@/types/event";
 import { CircleAlert, MoreHorizontal } from "lucide-react";
 import { FC } from "react";
-import AttendeeListDialog from "./AttendeeListDialog";
 import { eventTableCols } from "../const";
+import AttendeeListDialog from "./AttendeeListDialog";
+import EventDeleteDialog from "./EventDeleteDialog";
 
 interface EventsTableProps {
   events: EventType[];
@@ -98,7 +99,7 @@ const EventsTable: FC<EventsTableProps> = ({
                   <DropdownMenuContent align="end">
                     <AttendeeListDialog id={event.id} title={event.title} />
                     <Separator />
-                    {/* <TransactionDeleteDialog id={transaction.id} /> */}
+                    <EventDeleteDialog id={event.id} />
                   </DropdownMenuContent>
                 </DropdownMenu>
               </TableCell>
