@@ -11,6 +11,7 @@ export interface UserType {
   point: number;
   cityId: number;
   pointExpired: Date | null;
+  referralsUsed: [];
   createdAt: Date;
   updatedAt: Date;
 }

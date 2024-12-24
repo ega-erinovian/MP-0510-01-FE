@@ -18,9 +18,9 @@ const EventList = () => {
   const [page, setPage] = useState<number>(1);
   const [sortBy, setSortBy] = useState<string>("id");
   const [sortOrder, setSortOrder] = useState<string>("desc");
+  const [take, setTake] = useState<number>(10);
   const [search, setSearch] = useQueryState("search", { defaultValue: "" });
   const [debouncedSearch] = useDebounce(search, 1000);
-  const [take, setTake] = useState<number>(10);
   const [categoryId, setCategoryId] = useQueryState("categoryId", {
     defaultValue: "",
   });
