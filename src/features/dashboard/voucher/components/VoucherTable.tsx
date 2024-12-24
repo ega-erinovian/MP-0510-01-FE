@@ -14,13 +14,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { TransactionType } from "@/types/transaction";
+import { VoucherType } from "@/types/voucher";
 import { CircleAlert, MoreHorizontal } from "lucide-react";
 import Link from "next/link";
 import { FC } from "react";
-import TransactionDeleteDialog from "./VoucherDeleteDialog";
 import { voucherTableCols } from "../const";
-import { VoucherType } from "@/types/voucher";
+import VoucherDeleteDialog from "./VoucherDeleteDialog";
 
 interface VoucherTableProps {
   vouchers: VoucherType[];
@@ -106,7 +105,7 @@ const VoucherTable: FC<VoucherTableProps> = ({
                       <DropdownMenuItem>Edit</DropdownMenuItem>
                     </Link>
                     <Separator />
-                    <TransactionDeleteDialog id={voucher.id} />
+                    <VoucherDeleteDialog id={voucher.id} />
                   </DropdownMenuContent>
                 </DropdownMenu>
               </TableCell>

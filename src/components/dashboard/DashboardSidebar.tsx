@@ -32,6 +32,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { Button } from "../ui/button";
+import { useEffect, useState } from "react";
+import useGetUser from "@/hooks/api/user/useGetUser";
 
 // Menu items.
 const items = [
@@ -65,7 +67,7 @@ const items = [
       },
       {
         title: "Create Voucher",
-        url: "/dashboard/vouchers/create",
+        url: "/dashboard/vouchers/create-voucher",
       },
     ],
   },
@@ -76,7 +78,7 @@ const DashboardSidebar = () => {
 
   const { data } = useSession(); // dari next-auth
 
-  const user = data?.user;
+  const { data: user } = useGetUser(data?.user.id!);
 
   const logout = () => {
     // Logout pakai next-auth
@@ -150,7 +152,7 @@ const DashboardSidebar = () => {
         <SidebarFooter>
           <SidebarMenu>
             <SidebarMenuItem className="mb-2">
-              <Link href="/dashboard/profile">
+              <Link href={`/dashboard/profile/edit/${user.id}`}>
                 <SidebarMenuButton asChild className="h-full">
                   <div className="flex items-center gap-2">
                     <div className="relative w-10 h-10 ">
