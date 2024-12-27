@@ -3,7 +3,7 @@
 import { SidebarProvider } from "@/components/ui/sidebar";
 import React, { ReactNode } from "react";
 import DashboardSidebar from "./dashboard/DashboardSidebar";
-import AuthGuard from "./hoc/AuthGuardOrganizer";
+import OrganizerAuthGuard from "./hoc/AuthGuardOrganizer";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -20,4 +20,4 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   );
 };
 
-export default AuthGuard(DashboardLayout);
+export default OrganizerAuthGuard(DashboardLayout);

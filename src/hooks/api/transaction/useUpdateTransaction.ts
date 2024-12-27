@@ -1,4 +1,4 @@
-import { axiosInstance } from "@/lib/axios";
+import useAxios from "@/hooks/useAxios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { toast } from "react-toastify";
@@ -11,6 +11,7 @@ interface UpdateTransactionPayload {
 
 const useUpdateTransaction = () => {
   const queryClient = useQueryClient();
+  const { axiosInstance } = useAxios();
 
   return useMutation({
     mutationFn: async (payload: UpdateTransactionPayload) => {

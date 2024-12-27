@@ -1,4 +1,4 @@
-import { axiosInstance } from "@/lib/axios";
+import useAxios from "@/hooks/useAxios";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { toast } from "react-toastify";
@@ -11,6 +11,8 @@ interface CreateVoucherPayload {
 }
 
 const useCreateVoucher = () => {
+  const { axiosInstance } = useAxios();
+
   return useMutation({
     mutationFn: async (payload: CreateVoucherPayload) => {
       const { data } = await axiosInstance.post("/vouchers", payload);
