@@ -156,8 +156,8 @@ const EditVoucherPage = ({ id }: EditVoucherPageProps) => {
           <h1 className="text-3xl font-bold">Edit Voucher</h1>
 
           {/* Event Selection */}
-          <div className="space-y-1.5">
-            <Label>Event</Label>
+          <div className="grid gap-2">
+            <Label className="text-lg font-semibold">Select Event</Label>
             <Popover open={open} onOpenChange={setOpen}>
               {isUpdating && searchQuery !== "" ? (
                 <PopoverTrigger asChild disabled={true}>
@@ -240,8 +240,10 @@ const EditVoucherPage = ({ id }: EditVoucherPageProps) => {
           </div>
 
           {/* Voucher Code */}
-          <div className="space-y-1.5">
-            <Label htmlFor="code">Voucher Code</Label>
+          <div className="grid gap-2">
+            <Label htmlFor="code" className="text-lg font-semibold">
+              Voucher Code
+            </Label>
             <Input
               id="code"
               name="code"
@@ -257,8 +259,10 @@ const EditVoucherPage = ({ id }: EditVoucherPageProps) => {
           </div>
 
           {/* Amount */}
-          <div className="space-y-1.5">
-            <Label htmlFor="amount">Amount</Label>
+          <div className="grid gap-2">
+            <Label htmlFor="amount" className="text-lg font-semibold">
+              Amount
+            </Label>
             <Input
               id="amount"
               name="amount"
@@ -275,8 +279,10 @@ const EditVoucherPage = ({ id }: EditVoucherPageProps) => {
           </div>
 
           {/* Expiration Date */}
-          <div className="space-y-1.5">
-            <Label htmlFor="expiresAt">Expiration Date</Label>
+          <div className="grid gap-2">
+            <Label htmlFor="expiresAt" className="text-lg font-semibold">
+              Expiration Date
+            </Label>
             <Input
               id="expiresAt"
               name="expiresAt"
@@ -292,8 +298,10 @@ const EditVoucherPage = ({ id }: EditVoucherPageProps) => {
           </div>
 
           {/* Availability Status */}
-          <div className="space-y-1.5">
-            <Label htmlFor="isUsed">Status</Label>
+          <div className="grid gap-2">
+            <Label htmlFor="isUsed" className="text-lg font-semibold">
+              Status
+            </Label>
             <Select
               name="isUsed"
               onValueChange={handleSelectChange}

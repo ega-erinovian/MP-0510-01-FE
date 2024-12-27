@@ -17,7 +17,9 @@ import useGetCategories from "@/hooks/api/category/useGetCategories";
 import useGetCities from "@/hooks/api/city/useGetCities";
 import useGetCountries from "@/hooks/api/country/useGetCountries";
 import useGetEvent from "@/hooks/api/event/useGetEvent";
-import useUpdateEvent from "@/hooks/api/event/useUpdateEvent";
+import useUpdateEvent, {
+  UpdateEventPayload,
+} from "@/hooks/api/event/useUpdateEvent";
 import { formatISO } from "date-fns";
 import { useFormik } from "formik";
 import { Trash2 } from "lucide-react";
@@ -69,12 +71,23 @@ const EditEventComponent: FC<UpdateEventComponentProps> = ({ id }) => {
     },
     validationSchema: editEventSchema,
     onSubmit: async (values) => {
+      console.log("triggered");
+
       try {
-        await updateEvent({
-          ...values,
+        const payload: UpdateEventPayload = {
+          id: values.id,
+          title: values.title,
+          description: values.description,
+          price: values.price,
+          availableSeats: values.availableSeats,
+          thumbnnail: values.thumbnnail,
           startDate: formatISO(new Date(values.startDate)),
           endDate: formatISO(new Date(values.endDate)),
-        });
+          categoryId: values.categoryId,
+          cityId: values.cityId,
+        };
+
+        await updateEvent(payload);
 
         router.push("/dashboard/events");
       } catch (error) {
@@ -123,9 +136,9 @@ const EditEventComponent: FC<UpdateEventComponentProps> = ({ id }) => {
         },
       });
 
-      setSelectedCountry(String(citiesByCountry[0].countryId));
-
       setSelectedCity(String(event.cityId));
+
+      setSelectedCountry(String(event.city.countryId));
 
       setSelectedCategory(String(event.categoryId));
 
@@ -372,6 +385,7 @@ const EditEventComponent: FC<UpdateEventComponentProps> = ({ id }) => {
                 </SelectContent>
               </Select>
             </div>
+
             <RichTextEditor
               label="description"
               value={formik.values.description}

@@ -27,7 +27,7 @@ const EventDeleteDialog: FC<EventDeleteDialogProps> = ({ id }) => {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button className="w-full text-left mt-1" variant="destructive">
+        <Button className="w-full text-left mt-1" variant="outline">
           Delete
         </Button>
       </AlertDialogTrigger>

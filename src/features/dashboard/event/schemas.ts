@@ -1,7 +1,4 @@
 import * as Yup from "yup";
-import YupPassword from "yup-password";
-
-YupPassword(Yup);
 
 export const editEventSchema = Yup.object().shape({
   title: Yup.string()
@@ -14,18 +11,32 @@ export const editEventSchema = Yup.object().shape({
   price: Yup.number()
     .required("Price is required")
     .positive("Price must be a positive number"),
-  startDate: Yup.date()
+  startDate: Yup.string()
     .required("Start date is required")
-    .min(new Date(), "Start date cannot be in the past"),
-  endDate: Yup.date()
+    .test("is-future", "Start date cannot be in the past", function (value) {
+      if (!value) return false;
+      return new Date(value) > new Date();
+    }),
+  endDate: Yup.string()
     .required("End date is required")
-    .min(Yup.ref("startDate"), "End date must be after the start date"),
-  country: Yup.string().required("Country is required"),
+    .test(
+      "is-after-start",
+      "End date must be after the start date",
+      function (value) {
+        if (!value) return false;
+        const { startDate } = this.parent;
+        if (!startDate) return false;
+        return new Date(value) > new Date(startDate);
+      }
+    ),
+  categoryId: Yup.number()
+    .required("Category is required")
+    .positive("Invalid category selection"),
   cityId: Yup.number()
     .required("City is required")
     .positive("Invalid city selection"),
-  category: Yup.string().required("Category is required"),
   description: Yup.string()
     .required("Description is required")
     .min(10, "Description must be at least 10 characters long"),
+  thumbnnail: Yup.mixed().nullable(),
 });

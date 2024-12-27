@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import useDeleteTransaction from "@/hooks/api/transaction/useDeleteTransaction";
-import { Loader2 } from "lucide-react";
 import { FC } from "react";
 
 interface TransactionDeleteDialogProps {
@@ -28,7 +27,7 @@ const TransactionDeleteDialog: FC<TransactionDeleteDialogProps> = ({ id }) => {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button className="w-full text-left mt-1" variant="destructive">
+        <Button className="w-full text-left mt-1" variant="outline">
           Delete
         </Button>
       </AlertDialogTrigger>

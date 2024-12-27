@@ -22,6 +22,7 @@ import { FC } from "react";
 import { getStatusColor, transactionTableCols } from "../const";
 import TransactionDeleteDialog from "./TransactionDeleteDialog";
 import TransactionEditDialog from "./TransactionEditDialog";
+import PaymentProofDialog from "./PaymentProofDialog";
 
 interface TransactionsTableProps {
   transactions: TransactionType[];
@@ -99,12 +100,7 @@ const TransactionsTable: FC<TransactionsTableProps> = ({
               </TableCell>
               <TableCell className="font-medium min-w-[120px] max-w-[200px] truncate">
                 {transaction.paymentProof ? (
-                  <Link
-                    href={transaction.paymentProof || "/dashboard/transactions"}
-                    className="hover:text-blue-500 underline underline-offset-2"
-                    target="_blank">
-                    See Payment Proof
-                  </Link>
+                  <PaymentProofDialog img={transaction.paymentProof} />
                 ) : (
                   "No Payment Proof"
                 )}

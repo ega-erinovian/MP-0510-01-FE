@@ -79,7 +79,7 @@ const AttendeeListDialog: FC<AttendeeListProps> = ({ id, title }) => {
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
-        <div className="w-full py-2 px-4 hover:bg-zinc-100 cursor-pointer">
+        <div className="w-full py-2 px-4 hover:bg-zinc-100 cursor-pointer font-semibold">
           Attendee List
         </div>
       </SheetTrigger>
