@@ -170,7 +170,7 @@ const RegisterForm: FC<RegisterFormProps> = ({ role }) => {
     <form onSubmit={formik.handleSubmit} className="flex flex-col gap-6">
       <div className="flex flex-col items-center gap-2 text-center">
         <h1 className="text-3xl font-bold capitalize">
-          Create an {role.toLowerCase()} Account
+          Create {role.toLowerCase()} Account
         </h1>
       </div>
       <div className="grid gap-6">

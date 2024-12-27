@@ -1,10 +1,10 @@
-import { axiosInstance } from "@/lib/axios";
+import useAxios from "@/hooks/useAxios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { toast } from "react-toastify";
 
 const useDeleteTransaction = () => {
-  // const { axiosInstance } = useAxios();
+  const { axiosInstance } = useAxios();
   const queryClient = useQueryClient();
 
   return useMutation({

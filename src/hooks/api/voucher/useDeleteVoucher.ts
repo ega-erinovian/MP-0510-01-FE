@@ -1,11 +1,11 @@
-import { axiosInstance } from "@/lib/axios";
+import useAxios from "@/hooks/useAxios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { toast } from "react-toastify";
 
 const useDeleteVoucher = () => {
-  // const { axiosInstance } = useAxios();
   const queryClient = useQueryClient();
+  const { axiosInstance } = useAxios();
 
   return useMutation({
     mutationFn: async (id: number) => {
