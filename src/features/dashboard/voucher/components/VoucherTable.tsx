@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
@@ -102,7 +101,7 @@ const VoucherTable: FC<VoucherTableProps> = ({
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <Link href={`/dashboard/vouchers/edit/${voucher.id}`}>
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
+                      <Button className="w-full">Edit</Button>
                     </Link>
                     <Separator />
                     <VoucherDeleteDialog id={voucher.id} />

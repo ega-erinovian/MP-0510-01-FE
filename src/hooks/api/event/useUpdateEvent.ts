@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { toast } from "react-toastify";
 
-interface UpdateEventPayload {
+export interface UpdateEventPayload {
   id: number;
   title?: string;
   description?: string;

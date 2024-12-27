@@ -17,6 +17,7 @@ export interface EventType {
   };
   city: {
     name: string;
+    countryId: number;
   };
   category: {
     name: string;

@@ -70,8 +70,8 @@ const CreateVoucherPage = () => {
       <form onSubmit={formik.handleSubmit}>
         <div className="grid w-[500px] items-center gap-6">
           <h1 className="text-3xl font-bold">Create A Voucher</h1>
-          <div className="flex flex-col space-y-1.5">
-            <Label>Event</Label>
+          <div className="grid gap-2">
+            <Label className="text-lg font-semibold">Event</Label>
             <Popover open={open} onOpenChange={setOpen}>
               {isPending && searchQuery !== "" ? (
                 <PopoverTrigger asChild disabled={true}>
@@ -152,8 +152,10 @@ const CreateVoucherPage = () => {
               <p className="text-xs text-red-500">{formik.errors.eventId}</p>
             ) : null}
           </div>
-          <div className="flex flex-col space-y-1.5">
-            <Label htmlFor="code">Code</Label>
+          <div className="grid gap-2">
+            <Label htmlFor="code" className="text-lg font-semibold">
+              Code
+            </Label>
             <Input
               name="code"
               placeholder="Voucher code"
@@ -168,8 +170,10 @@ const CreateVoucherPage = () => {
             )}
           </div>
 
-          <div className="flex flex-col space-y-1.5">
-            <Label htmlFor="amount">Amount</Label>
+          <div className="grid gap-2">
+            <Label htmlFor="amount" className="text-lg font-semibold">
+              Amount
+            </Label>
             <Input
               name="amount"
               placeholder="Voucher amount"
@@ -184,8 +188,10 @@ const CreateVoucherPage = () => {
             )}
           </div>
 
-          <div className="flex flex-col space-y-1.5">
-            <Label htmlFor="expiresAt">Expires At</Label>
+          <div className="grid gap-2">
+            <Label htmlFor="expiresAt" className="text-lg font-semibold">
+              Expires At
+            </Label>
             <Input
               name="expiresAt"
               placeholder="Voucher expiration date"
@@ -200,7 +206,7 @@ const CreateVoucherPage = () => {
             )}
           </div>
 
-          <div className="flex justify-end mt-4">
+          <div className="flex justify-end mt-4 gap-2">
             <Button type="submit" className="mt-4" disabled={isPending}>
               {isPending ? "Loading..." : "Submit"}
             </Button>

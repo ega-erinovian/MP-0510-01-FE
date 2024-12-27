@@ -20,11 +20,11 @@ import {
 import { FC, useState, useCallback } from "react";
 import { transactionStatus } from "../const";
 import { useFormik } from "formik";
+import { updateTransactionSchema } from "../schemas";
 import useUpdateTransaction from "@/hooks/api/transaction/useUpdateTransaction";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { Input } from "@/components/ui/input";
-import { updateTransactionSchema } from "../schemas";
 
 interface TransactionEditDialogProps {
   id: number;
@@ -65,11 +65,8 @@ const TransactionEditDialog: FC<TransactionEditDialogProps> = ({
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger asChild>
-        <Button
-          className="w-full"
-          variant="outline"
-          onClick={() => setIsDialogOpen(true)}>
-          Update Status
+        <Button className="w-full" onClick={() => setIsDialogOpen(true)}>
+          Update
         </Button>
       </DialogTrigger>
 

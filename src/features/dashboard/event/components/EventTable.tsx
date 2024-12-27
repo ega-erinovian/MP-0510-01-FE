@@ -17,12 +17,11 @@ import {
 } from "@/components/ui/table";
 import { EventType } from "@/types/event";
 import { CircleAlert, MoreHorizontal } from "lucide-react";
+import Link from "next/link";
 import { FC } from "react";
 import { eventTableCols } from "../const";
 import AttendeeListDialog from "./AttendeeListDialog";
 import EventDeleteDialog from "./EventDeleteDialog";
-import Link from "next/link";
-import { DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
 
 interface EventsTableProps {
   events: EventType[];
@@ -51,6 +50,7 @@ const EventsTable: FC<EventsTableProps> = ({
       </div>
     );
   }
+
   return (
     <div className="w-full">
       <Table>
@@ -102,9 +102,7 @@ const EventsTable: FC<EventsTableProps> = ({
                     <AttendeeListDialog id={event.id} title={event.title} />
                     <Separator />
                     <Link href={`/dashboard/events/edit/${event.id}`}>
-                      <Button className="w-full mt-2" variant="outline">
-                        Edit
-                      </Button>
+                      <Button className="w-full mt-2">Edit</Button>
                     </Link>
                     <EventDeleteDialog id={event.id} />
                   </DropdownMenuContent>

@@ -194,8 +194,8 @@ const UpdateProfileComponent: FC<UpdateProfileComponentProps> = ({ id }) => {
                   </div>
                 </div>
               )}
-              <div className="flex flex-col space-y-1.5">
-                <Label>Profile Picture</Label>
+              <div className="grid gap-2">
+                <Label className="text-lg font-semibold">Profile Picture</Label>
                 <div className="flex items-center gap-2">
                   <Input
                     ref={profilePictureReff}
@@ -220,8 +220,8 @@ const UpdateProfileComponent: FC<UpdateProfileComponentProps> = ({ id }) => {
                   </p>
                 ) : null}
               </div>
-              <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="fullName">
+              <div className="grid gap-2">
+                <Label htmlFor="fullName" className="text-lg font-semibold">
                   {user.role === "customer" ? "Full Name" : "Organization Name"}
                 </Label>
                 <Input
@@ -240,8 +240,10 @@ const UpdateProfileComponent: FC<UpdateProfileComponentProps> = ({ id }) => {
                 )}
               </div>
 
-              <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="email">Email</Label>
+              <div className="grid gap-2">
+                <Label htmlFor="email" className="text-lg font-semibold">
+                  Email
+                </Label>
                 <Input
                   name="email"
                   type="email"
@@ -256,8 +258,12 @@ const UpdateProfileComponent: FC<UpdateProfileComponentProps> = ({ id }) => {
               </div>
 
               {user.referralsUsed.length === 0 && (
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="referralCode">Referral Code (optional)</Label>
+                <div className="grid gap-2">
+                  <Label
+                    htmlFor="referralCode"
+                    className="text-lg font-semibold">
+                    Referral Code (optional)
+                  </Label>
                   <div className="relative">
                     <Input
                       name="referralCode"
@@ -292,8 +298,10 @@ const UpdateProfileComponent: FC<UpdateProfileComponentProps> = ({ id }) => {
                 </div>
               )}
 
-              <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="phoneNumber">Phone Number</Label>
+              <div className="grid gap-2">
+                <Label htmlFor="phoneNumber" className="text-lg font-semibold">
+                  Phone Number
+                </Label>
                 <Input
                   name="phoneNumber"
                   placeholder="+628xxxxxxxxx"
