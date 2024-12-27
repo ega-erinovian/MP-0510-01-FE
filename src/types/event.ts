@@ -9,16 +9,16 @@ export interface EventType {
   thumbnnail: string;
   createdAt: Date;
   updatedAt: Date;
+  categoryId: number;
+  cityId: number;
   organizer: {
     id: number;
     fullName: string;
   };
   city: {
-    id: number;
     name: string;
   };
   category: {
-    id: number;
     name: string;
   };
 }

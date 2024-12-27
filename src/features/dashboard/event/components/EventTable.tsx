@@ -21,6 +21,8 @@ import { FC } from "react";
 import { eventTableCols } from "../const";
 import AttendeeListDialog from "./AttendeeListDialog";
 import EventDeleteDialog from "./EventDeleteDialog";
+import Link from "next/link";
+import { DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
 
 interface EventsTableProps {
   events: EventType[];
@@ -99,6 +101,11 @@ const EventsTable: FC<EventsTableProps> = ({
                   <DropdownMenuContent align="end">
                     <AttendeeListDialog id={event.id} title={event.title} />
                     <Separator />
+                    <Link href={`/dashboard/events/edit/${event.id}`}>
+                      <Button className="w-full mt-2" variant="outline">
+                        Edit
+                      </Button>
+                    </Link>
                     <EventDeleteDialog id={event.id} />
                   </DropdownMenuContent>
                 </DropdownMenu>
