@@ -37,8 +37,6 @@ const UpdateProfileComponent: FC<UpdateProfileComponentProps> = ({ id }) => {
     validationSchema: updateUserSchema,
     onSubmit: async (values) => {
       try {
-        console.log(values.profilePicture);
-
         if (values.email === user?.email) {
           await updateUser({
             id,

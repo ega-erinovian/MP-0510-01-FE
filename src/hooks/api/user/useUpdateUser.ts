@@ -1,7 +1,6 @@
 import { axiosInstance } from "@/lib/axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
 interface UpdateUserPayload {
@@ -16,30 +15,29 @@ interface UpdateUserPayload {
 }
 
 const useUpdateUser = () => {
-  const router = useRouter();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (payload: UpdateUserPayload) => {
-      const registerForm = new FormData();
+      const updateUserForm = new FormData();
 
-      if (payload.fullName) registerForm.append("fullName", payload.fullName);
-      if (payload.email) registerForm.append("email", payload.email);
-      if (payload.password) registerForm.append("password", payload.password);
+      if (payload.fullName) updateUserForm.append("fullName", payload.fullName);
+      if (payload.email) updateUserForm.append("email", payload.email);
+      if (payload.password) updateUserForm.append("password", payload.password);
       if (payload.phoneNumber)
-        registerForm.append("phoneNumber", payload.phoneNumber);
+        updateUserForm.append("phoneNumber", payload.phoneNumber);
       if (payload.profilePicture) {
-        registerForm.append("profilePicture", payload.profilePicture);
+        updateUserForm.append("profilePicture", payload.profilePicture);
       }
 
       const { data } = await axiosInstance.patch(
         `/users/${payload.id}`,
-        registerForm
+        updateUserForm
       );
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["vouchers"] });
+      queryClient.invalidateQueries({ queryKey: ["users"] });
       toast.success("User Updated Successfullly");
     },
 

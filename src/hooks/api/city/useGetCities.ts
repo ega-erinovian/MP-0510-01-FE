@@ -1,17 +1,15 @@
-"use client";
-
 import { axiosInstance } from "@/lib/axios";
 import { useQuery } from "@tanstack/react-query";
 
-interface GetCountriesQuery {
-  cityId?: number;
+interface GetCitiesQuery {
+  countryId?: number;
 }
 
-const useGetCountries = (queries?: GetCountriesQuery) => {
+const useGetCities = (queries: GetCitiesQuery) => {
   return useQuery({
-    queryKey: ["countries", queries],
+    queryKey: ["cities", queries],
     queryFn: async () => {
-      const { data } = await axiosInstance.get<CountryType[]>("/countries", {
+      const { data } = await axiosInstance.get<CityType[]>("/cities", {
         params: queries,
       });
 
@@ -23,4 +21,4 @@ const useGetCountries = (queries?: GetCountriesQuery) => {
   });
 };
 
-export default useGetCountries;
+export default useGetCities;
