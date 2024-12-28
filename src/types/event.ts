@@ -7,6 +7,7 @@ export interface EventType {
   startDate: Date;
   endDate: Date;
   thumbnnail: string;
+  address: string;
   createdAt: Date;
   updatedAt: Date;
   categoryId: number;

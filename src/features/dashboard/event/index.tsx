@@ -65,7 +65,7 @@ const EventList = () => {
   };
 
   if (error) {
-    return <DataNotFound text="Error fetching events" resetSearch={onSearch} />;
+    return <DataNotFound text="Error fetching events" />;
   }
 
   return (

@@ -48,9 +48,7 @@ const TransactionList = () => {
   };
 
   if (error) {
-    return (
-      <DataNotFound text="Error fetching transactions" resetSearch={onSearch} />
-    );
+    return <DataNotFound text="Error fetching transactions" />;
   }
 
   return (

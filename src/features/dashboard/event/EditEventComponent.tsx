@@ -26,6 +26,7 @@ import { Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, FC, useEffect, useRef, useState } from "react";
 import { editEventSchema } from "./schemas";
+import Image from "next/image";
 
 interface UpdateEventComponentProps {
   id: number;
@@ -61,6 +62,7 @@ const EditEventComponent: FC<UpdateEventComponentProps> = ({ id }) => {
       id,
       title: "",
       description: "",
+      address: "",
       price: 0,
       availableSeats: 0,
       thumbnnail: null,
@@ -78,6 +80,7 @@ const EditEventComponent: FC<UpdateEventComponentProps> = ({ id }) => {
           id: values.id,
           title: values.title,
           description: values.description,
+          address: values.address,
           price: values.price,
           availableSeats: values.availableSeats,
           thumbnnail: values.thumbnnail,
@@ -126,6 +129,7 @@ const EditEventComponent: FC<UpdateEventComponentProps> = ({ id }) => {
           id,
           title: event.title,
           description: event.description,
+          address: event.address,
           thumbnnail: null,
           price: event.price,
           availableSeats: event.availableSeats,
@@ -153,20 +157,21 @@ const EditEventComponent: FC<UpdateEventComponentProps> = ({ id }) => {
 
   return (
     <div className="w-full py-20 flex items-center justify-center">
-      <div className="w-[720px]">
+      <div className="w-[1080px]">
         <form onSubmit={formik.handleSubmit}>
           <div className="grid gap-6">
             {(selectedImage || event?.thumbnnail) && (
               <div className="w-full flex justify-center">
-                <div className="relative h-[300px] w-full">
-                  <img
+                <div className="relative h-[480px] w-full overflow-hidden rounded-lg">
+                  <Image
                     src={
                       selectedImage === ""
                         ? event?.thumbnnail || ""
                         : selectedImage
                     }
-                    alt="thumbnail-preview"
-                    className="object-cover w-full h-full"
+                    alt="thumbnail"
+                    fill
+                    className="object-cover duration-100 hover:scale-105"
                   />
                 </div>
               </div>
@@ -209,6 +214,22 @@ const EditEventComponent: FC<UpdateEventComponentProps> = ({ id }) => {
               />
               {!!formik.touched.title && !!formik.errors.title && (
                 <p className="text-xs text-red-500">{formik.errors.title}</p>
+              )}
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="address" className="text-lg font-semibold">
+                Address
+              </Label>
+              <textarea
+                name="address"
+                placeholder="Your event address"
+                value={formik.values.address}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                className="border rounded-lg p-2 w-full"
+              />
+              {!!formik.touched.address && !!formik.errors.address && (
+                <p className="text-xs text-red-500">{formik.errors.address}</p>
               )}
             </div>
             <div className="grid gap-2">
