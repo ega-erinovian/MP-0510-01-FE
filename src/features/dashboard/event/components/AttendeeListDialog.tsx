@@ -68,12 +68,7 @@ const AttendeeListDialog: FC<AttendeeListProps> = ({ id, title }) => {
   };
 
   if (error) {
-    return (
-      <DataNotFound
-        text="Error fetching attendees"
-        resetSearch={() => setSearch("")}
-      />
-    );
+    return <DataNotFound text="Error fetching attendees" />;
   }
 
   return (

@@ -33,6 +33,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "../ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 // Menu items.
 const items = [
@@ -80,7 +81,6 @@ const DashboardSidebar = () => {
   const { data: user } = useGetUser(data?.user.id!);
 
   const logout = () => {
-    // Logout pakai next-auth
     signOut();
   };
 
@@ -154,41 +154,32 @@ const DashboardSidebar = () => {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      {!!user?.id && (
-        <SidebarFooter>
-          <SidebarMenu>
-            <SidebarMenuItem className="mb-2">
-              <Link href={`/dashboard/profile/edit/${user.id}`}>
-                <SidebarMenuButton asChild className="h-full">
-                  <div className="flex items-center gap-2">
-                    <div className="relative w-10 h-10 ">
-                      <Image
-                        src={`${
-                          user.profilePicture ??
-                          "https://res.cloudinary.com/dpeljv2vu/image/upload/v1734840028/blank-profile-picture-973460_640_enmtle.webp"
-                        }`}
-                        alt="world-map"
-                        className="object-cover rounded-full"
-                        fill
-                      />
-                    </div>
-                    <span className="font-bold">{`${user.fullName}`}</span>
-                  </div>
-                </SidebarMenuButton>
+      {user?.id && (
+        <SidebarFooter className="border-t p-4">
+          <div className="flex items-center gap-4">
+            <Avatar>
+              <AvatarImage
+                src={user.profilePicture ?? ""}
+                alt={user.fullName}
+              />
+              <AvatarFallback>{user.fullName.charAt(0)}</AvatarFallback>
+            </Avatar>
+            <div className="flex flex-col">
+              <span className="font-semibold">{user.fullName}</span>
+              <Link
+                href={`/dashboard/profile/edit/${user.id}`}
+                className="text-sm text-muted-foreground hover:underline">
+                Edit Profile
               </Link>
-            </SidebarMenuItem>
-            <SidebarMenuItem className="mb-2">
-              <SidebarMenuButton asChild className="font-semibold">
-                <Button
-                  onClick={logout}
-                  variant={"ghost"}
-                  className="flex items-center justify-start">
-                  <LogOut />
-                  <span>Logout</span>
-                </Button>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
+            </div>
+          </div>
+          <Button
+            variant="ghost"
+            className="w-full justify-start mt-4"
+            onClick={logout}>
+            <LogOut className="mr-2 h-4 w-4" />
+            Logout
+          </Button>
         </SidebarFooter>
       )}
     </Sidebar>

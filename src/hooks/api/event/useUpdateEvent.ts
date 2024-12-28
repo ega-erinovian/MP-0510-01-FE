@@ -7,6 +7,7 @@ export interface UpdateEventPayload {
   id: number;
   title?: string;
   description?: string;
+  address?: string;
   price?: number;
   availableSeats?: number;
   thumbnnail?: File | null;
@@ -27,6 +28,7 @@ const useUpdateEvent = () => {
       if (payload.title) updateEventForm.append("title", payload.title);
       if (payload.description)
         updateEventForm.append("description", payload.description);
+      if (payload.address) updateEventForm.append("address", payload.address);
       if (payload.price) updateEventForm.append("price", `${payload.price}`);
       if (payload.availableSeats)
         updateEventForm.append("availableSeats", `${payload.availableSeats}`);
