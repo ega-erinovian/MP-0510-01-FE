@@ -19,10 +19,10 @@ import { TransactionType } from "@/types/transaction";
 import { CircleAlert, MoreHorizontal } from "lucide-react";
 import Link from "next/link";
 import { FC } from "react";
-import { getStatusColor, transactionTableCols } from "../const";
-import TransactionDeleteDialog from "./TransactionDeleteDialog";
 import TransactionEditDialog from "./TransactionEditDialog";
 import PaymentProofDialog from "./PaymentProofDialog";
+import { getStatusColor, transactionTableCols } from "../const";
+import CronTimer from "@/components/TransactionTimer";
 
 interface TransactionsTableProps {
   transactions: TransactionType[];
@@ -79,9 +79,6 @@ const TransactionsTable: FC<TransactionsTableProps> = ({
                 </Button>
               </TableCell>
               <TableCell className="font-medium">
-                {transaction.user.fullName}
-              </TableCell>
-              <TableCell className="font-medium">
                 {transaction.event.title}
               </TableCell>
               <TableCell className="font-medium">{transaction.qty}</TableCell>
@@ -105,6 +102,14 @@ const TransactionsTable: FC<TransactionsTableProps> = ({
                   "No Payment Proof"
                 )}
               </TableCell>
+              <TableCell className="font-medium">
+                {transaction.status !== "DONE" ||
+                transaction.totalPrice >= 0 ? (
+                  <CronTimer transactionId={transaction.id} />
+                ) : (
+                  "[DONE]"
+                )}
+              </TableCell>
               <TableCell>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -118,12 +123,7 @@ const TransactionsTable: FC<TransactionsTableProps> = ({
                       id={transaction.id}
                       status={transaction.status}
                       email={transaction.user.email}
-                      eventId={transaction.eventId}
-                      qty={transaction.qty}
-                      availableSeats={transaction.event.availableSeats}
                     />
-                    <Separator />
-                    <TransactionDeleteDialog id={transaction.id} />
                   </DropdownMenuContent>
                 </DropdownMenu>
               </TableCell>

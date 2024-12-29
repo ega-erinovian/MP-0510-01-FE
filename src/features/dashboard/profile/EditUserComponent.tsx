@@ -11,6 +11,7 @@ import { Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, FC, useEffect, useRef, useState } from "react";
 import { updateUserSchema } from "./schemas";
+import { toast } from "react-toastify";
 
 interface UpdateProfileComponentProps {
   id: number;
@@ -49,6 +50,7 @@ const UpdateProfileComponent: FC<UpdateProfileComponentProps> = ({ id }) => {
         }
 
         router.push("/dashboard");
+        toast.success("User Updated Successfully");
       } catch (error) {
         console.log(error);
       }

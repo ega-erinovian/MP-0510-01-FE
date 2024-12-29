@@ -5,7 +5,7 @@ import React from "react";
 const EventDetail = ({ params }: { params: { id: string } }) => {
   return (
     <LandingPageLayout>
-      <EventDetailComponent id={Number(params.id)} />
+      <EventDetailComponent eventId={Number(params.id)} />
     </LandingPageLayout>
   );
 };

@@ -3,26 +3,79 @@
 import DataNotFound from "@/components/dashboard/DataNotFound";
 import Loading from "@/components/dashboard/Loading";
 import Markdown from "@/components/Markdown";
+import QuantitySelector from "@/components/QuantitySelector";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import useGetEvent from "@/hooks/api/event/useGetEvent";
-import { Calendar, Clock, Flag, LocateIcon, Share2 } from "lucide-react";
+import useGetVouchers from "@/hooks/api/voucher/useGetVouchers";
+import { Calendar, LocateIcon, Share2 } from "lucide-react";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { FC } from "react";
+import Link from "next/link";
+import { FC, useEffect, useState } from "react";
+import { useDebounce } from "use-debounce";
+import CreateTransactionModal from "./components/CreateTransactionModal";
+import useGetCoupons from "@/hooks/api/coupon/useGetCoupons";
+import { VoucherType } from "@/types/voucher";
 
 interface EventDetailComponentProps {
-  id: number;
+  eventId: number;
 }
 
-const EventDetailComponent: FC<EventDetailComponentProps> = ({ id }) => {
-  const { data: event, isLoading: isEventLoading } = useGetEvent(id);
+const EventDetailComponent: FC<EventDetailComponentProps> = ({ eventId }) => {
+  const { data } = useSession(); // dari next-auth
+  const user = data?.user;
+
+  const { data: event, isLoading: isEventLoading } = useGetEvent(eventId);
+
+  const [quantity, setQuantity] = useState(1);
+
+  const [voucherCode, setVoucherCode] = useState<string>("");
+  const [isVoucherValid, setIsVoucherValid] = useState<boolean | null>(null);
+  const [debouncedVoucherCoupon] = useDebounce(voucherCode, 800);
+  const [referralMessage, setReferralMessage] = useState<string>("");
+  const { data: existingVoucher, isPending: isPendingVoucher } = useGetVouchers(
+    { search: debouncedVoucherCoupon, eventId: event?.id }
+  );
+  const { data: existingCoupon, isPending: isPendingCoupon } = useGetCoupons({
+    search: debouncedVoucherCoupon,
+    userId: user?.id,
+  });
+
+  const [voucherData, setVoucherData] = useState<VoucherType[]>([]);
+
+  useEffect(() => {
+    if (!debouncedVoucherCoupon || debouncedVoucherCoupon === "") {
+      setIsVoucherValid(null);
+      setReferralMessage("");
+      setVoucherData([]);
+      return;
+    }
+
+    if (isPendingVoucher) return;
+
+    const isValid = Array.isArray(existingVoucher?.data)
+      ? existingVoucher.data.length > 0
+      : !!existingVoucher;
+    setIsVoucherValid(isValid);
+
+    if (isValid) {
+      setReferralMessage("Valid voucher!");
+      setVoucherData(existingVoucher?.data || []);
+    } else if (debouncedVoucherCoupon) {
+      setReferralMessage("Invalid voucher");
+      setIsVoucherValid(false);
+      setVoucherData([]);
+    }
+  }, [debouncedVoucherCoupon, existingVoucher, isPendingVoucher]);
 
   if (isEventLoading) <Loading text="Event Data" />;
 
   if (!event) {
-    return <DataNotFound text="Event not found" />;
+    return <DataNotFound text="Data Not Found" />;
   }
 
   return (
@@ -77,7 +130,6 @@ const EventDetailComponent: FC<EventDetailComponentProps> = ({ id }) => {
                     {event.organizer.fullName}
                   </span>
                 </p>
-                {/* <p className="text-xs text-muted-foreground">12.2k followers</p> */}
               </div>
               <Button variant="outline" size="sm" className="ml-auto">
                 Visit Profile
@@ -139,8 +191,8 @@ const EventDetailComponent: FC<EventDetailComponentProps> = ({ id }) => {
         {/* Sidebar */}
         <div className="lg:col-span-1">
           <Card className="sticky top-24">
-            <CardContent className="p-6">
-              <div className="mb-6">
+            <CardContent className="p-6 grid gap-4">
+              <div>
                 <h2 className="text-xl font-semibold mb-1">{event.title}</h2>
                 <p className="text-sm text-muted-foreground">
                   {event.price.toLocaleString("id-ID", {
@@ -151,16 +203,89 @@ const EventDetailComponent: FC<EventDetailComponentProps> = ({ id }) => {
                 </p>
               </div>
 
-              <Button className="w-full" size="lg">
-                Reserve a spot
-              </Button>
+              {event.availableSeats > 0 ? (
+                <>
+                  <div className="flex justify-between items-center w-full">
+                    <p>Quantity</p>
+                    <QuantitySelector
+                      maxValue={event.availableSeats}
+                      quantity={quantity}
+                      onChangeQuantity={setQuantity}
+                    />
+                  </div>
 
-              <div className="mt-6 pt-6 border-t">
-                <Button variant="outline" className="w-full" size="lg">
-                  <Flag className="mr-2 h-4 w-4" />
-                  Report this event
-                </Button>
-              </div>
+                  <div className="grid gap-2">
+                    <div className="relative">
+                      <Input
+                        type="text"
+                        placeholder="Input a Voucher or Coupon"
+                        value={voucherCode}
+                        onChange={(e) => setVoucherCode(e.target.value)}
+                        disabled={!user}
+                        className={`${
+                          isVoucherValid === true
+                            ? "border-green-500"
+                            : isVoucherValid === false
+                            ? "border-red-500"
+                            : ""
+                        } w-full`}
+                      />
+                      {isPendingVoucher && (
+                        <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500">
+                          Checking...
+                        </span>
+                      )}
+                    </div>
+                    <p
+                      className={`${
+                        isVoucherValid === true
+                          ? "text-green-500"
+                          : isVoucherValid === false
+                          ? "text-red-500"
+                          : ""
+                      } text-xs`}>
+                      {referralMessage}
+                    </p>
+                  </div>
+
+                  <div>
+                    {user && (
+                      <CreateTransactionModal
+                        userId={user.id}
+                        event={event}
+                        quantity={quantity}
+                        voucher={voucherData}
+                      />
+                    )}
+
+                    {!user ? (
+                      <p className="text-sm text-muted-foreground text-center mt-2">
+                        Please{" "}
+                        <Link
+                          href={"/login"}
+                          className="text-sky-500 underline underline-offset-2 hover:text-sky-600">
+                          Login
+                        </Link>{" "}
+                        to Book Ticket
+                      </p>
+                    ) : null}
+
+                    {user?.role === "ORGANIZER" ? (
+                      <p className="text-sm text-muted-foreground text-center mt-2">
+                        Please{" "}
+                        <Link
+                          href={"/login"}
+                          className="text-sky-500 underline underline-offset-2 hover:text-sky-600">
+                          Login
+                        </Link>{" "}
+                        as Customer to Book Ticket
+                      </p>
+                    ) : null}
+                  </div>
+                </>
+              ) : (
+                <p className="text-gray-400">Sold Out</p>
+              )}
             </CardContent>
           </Card>
         </div>

@@ -23,35 +23,34 @@ const useUpdateEvent = () => {
 
   return useMutation({
     mutationFn: async (payload: UpdateEventPayload) => {
-      const updateEventForm = new FormData();
+      const formData = new FormData();
 
-      if (payload.title) updateEventForm.append("title", payload.title);
+      if (payload.title) formData.append("title", payload.title);
       if (payload.description)
-        updateEventForm.append("description", payload.description);
-      if (payload.address) updateEventForm.append("address", payload.address);
-      if (payload.price) updateEventForm.append("price", `${payload.price}`);
+        formData.append("description", payload.description);
+      if (payload.address) formData.append("address", payload.address);
+      if (payload.price) formData.append("price", `${payload.price}`);
       if (payload.availableSeats)
-        updateEventForm.append("availableSeats", `${payload.availableSeats}`);
+        formData.append("availableSeats", `${payload.availableSeats}`);
       if (payload.thumbnnail) {
-        updateEventForm.append("thumbnnail", payload.thumbnnail);
+        formData.append("thumbnnail", payload.thumbnnail);
       }
-      if (payload.startDate)
-        updateEventForm.append("startDate", payload.startDate);
-      if (payload.endDate) updateEventForm.append("endDate", payload.endDate);
+      if (payload.startDate) formData.append("startDate", payload.startDate);
+      if (payload.endDate) formData.append("endDate", payload.endDate);
       if (payload.categoryId)
-        updateEventForm.append("categoryId", `${payload.categoryId}`);
-      if (payload.cityId) updateEventForm.append("cityId", `${payload.cityId}`);
+        formData.append("categoryId", `${payload.categoryId}`);
+      if (payload.cityId) formData.append("cityId", `${payload.cityId}`);
 
       const { data } = await axiosInstance.patch(
         `/events/${payload.id}`,
-        updateEventForm
+        formData
       );
 
       return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["events"] });
-      toast.success("Event Updated Successfullly");
+      console.log("Event Updated Successfullly");
     },
 
     onError: (error: AxiosError<any>) => {

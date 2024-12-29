@@ -50,7 +50,7 @@ const LoginForm = () => {
             </Label>
             <Link
               href="/forgot-password"
-              className="ml-auto text-lg underline-offset-4 hover:underline">
+              className="ml-auto text-sm underline-offset-4 hover:underline">
               Forgot Password
             </Link>
           </div>

@@ -12,6 +12,7 @@ import { Menu, Ticket } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Button } from "./ui/button";
 
 const Navbar = () => {
   const router = useRouter();
@@ -47,8 +48,8 @@ const Navbar = () => {
               Browse
             </Link>
             {!user?.id && (
-              <Link href="/login" className="hover:text-sky-600">
-                Sign in
+              <Link href="/login">
+                <Button>Sign in</Button>
               </Link>
             )}
             {!!user?.id && (
@@ -56,7 +57,7 @@ const Navbar = () => {
                 <Link
                   href={
                     user?.role === "CUSTOMER"
-                      ? `/profile/edit/${user?.id}`
+                      ? `/profile`
                       : `/dashboard/profile/edit/${user?.id}`
                   }
                   className="hover:text-sky-600">
@@ -86,7 +87,9 @@ const Navbar = () => {
 
                 {!user?.id && (
                   <DropdownMenuItem>
-                    <Link href="/login">Sign in</Link>
+                    <Link href="/login">
+                      <Button>Sign in</Button>
+                    </Link>
                   </DropdownMenuItem>
                 )}
                 {!!user?.id && (
