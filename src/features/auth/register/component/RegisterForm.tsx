@@ -261,7 +261,7 @@ const RegisterForm: FC<RegisterFormProps> = ({ role }) => {
           ) : null}
         </div>
 
-        {role === "customer" && (
+        {role === "CUSTOMER" && (
           <div className="grid gap-2">
             <Label htmlFor="referralCode" className="text-lg font-semibold">
               Referral Code (optional)

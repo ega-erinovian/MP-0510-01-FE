@@ -16,6 +16,7 @@ const RecentSales: FC<RecentSalesProps> = ({ id }) => {
     sortOrder: "desc",
     take: 5,
     userId: id,
+    status: "DONE",
   });
   return (
     <div className="bg-gray-100 row-span-3 col-start-3 row-start-2 rounded-md p-8 relative h-full ">
@@ -25,7 +26,7 @@ const RecentSales: FC<RecentSalesProps> = ({ id }) => {
       ) : (
         transactions?.data.map((transaction) => (
           <RecentSalesItem
-            id={transaction.eventId}
+            id={transaction.id}
             title={transaction.event.title}
             createdAt={transaction.createdAt}
           />

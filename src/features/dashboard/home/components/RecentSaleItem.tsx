@@ -16,12 +16,12 @@ const RecentSalesItem: FC<RecentSalesProps> = ({ id, title, createdAt }) => {
           <TicketCheck className="text-white text-xl w-8 h-8" />
         </div>
         <div>
-          <p className="text-xs font-medium text-gray-400">Event#{id}</p>
-          <h1 className="text-xl font-bold text-gray-800">{title}</h1>
+          <p className="text-xs font-medium text-gray-400">Transaction#{id}</p>
+          <h1 className="text-md font-bold text-gray-800">{title}</h1>
         </div>
       </div>
       <div>
-        <p className="text-sm text-gray-400">
+        <p className="text-xs text-gray-400">
           {formatDistanceToNow(createdAt, { addSuffix: true })}
         </p>
       </div>

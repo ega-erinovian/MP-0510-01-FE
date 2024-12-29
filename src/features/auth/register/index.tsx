@@ -15,7 +15,7 @@ const RegisterComponent: FC<RegisterComponentProps> = ({ role }) => {
     <div className="grid min-h-svh lg:grid-cols-2">
       <div className="relative hidden bg-muted lg:block">
         <img
-          src="https://img.freepik.com/free-photo/front-view-engaged-crowd-smiley-dj_23-2148325420.jpg?t=st=1735044686~exp=1735048286~hmac=2246d7c534bfff038cda66110b6aefd4ac13e60d81cb080e1b9042fccd5338e5&w=740"
+          src="/register-bg.jpg"
           alt="Image"
           className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
         />

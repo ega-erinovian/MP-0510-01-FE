@@ -27,6 +27,7 @@ import { useRouter } from "next/navigation";
 import { ChangeEvent, FC, useEffect, useRef, useState } from "react";
 import { editEventSchema } from "./schemas";
 import Image from "next/image";
+import { toast } from "react-toastify";
 
 interface UpdateEventComponentProps {
   id: number;
@@ -73,8 +74,6 @@ const EditEventComponent: FC<UpdateEventComponentProps> = ({ id }) => {
     },
     validationSchema: editEventSchema,
     onSubmit: async (values) => {
-      console.log("triggered");
-
       try {
         const payload: UpdateEventPayload = {
           id: values.id,
@@ -93,6 +92,7 @@ const EditEventComponent: FC<UpdateEventComponentProps> = ({ id }) => {
         await updateEvent(payload);
 
         router.push("/dashboard/events");
+        toast.success("Event Updated Successfullly");
       } catch (error) {
         console.log(error);
       }

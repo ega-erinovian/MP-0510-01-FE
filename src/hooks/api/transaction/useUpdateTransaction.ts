@@ -7,6 +7,7 @@ interface UpdateTransactionPayload {
   id: number;
   status: string;
   email: string;
+  paymentProof: File | null;
 }
 
 const useUpdateTransaction = () => {
@@ -15,9 +16,17 @@ const useUpdateTransaction = () => {
 
   return useMutation({
     mutationFn: async (payload: UpdateTransactionPayload) => {
+      const formData = new FormData();
+
+      if (payload.status) formData.append("status", payload.status);
+      if (payload.email) formData.append("email", payload.email);
+      if (payload.paymentProof) {
+        formData.append("paymentProof", payload.paymentProof);
+      }
+
       const { data } = await axiosInstance.patch(
         `/transactions/${payload.id}`,
-        payload
+        formData
       );
       return data;
     },

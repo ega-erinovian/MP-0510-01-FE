@@ -25,28 +25,39 @@ import useUpdateTransaction from "@/hooks/api/transaction/useUpdateTransaction";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { Input } from "@/components/ui/input";
+import useUpdateEvent from "@/hooks/api/event/useUpdateEvent";
+import useGetTransactions from "@/hooks/api/transaction/useGetTransactions";
 
 interface TransactionEditDialogProps {
   id: number;
   status: string;
   email: string;
+  eventId: number;
+  qty: number;
+  availableSeats: number;
 }
 
 const TransactionEditDialog: FC<TransactionEditDialogProps> = ({
   id,
   status,
   email,
+  eventId,
+  qty,
+  availableSeats,
 }) => {
   const router = useRouter();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { mutateAsync: updateTransaction, isPending: isUpdating } =
     useUpdateTransaction();
+  const { mutateAsync: updateEvent, isPending: isUpdatingEvent } =
+    useUpdateEvent();
 
   const formik = useFormik({
     initialValues: {
       id,
       status,
       email,
+      paymentProof: null,
     },
     validationSchema: updateTransactionSchema,
     onSubmit: async (values) => {
@@ -54,6 +65,18 @@ const TransactionEditDialog: FC<TransactionEditDialogProps> = ({
         await updateTransaction({
           ...values,
         });
+
+        if (
+          values.status === "REJECTED" ||
+          values.status === "EXPIRED" ||
+          values.status === "CANCELED"
+        ) {
+          await updateEvent({
+            id: eventId,
+            availableSeats: availableSeats + qty,
+          });
+        }
+
         setIsDialogOpen(false);
         router.push("/dashboard/transactions");
       } catch (error) {

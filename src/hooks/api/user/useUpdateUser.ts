@@ -30,17 +30,28 @@ const useUpdateUser = () => {
         updateUserForm.append("profilePicture", payload.profilePicture);
       }
 
+      if (payload.point !== undefined && payload.point !== null) {
+        updateUserForm.append("point", JSON.stringify(payload.point));
+      }
+
+      if (payload.pointExpired) {
+        updateUserForm.append(
+          "pointExpired",
+          payload.pointExpired.toISOString()
+        );
+      }
+
       const { data } = await axiosInstance.patch(
         `/users/${payload.id}`,
         updateUserForm
       );
+
       return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
-      toast.success("User Updated Successfullly");
+      console.log("User Updated Successfully");
     },
-
     onError: (error: AxiosError<any>) => {
       const errorMessage =
         error.response?.data?.message ||
