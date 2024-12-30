@@ -41,6 +41,7 @@ const CreateTransactionModal: FC<CreateTransactionModalProps> = ({
 
   const transactionDate = new Date();
   const [totalPrice, setTotalPrice] = useState(0);
+  const [isOpen, setIsOpen] = useState(false);
 
   const [selectedImage, setSelectedImage] = useState<string>("");
   const paymentProofReff = useRef<HTMLInputElement>(null);
@@ -80,16 +81,6 @@ const CreateTransactionModal: FC<CreateTransactionModalProps> = ({
     },
     onSubmit: async (values) => {
       try {
-        await createTransaction({
-          status:
-            selectedImage !== "" || totalPrice <= 0 ? "CONFIRMING" : "UNPAID",
-          userId: user?.id || 0,
-          eventId: event.id,
-          paymentProof: values.paymentProof,
-          qty: quantity,
-          totalPrice,
-        });
-
         await updateEvent({
           id: event.id,
           availableSeats: event.availableSeats - quantity,
@@ -117,11 +108,23 @@ const CreateTransactionModal: FC<CreateTransactionModalProps> = ({
           });
         }
 
+        await createTransaction({
+          status:
+            selectedImage !== "" || totalPrice <= 0 ? "CONFIRMING" : "UNPAID",
+          userId: user?.id || 0,
+          eventId: event.id,
+          paymentProof: values.paymentProof,
+          qty: quantity,
+          totalPrice,
+        });
+
         setIsChecked(false);
-        router.push(`/events/${event.id}`);
         toast.success("Transaction Created Successfully");
+        router.push(`/events/${event.id}`);
       } catch (error) {
         console.log(error);
+      } finally {
+        setIsOpen(false); // Close the modal
       }
     },
   });
@@ -147,10 +150,11 @@ const CreateTransactionModal: FC<CreateTransactionModalProps> = ({
   if (isLoading) <Loading text="User" />;
 
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button
           className="w-full"
+          onClick={() => setIsOpen(true)}
           disabled={user?.id === null || user?.role !== "CUSTOMER"}>
           Reserve A Seats
         </Button>
@@ -248,14 +252,19 @@ const CreateTransactionModal: FC<CreateTransactionModalProps> = ({
             id="terms"
             checked={isChecked}
             onCheckedChange={handleSwitchChange}
-            disabled={user && user.point <= 0}
+            disabled={(user && user.point <= 0) || event.price <= 0}
             className="data-[state=checked]:bg-sky-500 data-[state=checked]:hover:bg-sky-600"
           />
         </div>
 
         <form onSubmit={formik.handleSubmit} className="grid gap-4">
           <div className="grid gap-2">
-            <Label className="text-lg font-semibold">Payment Proof</Label>
+            <Label
+              className={`text-lg font-semibold ${
+                event.price <= 0 && "text-gray-400"
+              }`}>
+              Payment Proof
+            </Label>
             {selectedImage !== "" && (
               <Link
                 href={selectedImage}
@@ -270,6 +279,7 @@ const CreateTransactionModal: FC<CreateTransactionModalProps> = ({
                 type="file"
                 accept="image/*"
                 onChange={onChangePaymentProof}
+                disabled={event.price <= 0}
               />
               {selectedImage && (
                 <Button

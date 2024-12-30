@@ -29,11 +29,10 @@ import {
 } from "@/components/ui/sidebar";
 import useGetUser from "@/hooks/api/user/useGetUser";
 import { signOut, useSession } from "next-auth/react";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Button } from "../ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Button } from "../ui/button";
 
 // Menu items.
 const items = [
@@ -44,6 +43,10 @@ const items = [
       {
         title: "Event List",
         url: "/dashboard/events",
+      },
+      {
+        title: "Create Event",
+        url: "/dashboard/events/create",
       },
     ],
   },
