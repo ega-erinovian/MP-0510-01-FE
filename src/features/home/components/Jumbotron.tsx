@@ -1,14 +1,49 @@
+"use client";
+
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import { jumbotronImg } from "../const";
+import Image from "next/image";
+import Autoplay from "embla-carousel-autoplay";
+
 const Jumbotron = () => {
   return (
-    <section className="mt-20 flex flex-col items-center gap-4">
-      <h1 className="text-6xl font-extrabold">
-        Event
-        <span className="bg-sky-600 rounded-sm p-2 m-0 text-white">In</span>
-      </h1>
-      <p className="text-xl">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid, non?
-      </p>
-    </section>
+    <div className="mb-28">
+      <Carousel
+        className="w-full"
+        plugins={[
+          Autoplay({
+            delay: 5000,
+          }),
+        ]}>
+        <CarouselContent className="">
+          {jumbotronImg.map((img, index) => (
+            <CarouselItem key={index}>
+              <div className="p-1">
+                <Card>
+                  <CardContent className="relative w-full overflow-hidden h-[480px] rounded-lg">
+                    <Image
+                      src={img}
+                      alt="jumbotron"
+                      fill
+                      className="object-cover duration-100"
+                    />
+                  </CardContent>
+                </Card>
+              </div>
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+        <CarouselPrevious />
+        <CarouselNext />
+      </Carousel>
+    </div>
   );
 };
 

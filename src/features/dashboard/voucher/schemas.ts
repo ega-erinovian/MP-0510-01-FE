@@ -4,16 +4,16 @@ import YupPassword from "yup-password";
 YupPassword(Yup);
 
 export const CreateVoucherSchema = Yup.object().shape({
-  code: Yup.string().required("Code is required"),
-  amount: Yup.number().required("Amount is required").min(1),
+  code: Yup.string().min(4).required("Code is required"),
+  amount: Yup.number().min(1000).required("Amount is required"),
   expiresAt: Yup.date().required("Expire date is required"),
   eventId: Yup.number().required("Event ID is required"),
 });
 
 export const updateVoucherSchema = Yup.object().shape({
-  code: Yup.string().min(4),
-  amount: Yup.number().min(1000),
-  expiresAt: Yup.date(),
-  eventId: Yup.number(),
+  code: Yup.string().min(4).required("Code is required"),
+  amount: Yup.number().min(1000).required("Amount is required"),
+  expiresAt: Yup.date().required("Expire date is required"),
+  eventId: Yup.number().required("Event ID is required"),
   isUsed: Yup.boolean(),
 });

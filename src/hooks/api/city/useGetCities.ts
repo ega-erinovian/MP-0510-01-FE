@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 
 interface GetCitiesQuery {
   countryId?: number;
+  search?: string;
 }
 
 const useGetCities = (queries: GetCitiesQuery) => {

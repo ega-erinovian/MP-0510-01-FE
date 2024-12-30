@@ -56,24 +56,8 @@ export const editEventSchema = Yup.object().shape({
   price: Yup.number()
     .required("Price is required")
     .positive("Price must be a positive number"),
-  startDate: Yup.string()
-    .required("Start date is required")
-    .test("is-future", "Start date cannot be in the past", function (value) {
-      if (!value) return false;
-      return new Date(value) > new Date();
-    }),
-  endDate: Yup.string()
-    .required("End date is required")
-    .test(
-      "is-after-start",
-      "End date must be after the start date",
-      function (value) {
-        if (!value) return false;
-        const { startDate } = this.parent;
-        if (!startDate) return false;
-        return new Date(value) > new Date(startDate);
-      }
-    ),
+  startDate: Yup.string().required("Start date is required"),
+  endDate: Yup.string().required("End date is required"),
   categoryId: Yup.number()
     .required("Category is required")
     .positive("Invalid category selection"),

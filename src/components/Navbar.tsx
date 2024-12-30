@@ -33,7 +33,7 @@ const Navbar = () => {
             <Link
               href="/"
               className="flex items-center gap-2 font-bold transition-all">
-              <div className="flex h-6 w-6 items-center justify-center rounded-md bg-sky-600 text-primary-foreground">
+              <div className="flex h-6 w-6 items-center justify-center rounded-md bg-purple-700 text-primary-foreground">
                 <Ticket className="size-4" color="#fafafa" />
               </div>
               EventIn.
@@ -41,15 +41,15 @@ const Navbar = () => {
           </div>
 
           <div className="hidden cursor-pointer items-center gap-8 text-sm font-semibold md:flex">
-            <Link href="/" className="hover:text-sky-600">
+            <Link href="/" className="hover:text-purple-700">
               Home
             </Link>
-            <Link href="/events" className="hover:text-sky-600">
+            <Link href="/events" className="hover:text-purple-700">
               Browse
             </Link>
             {!user?.id && (
               <Link href="/login">
-                <Button>Sign in</Button>
+                <Button className="hover:bg-purple-700">Sign in</Button>
               </Link>
             )}
             {!!user?.id && (
@@ -60,10 +60,10 @@ const Navbar = () => {
                       ? `/profile`
                       : `/dashboard/profile/edit/${user?.id}`
                   }
-                  className="hover:text-sky-600">
+                  className="hover:text-purple-700">
                   Profile
                 </Link>
-                <p onClick={logout} className="hover:text-sky-600">
+                <p onClick={logout} className="hover:text-purple-700">
                   Logout
                 </p>
               </>

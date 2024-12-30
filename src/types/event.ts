@@ -15,6 +15,7 @@ export interface EventType {
   organizer: {
     id: number;
     fullName: string;
+    profilePicture: string;
   };
   city: {
     name: string;
