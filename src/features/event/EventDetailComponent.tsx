@@ -221,7 +221,7 @@ const EventDetailComponent: FC<EventDetailComponentProps> = ({ eventId }) => {
                         placeholder="Input a Voucher or Coupon"
                         value={voucherCode}
                         onChange={(e) => setVoucherCode(e.target.value)}
-                        disabled={!user}
+                        disabled={!user || event.price <= 0}
                         className={`${
                           isVoucherValid === true
                             ? "border-green-500"

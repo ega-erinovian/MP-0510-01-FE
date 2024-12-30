@@ -1,6 +1,5 @@
 "use client";
 
-import Loading from "@/components/dashboard/Loading";
 import RichTextEditor from "@/components/dashboard/RichTextEditor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,51 +15,48 @@ import {
 import useGetCategories from "@/hooks/api/category/useGetCategories";
 import useGetCities from "@/hooks/api/city/useGetCities";
 import useGetCountries from "@/hooks/api/country/useGetCountries";
-import useGetEvent from "@/hooks/api/event/useGetEvent";
-import useUpdateEvent, {
-  UpdateEventPayload,
-} from "@/hooks/api/event/useUpdateEvent";
+import useCreateEvent, {
+  CreateEventPayload,
+} from "@/hooks/api/event/useCreateEvent";
 import { formatISO } from "date-fns";
 import { useFormik } from "formik";
 import { Trash2 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { ChangeEvent, FC, useEffect, useRef, useState } from "react";
-import { editEventSchema } from "./schemas";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
+import { createEventSchema } from "./schemas";
 
-interface UpdateEventComponentProps {
-  id: number;
-}
+const CreateEventComponent = () => {
+  const { data } = useSession(); // dari next-auth
+  const user = data?.user;
 
-const EditEventComponent: FC<UpdateEventComponentProps> = ({ id }) => {
   const router = useRouter();
-  const { data: event, isLoading: isEventLoading } = useGetEvent(id);
-  const { mutateAsync: updateEvent, isPending: isUpdating } = useUpdateEvent();
+  const { mutateAsync: createEvent, isPending: isUpdating } = useCreateEvent();
 
   const [selectedImage, setSelectedImage] = useState<string>("");
-  const [selectedCity, setSelectedCity] = useState<string>(
-    String(event?.cityId)
-  );
+  const [selectedCity, setSelectedCity] = useState<string>("");
 
-  const { data: countries } = useGetCountries();
   const [selectedCountry, setSelectedCountry] = useState<string>("");
+  const { data: countries } = useGetCountries();
 
-  const { data: citiesByCountry, isLoading: citiesLoading } = useGetCities({
-    countryId: parseInt(selectedCountry),
-  });
+  const { data: citiesByCountry = [], isLoading: citiesLoading } = useGetCities(
+    { countryId: Number(selectedCountry) }
+  );
 
   const { data: categories = [] } = useGetCategories();
 
   const [selectedCategory, setSelectedCategory] = useState<string>("");
 
   const thumbnailReff = useRef<HTMLInputElement>(null);
-  const [isFormReady, setIsFormReady] = useState(false);
-  const formInitialized = useRef(false);
+
+  useEffect(() => {
+    setSelectedCity("");
+  }, [selectedCountry]);
 
   const formik = useFormik({
     initialValues: {
-      id,
       title: "",
       description: "",
       address: "",
@@ -71,12 +67,12 @@ const EditEventComponent: FC<UpdateEventComponentProps> = ({ id }) => {
       endDate: "",
       categoryId: 0,
       cityId: 0,
+      userId: 0,
     },
-    validationSchema: editEventSchema,
+    validationSchema: createEventSchema,
     onSubmit: async (values) => {
       try {
-        const payload: UpdateEventPayload = {
-          id: values.id,
+        const payload: CreateEventPayload = {
           title: values.title,
           description: values.description,
           address: values.address,
@@ -87,12 +83,13 @@ const EditEventComponent: FC<UpdateEventComponentProps> = ({ id }) => {
           endDate: formatISO(new Date(values.endDate)),
           categoryId: values.categoryId,
           cityId: values.cityId,
+          userId: user?.id!,
         };
 
-        await updateEvent(payload);
+        await createEvent(payload);
 
         router.push("/dashboard/events");
-        toast.success("Event Updated Successfullly");
+        toast.success("Event Created Successfullly");
       } catch (error) {
         console.log(error);
       }
@@ -108,7 +105,7 @@ const EditEventComponent: FC<UpdateEventComponentProps> = ({ id }) => {
   };
 
   const removeThumbnail = () => {
-    formik.setFieldValue("thumbnnail", null);
+    formik.setFieldValue("profilePicture", null);
     setSelectedImage("");
 
     if (thumbnailReff.current) {
@@ -116,59 +113,16 @@ const EditEventComponent: FC<UpdateEventComponentProps> = ({ id }) => {
     }
   };
 
-  useEffect(() => {
-    if (
-      event &&
-      !isEventLoading &&
-      !formInitialized.current &&
-      citiesByCountry
-    ) {
-      // Initialize form with data
-      formik.resetForm({
-        values: {
-          id,
-          title: event.title,
-          description: event.description,
-          address: event.address,
-          thumbnnail: null,
-          price: event.price,
-          availableSeats: event.availableSeats,
-          startDate: new Date(event.startDate).toISOString().slice(0, 16),
-          endDate: new Date(event.endDate).toISOString().slice(0, 16),
-          categoryId: event.categoryId,
-          cityId: event.cityId,
-        },
-      });
-
-      setSelectedCity(String(event.cityId));
-
-      setSelectedCountry(String(event.city.countryId));
-
-      setSelectedCategory(String(event.categoryId));
-
-      formInitialized.current = true;
-      setIsFormReady(true);
-    }
-  }, [event, isEventLoading]);
-
-  if (isEventLoading || !isFormReady) {
-    return <Loading text="Event Data" />;
-  }
-
   return (
     <div className="w-full py-20 flex items-center justify-center">
       <div className="w-[1080px]">
         <form onSubmit={formik.handleSubmit}>
           <div className="grid gap-6">
-            {(selectedImage || event?.thumbnnail) && (
+            {selectedImage && (
               <div className="w-full flex justify-center">
                 <div className="relative h-[480px] w-full overflow-hidden rounded-lg">
                   <Image
-                    src={
-                      selectedImage === ""
-                        ? event?.thumbnnail || ""
-                        : selectedImage
-                    }
+                    src={selectedImage}
                     alt="thumbnail"
                     fill
                     className="object-cover duration-100 hover:scale-105"
@@ -438,4 +392,4 @@ const EditEventComponent: FC<UpdateEventComponentProps> = ({ id }) => {
   );
 };
 
-export default EditEventComponent;
+export default CreateEventComponent;
