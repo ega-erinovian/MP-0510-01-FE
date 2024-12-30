@@ -64,11 +64,17 @@ const VoucherTable: FC<VoucherTableProps> = ({
             <TableRow key={voucher.id}>
               <TableCell className="font-medium">{voucher.id}</TableCell>
               <TableCell className="font-medium">
-                {voucher.isUsed ? (
+                {voucher.isUsed === "USED" && (
                   <div className="capitalize bg-red-300 rounded-full text-red-700 font-semibold py-2 px-4 w-fit">
                     Used
                   </div>
-                ) : (
+                )}
+                {voucher.isUsed === "EXPIRED" && (
+                  <div className="capitalize bg-red-300 rounded-full text-red-700 font-semibold py-2 px-4 w-fit">
+                    Used
+                  </div>
+                )}
+                {voucher.isUsed === "AVAILABLE" && (
                   <div className="capitalize bg-green-200 rounded-full text-green-800 font-semibold py-2 px-4 w-fit">
                     Available
                   </div>

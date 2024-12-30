@@ -86,7 +86,12 @@ const EventsTable: FC<EventsTableProps> = ({
                 }).format(new Date(event.endDate))}
               </TableCell>
               <TableCell className="font-medium">{event.city.name}</TableCell>
-              <TableCell className="font-medium">{event.price}</TableCell>
+              <TableCell className="font-medium">
+                {event.price.toLocaleString("id-ID", {
+                  style: "currency",
+                  currency: "IDR",
+                })}
+              </TableCell>
               <TableCell className="font-medium">
                 {event.availableSeats}
               </TableCell>

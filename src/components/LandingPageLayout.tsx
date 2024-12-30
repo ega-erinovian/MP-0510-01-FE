@@ -2,6 +2,7 @@
 
 import React, { ReactNode } from "react";
 import Navbar from "./Navbar";
+import { Footer } from "./Footer";
 
 interface LandingPageLayoutProps {
   children: ReactNode;
@@ -12,6 +13,7 @@ const LandingPageLayout: React.FC<LandingPageLayoutProps> = ({ children }) => {
     <>
       <Navbar />
       <main>{children}</main>
+      <Footer />
     </>
   );
 };

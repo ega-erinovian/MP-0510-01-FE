@@ -38,8 +38,9 @@ const EventDetailComponent: FC<EventDetailComponentProps> = ({ eventId }) => {
   const [debouncedVoucherCoupon] = useDebounce(voucherCode, 800);
   const [referralMessage, setReferralMessage] = useState<string>("");
   const { data: existingVoucher, isPending: isPendingVoucher } = useGetVouchers(
-    { search: debouncedVoucherCoupon, eventId: event?.id }
+    { search: debouncedVoucherCoupon, eventId: event?.id, isUsed: "AVAILABLE" }
   );
+
   const { data: existingCoupon, isPending: isPendingCoupon } = useGetCoupons({
     search: debouncedVoucherCoupon,
     userId: user?.id,
@@ -63,8 +64,17 @@ const EventDetailComponent: FC<EventDetailComponentProps> = ({ eventId }) => {
     setIsVoucherValid(isValid);
 
     if (isValid) {
-      setReferralMessage("Valid voucher!");
-      setVoucherData(existingVoucher?.data || []);
+      if (
+        existingVoucher?.data[0].isUsed === "EXPIRED" ||
+        existingVoucher?.data[0].isUsed === "USED"
+      ) {
+        setReferralMessage("Invalid voucher");
+        setIsVoucherValid(false);
+        setVoucherData([]);
+      } else {
+        setReferralMessage("Valid voucher!");
+        setVoucherData(existingVoucher?.data || []);
+      }
     } else if (debouncedVoucherCoupon) {
       setReferralMessage("Invalid voucher");
       setIsVoucherValid(false);

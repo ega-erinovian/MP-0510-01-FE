@@ -5,8 +5,10 @@ import { useQuery } from "@tanstack/react-query";
 
 interface GetEventsQuery extends PaginationQueries {
   search?: string;
-  categoryId?: number;
   userId?: number;
+  categoryId?: number;
+  cityId?: number;
+  timeRange?: string;
 }
 
 const useGetEvents = (queries: GetEventsQuery) => {

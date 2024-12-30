@@ -396,7 +396,7 @@ const RegisterForm: FC<RegisterFormProps> = ({ role }) => {
 
         <div className="text-center text-lg space-y-2 mt-8">
           Already Have An Account?{" "}
-          <Link href="/login" className="font-semibold hover:text-sky-500">
+          <Link href="/login" className="font-semibold hover:text-purple-700">
             Sign In
           </Link>
         </div>

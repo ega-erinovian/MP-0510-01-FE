@@ -70,7 +70,7 @@ const items = [
       },
       {
         title: "Create Voucher",
-        url: "/dashboard/vouchers/create-voucher",
+        url: "/dashboard/vouchers/create",
       },
     ],
   },
@@ -94,8 +94,8 @@ const DashboardSidebar = () => {
           <SidebarGroupLabel className="text-2xl mb-4">
             <Link
               href="/dashboard"
-              className="flex items-center gap-2 font-bold">
-              <div className="flex h-6 w-6 items-center justify-center rounded-md bg-sky-600 text-primary-foreground">
+              className="flex items-center gap-2 font-semibold">
+              <div className="flex h-6 w-6 items-center justify-center rounded-md bg-purple-700 text-primary-foreground">
                 <Ticket className="size-4" color="#fafafa" />
               </div>
               EventIn.

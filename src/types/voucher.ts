@@ -3,7 +3,7 @@ export interface VoucherType {
   eventId: number;
   code: string;
   amount: number;
-  isUsed: boolean;
+  isUsed: string;
   expiresAt: string;
   createdAt: string;
   updatedAt: string;

@@ -9,8 +9,8 @@ export interface PaginationMeta {
   page: number;
   take: number;
   total: number;
-  sortBy: string;
-  sortOrder: string;
+  sortBy?: string;
+  sortOrder?: string;
 }
 
 export interface PageableResponse<T> {

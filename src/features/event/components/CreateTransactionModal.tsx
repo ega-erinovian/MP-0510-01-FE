@@ -104,7 +104,7 @@ const CreateTransactionModal: FC<CreateTransactionModalProps> = ({
 
         if (voucher && voucher.length > 0 && voucher[0]?.amount > 0) {
           await updateVoucher({
-            isUsed: true,
+            isUsed: "USED",
           });
         }
 
@@ -124,7 +124,7 @@ const CreateTransactionModal: FC<CreateTransactionModalProps> = ({
       } catch (error) {
         console.log(error);
       } finally {
-        setIsOpen(false); // Close the modal
+        setIsOpen(false);
       }
     },
   });
@@ -132,7 +132,6 @@ const CreateTransactionModal: FC<CreateTransactionModalProps> = ({
   const onChangePaymentProof = (e: ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length) {
-      // Set the actual file in formik
       formik.setFieldValue("paymentProof", files[0]);
       setSelectedImage(URL.createObjectURL(files[0]));
     }

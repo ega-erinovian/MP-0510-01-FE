@@ -76,14 +76,14 @@ const LoginForm = () => {
           <p>
             <Link
               href="/register/customer"
-              className="font-semibold hover:text-sky-500">
+              className="font-semibold hover:text-purple-700">
               I Want to Buy Ticket
             </Link>
           </p>
           <p>
             <Link
               href="/register/organizer"
-              className="font-semibold hover:text-sky-500">
+              className="font-semibold hover:text-purple-700">
               I Want to Organize Events
             </Link>
           </p>

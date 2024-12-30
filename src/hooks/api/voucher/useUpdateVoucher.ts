@@ -8,7 +8,7 @@ interface UpdateVoucherPayload {
   code?: string;
   amount?: number;
   expiresAt?: string;
-  isUsed?: boolean;
+  isUsed?: string;
 }
 
 const useUpdateVoucher = (id: number) => {
@@ -23,7 +23,7 @@ const useUpdateVoucher = (id: number) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["voucher", id] });
       queryClient.invalidateQueries({ queryKey: ["vouchers"] });
-      toast.success("Voucher Updated Successfullly");
+      console.log("Voucher Updated Successfullly");
     },
     onError: (error: AxiosError<any>) => {
       const errorMessage =

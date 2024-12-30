@@ -81,7 +81,7 @@ const EditVoucherPage = ({ id }: EditVoucherPageProps) => {
       amount: 0,
       expiresAt: "",
       eventId: 0,
-      isUsed: false,
+      isUsed: "",
     },
     validationSchema: updateVoucherSchema,
     onSubmit: async (values) => {
@@ -92,6 +92,7 @@ const EditVoucherPage = ({ id }: EditVoucherPageProps) => {
           expiresAt: formattedExpiresAt,
         });
         router.push("/dashboard/vouchers");
+        toast.success("Voucher Updated Successfullly");
       } catch (error) {
         console.error("Failed to update voucher: ", error);
         toast.error("Failed to update voucher");
@@ -308,14 +309,13 @@ const EditVoucherPage = ({ id }: EditVoucherPageProps) => {
               value={String(formik.values.isUsed)}
               disabled={isUpdating}>
               <SelectTrigger>
-                <SelectValue>
-                  {formik.values.isUsed ? "Used" : "Available"}
-                </SelectValue>
+                <SelectValue>{formik.values.isUsed}</SelectValue>
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectItem value="true">Used</SelectItem>
-                  <SelectItem value="false">Available</SelectItem>
+                  <SelectItem value="AVAILABLE">Available</SelectItem>
+                  <SelectItem value="USED">Used</SelectItem>
+                  <SelectItem value="EXPIRED">Expired</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>

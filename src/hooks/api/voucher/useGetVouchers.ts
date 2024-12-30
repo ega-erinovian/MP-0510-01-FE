@@ -7,6 +7,7 @@ interface GetVoucherQuery extends PaginationQueries {
   search?: string;
   userId?: number;
   eventId?: number;
+  isUsed?: string;
 }
 
 const useGetVouchers = (queries: GetVoucherQuery) => {
