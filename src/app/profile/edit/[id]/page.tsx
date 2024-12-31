@@ -1,14 +1,15 @@
 "use client";
 
 import CustomerAuthGuard from "@/components/hoc/AuthGuardCustomer";
-import LandingPageLayout from "@/components/LandingPageLayout";
+import Navbar from "@/components/Navbar";
 import UpdateProfileComponent from "@/features/profile/EditUserComponent";
 
 const EditProfile = ({ params }: { params: { id: string } }) => {
   return (
-    <LandingPageLayout>
+    <>
+      <Navbar />
       <UpdateProfileComponent id={parseInt(params.id)} />
-    </LandingPageLayout>
+    </>
   );
 };
 

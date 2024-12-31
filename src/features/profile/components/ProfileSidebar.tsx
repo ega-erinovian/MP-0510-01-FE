@@ -1,9 +1,10 @@
 import {
   ChevronRight,
-  ClockIcon,
-  GroupIcon,
-  LogOut,
   Ticket,
+  GroupIcon,
+  ClockIcon,
+  LogOut,
+  Key,
 } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -40,12 +41,15 @@ const items = [
     url: "/profile/coupons",
     icon: Ticket,
   },
+  {
+    title: "Reset Password",
+    url: "/profile/update-password",
+    icon: Key,
+  },
 ];
 
 const ProfileSidebar = () => {
-  const pathname = usePathname();
-
-  const { data } = useSession(); // dari next-auth
+  const { data } = useSession();
 
   const { data: user } = useGetUser(data?.user.id!);
 
@@ -62,7 +66,7 @@ const ProfileSidebar = () => {
               <SidebarMenuItem className="mb-2"></SidebarMenuItem>
               {items.map((item, idx) => (
                 <SidebarMenuItem className="mb-2" key={idx}>
-                  <Link href="/profile">
+                  <Link href={item.url}>
                     <SidebarMenuButton className="font-semibold">
                       <>
                         <item.icon />

@@ -89,6 +89,7 @@ const RegisterForm: FC<RegisterFormProps> = ({ role }) => {
       fullName: "",
       email: "",
       password: "",
+      confirmPassword: "",
       referralCode: null,
       profilePicture: null,
       phoneNumber: "",
@@ -258,6 +259,25 @@ const RegisterForm: FC<RegisterFormProps> = ({ role }) => {
           />
           {!!formik.touched.password && !!formik.errors.password ? (
             <p className="text-xs text-red-500">{formik.errors.password}</p>
+          ) : null}
+        </div>
+        <div className="flex flex-col space-y-1.5">
+          <Label htmlFor="confirmPassword" className="text-lg font-semibold">
+            Confirm Password
+          </Label>
+          <Input
+            name="confirmPassword"
+            placeholder="Min 8 - 12 Character"
+            type="password"
+            value={formik.values.confirmPassword}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+          />
+          {!!formik.touched.confirmPassword &&
+          !!formik.errors.confirmPassword ? (
+            <p className="text-xs text-red-500">
+              {formik.errors.confirmPassword}
+            </p>
           ) : null}
         </div>
 

@@ -14,7 +14,7 @@ const CustomerProfileLayout: React.FC<LandingPageLayoutProps> = ({
   return (
     <SidebarProvider>
       <ProfileSidebar />
-      <main className="mt-8 w-full">{children}</main>
+      <main className="mt-16 w-full">{children}</main>
     </SidebarProvider>
   );
 };
