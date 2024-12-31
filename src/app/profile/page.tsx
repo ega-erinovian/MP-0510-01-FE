@@ -1,15 +1,16 @@
 "use client";
 
 import CustomerAuthGuard from "@/components/hoc/AuthGuardCustomer";
-import LandingPageLayout from "@/components/LandingPageLayout";
+import Navbar from "@/components/Navbar";
 import TransactionHistoryComponent from "@/features/profile/TransactionHistoryComponent";
 import React from "react";
 
 const CustomerProfile = () => {
   return (
-    <LandingPageLayout>
+    <>
+      <Navbar />
       <TransactionHistoryComponent />
-    </LandingPageLayout>
+    </>
   );
 };
 

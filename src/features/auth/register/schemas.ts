@@ -11,6 +11,9 @@ export const registerSchema = Yup.object().shape({
     .minLowercase(1)
     .minUppercase(1)
     .min(4),
+  confirmPassword: Yup.string()
+    .required("Confirm Password is required")
+    .oneOf([Yup.ref("password")], "Passwords must match"),
   referralCode: Yup.string().nullable(),
   profilePicture: Yup.string().nullable(),
   phoneNumber: Yup.number().required("Phone number is required"),
