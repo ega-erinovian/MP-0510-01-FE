@@ -10,6 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import useUpdateCoupon from "@/hooks/api/coupon/useUpdateCoupon";
 import useUpdateEvent from "@/hooks/api/event/useUpdateEvent";
 import useCreateTransaction from "@/hooks/api/transaction/useCreateTransaction";
 import useGetUser from "@/hooks/api/user/useGetUser";
@@ -27,7 +28,8 @@ import { toast } from "react-toastify";
 
 interface CreateTransactionModalProps {
   event: EventType;
-  voucher: VoucherType[] | CouponType[];
+  voucher: VoucherType[];
+  coupon: CouponType[];
   quantity: number;
   userId: number;
 }
@@ -35,6 +37,7 @@ const CreateTransactionModal: FC<CreateTransactionModalProps> = ({
   userId,
   event,
   voucher,
+  coupon,
   quantity,
 }) => {
   const router = useRouter();
@@ -50,21 +53,31 @@ const CreateTransactionModal: FC<CreateTransactionModalProps> = ({
 
   const handleSwitchChange = (checked: boolean) => {
     setIsChecked(checked);
-    console.log("Switch is now:", checked);
   };
 
   const { data: user, isLoading } = useGetUser(userId);
   const { mutateAsync: createTransaction, isPending } = useCreateTransaction();
-  const { mutateAsync: updateEvent } = useUpdateEvent();
-  const { mutateAsync: updateUser } = useUpdateUser();
-  const { mutateAsync: updateVoucher } = useUpdateVoucher(voucher[0]?.id || 0);
+  const { mutateAsync: updateEvent, isPending: isUpdatingEvent } =
+    useUpdateEvent();
+  const { mutateAsync: updateUser, isPending: isUpdatingUser } =
+    useUpdateUser();
+
+  const { mutateAsync: updateVoucher, isPending: isUpdatingVoucher } =
+    useUpdateVoucher(voucher[0]?.id || 0);
+  const { mutateAsync: updateCoupon, isPending: isUpdatingCoupon } =
+    useUpdateCoupon(coupon[0]?.id || 0);
 
   useEffect(() => {
     let updatedPrice = event.price * quantity;
 
-    if (voucher && voucher.length > 0 && voucher[0]?.amount > 0) {
+    if (voucher && voucher.length > 0 && voucher[0].amount > 0) {
       const voucherAmount = voucher[0].amount;
       updatedPrice = Math.max(0, updatedPrice - voucherAmount);
+    }
+
+    if (coupon && coupon.length > 0 && coupon[0].amount > 0) {
+      const couponAmount = coupon[0].amount;
+      updatedPrice = Math.max(0, updatedPrice - couponAmount);
     }
 
     if (isChecked && user) {
@@ -73,7 +86,7 @@ const CreateTransactionModal: FC<CreateTransactionModalProps> = ({
     }
 
     setTotalPrice(updatedPrice);
-  }, [quantity, event.price, voucher, isChecked, user]);
+  }, [quantity, event.price, voucher, coupon, isChecked, user]);
 
   const formik = useFormik({
     initialValues: {
@@ -81,31 +94,44 @@ const CreateTransactionModal: FC<CreateTransactionModalProps> = ({
     },
     onSubmit: async (values) => {
       try {
-        await updateEvent({
-          id: event.id,
-          availableSeats: event.availableSeats - quantity,
-        });
+        const voucherId = voucher[0]?.id;
+        const couponId = coupon[0]?.id;
 
-        if (user && isChecked) {
-          const newPoints =
-            user.point <= totalPrice ? 0 : user.point - event.price * quantity;
-
-          const response = await updateUser({
-            id: user.id,
-            point: newPoints,
+        if (!isPending) {
+          await updateEvent({
+            id: event.id,
+            availableSeats: event.availableSeats - quantity,
           });
 
-          if (!response || response.point !== newPoints) {
-            throw new Error(
-              "Failed to update user points. Please check the API response."
-            );
+          if (user && isChecked) {
+            const newPoints =
+              user.point <= totalPrice
+                ? 0
+                : user.point - event.price * quantity;
+
+            const response = await updateUser({
+              id: user.id,
+              point: newPoints,
+            });
+
+            if (!response || response.point !== newPoints) {
+              throw new Error(
+                "Failed to update user points. Please check the API response."
+              );
+            }
           }
-        }
 
-        if (voucher && voucher.length > 0 && voucher[0]?.amount > 0) {
-          await updateVoucher({
-            isUsed: "USED",
-          });
+          if (voucher && voucher.length > 0 && voucher[0].amount > 0) {
+            await updateVoucher({
+              isUsed: "USED",
+            });
+          }
+
+          if (coupon && coupon.length > 0 && coupon[0].amount > 0) {
+            await updateCoupon({
+              isUsed: "USED",
+            });
+          }
         }
 
         await createTransaction({
@@ -116,6 +142,9 @@ const CreateTransactionModal: FC<CreateTransactionModalProps> = ({
           paymentProof: values.paymentProof,
           qty: quantity,
           totalPrice,
+          voucherId,
+          couponId,
+          isUsePoint: isChecked,
         });
 
         setIsChecked(false);
@@ -173,7 +202,6 @@ const CreateTransactionModal: FC<CreateTransactionModalProps> = ({
             }).format(transactionDate)}
           </div>
 
-          {/* Order Items */}
           <div className="space-y-4">
             <div className="flex justify-between items-start">
               <div className="space-y-1">
@@ -196,10 +224,22 @@ const CreateTransactionModal: FC<CreateTransactionModalProps> = ({
             </div>
             {voucher && voucher.length > 0 && voucher[0]?.amount > 0 && (
               <div className="flex justify-between items-start">
-                <div className="text-sm">Voucher/Coupon Discount</div>
+                <div className="text-sm">Voucher Discount</div>
                 <div className="text-sm">
                   -{" "}
                   {voucher[0]?.amount.toLocaleString("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                  })}
+                </div>
+              </div>
+            )}
+            {coupon && coupon.length > 0 && coupon[0]?.amount > 0 && (
+              <div className="flex justify-between items-start">
+                <div className="text-sm">Coupon Discount</div>
+                <div className="text-sm">
+                  -{" "}
+                  {coupon[0]?.amount.toLocaleString("id-ID", {
                     style: "currency",
                     currency: "IDR",
                   })}
@@ -225,7 +265,6 @@ const CreateTransactionModal: FC<CreateTransactionModalProps> = ({
             )}
           </div>
 
-          {/* Total */}
           <div className="pt-4 border-t border-gray-200">
             <div className="flex justify-between items-center">
               <div className="font-medium">Total</div>
@@ -296,8 +335,22 @@ const CreateTransactionModal: FC<CreateTransactionModalProps> = ({
               </p>
             ) : null}
           </div>
-          <Button type="submit" disabled={isPending}>
-            {isPending ? "Loading..." : "Submit"}
+          <Button
+            type="submit"
+            disabled={
+              isPending &&
+              isUpdatingEvent &&
+              isUpdatingUser &&
+              isUpdatingVoucher &&
+              isUpdatingCoupon
+            }>
+            {isPending &&
+            isUpdatingEvent &&
+            isUpdatingUser &&
+            isUpdatingVoucher &&
+            isUpdatingCoupon
+              ? "Loading..."
+              : "Submit"}
           </Button>
         </form>
       </DialogContent>

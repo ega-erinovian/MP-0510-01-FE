@@ -54,15 +54,15 @@ const Navbar = () => {
             )}
             {!!user?.id && (
               <>
-                <Link
-                  href={
-                    user?.role === "CUSTOMER"
-                      ? `/profile`
-                      : `/dashboard/profile/edit/${user?.id}`
-                  }
-                  className="hover:text-purple-700">
-                  Profile
-                </Link>
+                {user?.role === "CUSTOMER" ? (
+                  <Link href="/profile" className="hover:text-purple-700">
+                    Profile
+                  </Link>
+                ) : (
+                  <Link href="/dashboard" className="hover:text-purple-700">
+                    Dashboard
+                  </Link>
+                )}
                 <p onClick={logout} className="hover:text-purple-700">
                   Logout
                 </p>
