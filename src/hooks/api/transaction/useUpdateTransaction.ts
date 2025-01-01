@@ -8,6 +8,8 @@ interface UpdateTransactionPayload {
   status: string;
   email: string;
   paymentProof: File | null;
+  voucherId?: number | null;
+  couponId?: number | null;
 }
 
 const useUpdateTransaction = () => {
@@ -24,6 +26,18 @@ const useUpdateTransaction = () => {
         formData.append("paymentProof", payload.paymentProof);
       }
 
+      if (payload.voucherId === null) {
+        formData.append("voucherId", "null");
+      } else if (payload.voucherId !== undefined) {
+        formData.append("voucherId", `${payload.voucherId}`);
+      }
+
+      if (payload.couponId === null) {
+        formData.append("couponId", "null");
+      } else if (payload.couponId !== undefined) {
+        formData.append("couponId", `${payload.couponId}`);
+      }
+
       const { data } = await axiosInstance.patch(
         `/transactions/${payload.id}`,
         formData
@@ -32,7 +46,7 @@ const useUpdateTransaction = () => {
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["transactions"] });
-      toast.success("Transaction Updated Successfullly");
+      toast.success("Transaction Updated Successfully");
     },
     onError: (error: AxiosError<any>) => {
       const errorMessage =

@@ -6,10 +6,11 @@ export interface TransactionType {
   totalPrice: number;
   paymentProof?: string;
   status: string;
-  voucherId?: string;
-  couponId?: string;
+  voucherId?: number;
+  couponId?: number;
   createdAt: Date;
   updatedAt: Date;
+  isUsePoint: boolean;
   user: {
     fullName: string;
     email: string;
@@ -20,6 +21,7 @@ export interface TransactionType {
       comment: string;
       eventId: number;
     }[];
+    point: number;
   };
   event: {
     title: string;

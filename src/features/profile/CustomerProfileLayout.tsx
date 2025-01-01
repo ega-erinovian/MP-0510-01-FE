@@ -3,6 +3,7 @@
 import React, { ReactNode } from "react";
 import ProfileSidebar from "./components/ProfileSidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import CustomerAuthGuard from "@/components/hoc/AuthGuardCustomer";
 
 interface LandingPageLayoutProps {
   children: ReactNode;
@@ -19,4 +20,4 @@ const CustomerProfileLayout: React.FC<LandingPageLayoutProps> = ({
   );
 };
 
-export default CustomerProfileLayout;
+export default CustomerAuthGuard(CustomerProfileLayout);

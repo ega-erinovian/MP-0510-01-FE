@@ -3,8 +3,10 @@
 import {
   Calendar,
   ChevronRight,
+  Home,
   Layout,
   LogOut,
+  Settings,
   Ticket,
   TicketPercent,
 } from "lucide-react";
@@ -34,7 +36,6 @@ import { usePathname } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
 
-// Menu items.
 const items = [
   {
     title: "Events",
@@ -74,12 +75,22 @@ const items = [
       },
     ],
   },
+  {
+    title: "Settings",
+    icon: Settings,
+    subitems: [
+      {
+        title: "Reset Password",
+        url: "/dashboard/profile/update-password",
+      },
+    ],
+  },
 ];
 
 const DashboardSidebar = () => {
   const pathname = usePathname();
 
-  const { data } = useSession(); // dari next-auth
+  const { data } = useSession();
 
   const { data: user } = useGetUser(data?.user.id!);
 
@@ -107,7 +118,21 @@ const DashboardSidebar = () => {
                 <SidebarMenuButton
                   asChild
                   className={
-                    pathname === "/dashboard/"
+                    pathname === "/"
+                      ? "bg-[#e8e9ea] hover:bg-[#d6d7d9]"
+                      : "hover:bg-[#e8e9ea]"
+                  }>
+                  <Link href="/">
+                    <Layout />
+                    <span className="font-semibold">Home</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem className="mb-2">
+                <SidebarMenuButton
+                  asChild
+                  className={
+                    pathname === "/dashboard"
                       ? "bg-[#e8e9ea] hover:bg-[#d6d7d9]"
                       : "hover:bg-[#e8e9ea]"
                   }>

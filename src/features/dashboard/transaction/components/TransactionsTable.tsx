@@ -17,12 +17,11 @@ import {
 } from "@/components/ui/table";
 import { TransactionType } from "@/types/transaction";
 import { CircleAlert, MoreHorizontal } from "lucide-react";
-import Link from "next/link";
 import { FC } from "react";
 import { getStatusColor, transactionTableCols } from "../const";
+import PaymentProofDialog from "./PaymentProofDialog";
 import TransactionDeleteDialog from "./TransactionDeleteDialog";
 import TransactionEditDialog from "./TransactionEditDialog";
-import PaymentProofDialog from "./PaymentProofDialog";
 
 interface TransactionsTableProps {
   transactions: TransactionType[];
@@ -114,14 +113,7 @@ const TransactionsTable: FC<TransactionsTableProps> = ({
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <TransactionEditDialog
-                      id={transaction.id}
-                      status={transaction.status}
-                      email={transaction.user.email}
-                      eventId={transaction.eventId}
-                      qty={transaction.qty}
-                      availableSeats={transaction.event.availableSeats}
-                    />
+                    <TransactionEditDialog transaction={transaction} />
                     <Separator />
                     <TransactionDeleteDialog id={transaction.id} />
                   </DropdownMenuContent>
@@ -133,7 +125,6 @@ const TransactionsTable: FC<TransactionsTableProps> = ({
       </Table>
 
       <div className="mt-6 flex justify-between items-center">
-        {/* Items per page selection */}
         <div>
           <label className="mr-2">Items per page</label>
           <select

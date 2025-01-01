@@ -19,6 +19,7 @@ import { FC, useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
 import CreateTransactionModal from "./components/CreateTransactionModal";
 import useGetCoupons from "@/hooks/api/coupon/useGetCoupons";
+import { CouponType } from "@/types/coupon";
 import { VoucherType } from "@/types/voucher";
 
 interface EventDetailComponentProps {
@@ -35,52 +36,91 @@ const EventDetailComponent: FC<EventDetailComponentProps> = ({ eventId }) => {
 
   const [voucherCode, setVoucherCode] = useState<string>("");
   const [isVoucherValid, setIsVoucherValid] = useState<boolean | null>(null);
-  const [debouncedVoucherCoupon] = useDebounce(voucherCode, 800);
-  const [referralMessage, setReferralMessage] = useState<string>("");
+  const [couponCode, setCouponCode] = useState<string>("");
+  const [isCouponValid, setIsCouponValid] = useState<boolean | null>(null);
+  const [debouncedVoucher] = useDebounce(voucherCode, 500);
+  const [debouncedCoupon] = useDebounce(couponCode, 500);
+  const [voucherMessage, setVoucherMessage] = useState<string>("");
+  const [couponMessage, setCouponMessage] = useState<string>("");
   const { data: existingVoucher, isPending: isPendingVoucher } = useGetVouchers(
-    { search: debouncedVoucherCoupon, eventId: event?.id, isUsed: "AVAILABLE" }
+    { search: debouncedVoucher, eventId: event?.id, isUsed: "AVAILABLE" }
   );
 
   const { data: existingCoupon, isPending: isPendingCoupon } = useGetCoupons({
-    search: debouncedVoucherCoupon,
+    search: debouncedCoupon,
     userId: user?.id,
   });
 
   const [voucherData, setVoucherData] = useState<VoucherType[]>([]);
+  const [couponData, setCouponData] = useState<CouponType[]>([]);
 
   useEffect(() => {
-    if (!debouncedVoucherCoupon || debouncedVoucherCoupon === "") {
+    if (!debouncedVoucher || debouncedVoucher === "") {
       setIsVoucherValid(null);
-      setReferralMessage("");
+      setVoucherMessage("");
       setVoucherData([]);
       return;
     }
 
     if (isPendingVoucher) return;
 
-    const isValid = Array.isArray(existingVoucher?.data)
+    const isVoucherValid = Array.isArray(existingVoucher?.data)
       ? existingVoucher.data.length > 0
       : !!existingVoucher;
-    setIsVoucherValid(isValid);
+    setIsVoucherValid(isVoucherValid);
 
-    if (isValid) {
+    if (isVoucherValid) {
       if (
         existingVoucher?.data[0].isUsed === "EXPIRED" ||
         existingVoucher?.data[0].isUsed === "USED"
       ) {
-        setReferralMessage("Invalid voucher");
+        setVoucherMessage("Invalid voucher");
         setIsVoucherValid(false);
         setVoucherData([]);
       } else {
-        setReferralMessage("Valid voucher!");
+        setVoucherMessage("Valid voucher!");
         setVoucherData(existingVoucher?.data || []);
       }
-    } else if (debouncedVoucherCoupon) {
-      setReferralMessage("Invalid voucher");
+    } else if (debouncedVoucher) {
+      setVoucherMessage("Invalid voucher");
       setIsVoucherValid(false);
       setVoucherData([]);
     }
-  }, [debouncedVoucherCoupon, existingVoucher, isPendingVoucher]);
+  }, [debouncedVoucher, existingVoucher, isPendingVoucher]);
+
+  useEffect(() => {
+    if (!debouncedCoupon || debouncedCoupon === "") {
+      setIsCouponValid(null);
+      setCouponMessage("");
+      setCouponData([]);
+      return;
+    }
+
+    if (isPendingCoupon) return;
+
+    const isCouponValid = Array.isArray(existingCoupon?.data)
+      ? existingCoupon.data.length > 0
+      : !!existingCoupon;
+    setIsCouponValid(isCouponValid);
+
+    if (isCouponValid) {
+      if (
+        existingCoupon?.data[0]?.isUsed === "EXPIRED" ||
+        existingCoupon?.data[0]?.isUsed === "USED"
+      ) {
+        setCouponMessage("Invalid coupon");
+        setIsCouponValid(false);
+        setCouponData([]);
+      } else {
+        setCouponMessage("Valid coupon!");
+        setCouponData(existingCoupon?.data || []);
+      }
+    } else if (debouncedCoupon) {
+      setCouponMessage("Invalid coupon");
+      setIsCouponValid(false);
+      setCouponData([]);
+    }
+  }, [debouncedCoupon, existingCoupon, isPendingCoupon]);
 
   if (isEventLoading) <Loading text="Event Data" />;
 
@@ -228,7 +268,7 @@ const EventDetailComponent: FC<EventDetailComponentProps> = ({ eventId }) => {
                     <div className="relative">
                       <Input
                         type="text"
-                        placeholder="Input a Voucher or Coupon"
+                        placeholder="Input a Voucher"
                         value={voucherCode}
                         onChange={(e) => setVoucherCode(e.target.value)}
                         disabled={!user || event.price <= 0}
@@ -254,7 +294,41 @@ const EventDetailComponent: FC<EventDetailComponentProps> = ({ eventId }) => {
                           ? "text-red-500"
                           : ""
                       } text-xs`}>
-                      {referralMessage}
+                      {voucherMessage}
+                    </p>
+                  </div>
+
+                  <div className="grid gap-2">
+                    <div className="relative">
+                      <Input
+                        type="text"
+                        placeholder="Input a Coupon"
+                        value={couponCode}
+                        onChange={(e) => setCouponCode(e.target.value)}
+                        disabled={!user || event.price <= 0}
+                        className={`${
+                          isCouponValid === true
+                            ? "border-green-500"
+                            : isCouponValid === false
+                            ? "border-red-500"
+                            : ""
+                        } w-full`}
+                      />
+                      {isPendingCoupon && (
+                        <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500">
+                          Checking...
+                        </span>
+                      )}
+                    </div>
+                    <p
+                      className={`${
+                        isCouponValid === true
+                          ? "text-green-500"
+                          : isCouponValid === false
+                          ? "text-red-500"
+                          : ""
+                      } text-xs`}>
+                      {couponMessage}
                     </p>
                   </div>
 
@@ -265,6 +339,7 @@ const EventDetailComponent: FC<EventDetailComponentProps> = ({ eventId }) => {
                         event={event}
                         quantity={quantity}
                         voucher={voucherData}
+                        coupon={couponData}
                       />
                     )}
 

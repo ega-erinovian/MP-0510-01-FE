@@ -10,6 +10,9 @@ export interface CreateTransactionPayload {
   userId: number;
   eventId: number;
   paymentProof: File | null;
+  voucherId?: number;
+  couponId?: number;
+  isUsePoint?: boolean;
 }
 
 const useCreateTransaction = () => {
@@ -20,13 +23,20 @@ const useCreateTransaction = () => {
     mutationFn: async (payload: CreateTransactionPayload) => {
       const formData = new FormData();
 
+      console.log("Voucher Id from hook: ", payload.voucherId);
+
       formData.append("userId", `${payload.userId}`);
       formData.append("eventId", `${payload.eventId}`);
       formData.append("status", payload.status);
-      formData.append("qty", `${payload.qty}`); // Ensure qty is properly set
+      formData.append("qty", `${payload.qty}`);
       formData.append("totalPrice", `${payload.totalPrice}`);
       if (payload.paymentProof)
         formData.append("paymentProof", payload.paymentProof);
+      if (payload.voucherId)
+        formData.append("voucherId", `${payload.voucherId}`);
+      if (payload.couponId) formData.append("couponId", `${payload.couponId}`);
+      if (payload.isUsePoint)
+        formData.append("isUsePoint", `${payload.isUsePoint}`);
 
       const { data } = await axiosInstance.post(`/transactions`, formData);
 

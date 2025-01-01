@@ -1,5 +1,4 @@
-"use client";
-
+import { FC, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -17,63 +16,122 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { FC, useState, useCallback } from "react";
-import { transactionStatus } from "../const";
-import { useFormik } from "formik";
-import { updateTransactionSchema } from "../schemas";
+import useUpdateEvent from "@/hooks/api/event/useUpdateEvent";
 import useUpdateTransaction from "@/hooks/api/transaction/useUpdateTransaction";
+import useUpdateUser from "@/hooks/api/user/useUpdateUser";
+import useGetVoucher from "@/hooks/api/voucher/useGetVoucher";
+import useUpdateVoucher from "@/hooks/api/voucher/useUpdateVoucher";
+import { TransactionType } from "@/types/transaction";
+import { useFormik } from "formik";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import { Input } from "@/components/ui/input";
-import useUpdateEvent from "@/hooks/api/event/useUpdateEvent";
-import useGetTransactions from "@/hooks/api/transaction/useGetTransactions";
+import { transactionStatus } from "../const";
+import { updateTransactionSchema } from "../schemas";
+import useGetCoupon from "@/hooks/api/coupon/useGetCoupon";
+import useUpdateCoupon from "@/hooks/api/coupon/useUpdateCoupon";
 
 interface TransactionEditDialogProps {
-  id: number;
-  status: string;
-  email: string;
-  eventId: number;
-  qty: number;
-  availableSeats: number;
+  transaction: TransactionType;
 }
 
 const TransactionEditDialog: FC<TransactionEditDialogProps> = ({
-  id,
-  status,
-  email,
-  eventId,
-  qty,
-  availableSeats,
+  transaction,
 }) => {
   const router = useRouter();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const { mutateAsync: updateTransaction, isPending: isUpdating } =
+  const { mutateAsync: updateTransaction, isPending: isUpdatingTransaction } =
     useUpdateTransaction();
   const { mutateAsync: updateEvent, isPending: isUpdatingEvent } =
     useUpdateEvent();
+  const { mutateAsync: updateVoucher } = useUpdateVoucher(
+    transaction.voucherId || 0
+  );
+
+  const { mutateAsync: updateCoupon } = useUpdateCoupon(
+    transaction.couponId || 0
+  );
+
+  const { mutateAsync: updateUser } = useUpdateUser();
+
+  const { data: existingVoucher, isPending: isPendingVoucher } = useGetVoucher(
+    transaction.voucherId || 0
+  );
+
+  const { data: existingCoupon, isPending: isPendingCoupon } = useGetCoupon(
+    transaction.couponId || 0
+  );
 
   const formik = useFormik({
     initialValues: {
-      id,
-      status,
-      email,
+      id: transaction.id,
+      status: transaction.status,
+      email: transaction.user.email,
       paymentProof: null,
+      voucherId: transaction.voucherId ?? null,
+      couponId: transaction.couponId ?? null,
     },
     validationSchema: updateTransactionSchema,
     onSubmit: async (values) => {
       try {
-        await updateTransaction({
-          ...values,
-        });
+        if (
+          (values.status === "REJECTED" ||
+            values.status === "EXPIRED" ||
+            values.status === "CANCELED") &&
+          !isUpdatingTransaction
+        ) {
+          await updateEvent({
+            id: transaction.eventId,
+            availableSeats: transaction.event.availableSeats + transaction.qty,
+          });
+
+          if (transaction.voucherId) {
+            await updateVoucher({
+              isUsed: "AVAILABLE",
+            });
+          }
+
+          if (transaction.couponId) {
+            await updateCoupon({
+              isUsed: "AVAILABLE",
+            });
+          }
+
+          let totalPriceBeforePoint = transaction.event.price * transaction.qty;
+          let usedPoint = 0;
+
+          if (transaction.isUsePoint) {
+            if (existingVoucher) {
+              totalPriceBeforePoint -= existingVoucher.amount;
+            }
+
+            if (existingCoupon) {
+              totalPriceBeforePoint -= existingCoupon.amount;
+            }
+
+            usedPoint = totalPriceBeforePoint - transaction.totalPrice;
+          }
+
+          if (transaction.totalPrice < totalPriceBeforePoint) {
+            await updateUser({
+              id: transaction.userId,
+              point: transaction.user.point + usedPoint,
+            });
+          }
+        }
 
         if (
           values.status === "REJECTED" ||
           values.status === "EXPIRED" ||
           values.status === "CANCELED"
         ) {
-          await updateEvent({
-            id: eventId,
-            availableSeats: availableSeats + qty,
+          await updateTransaction({
+            ...values,
+            voucherId: null,
+            couponId: null,
+          });
+        } else {
+          await updateTransaction({
+            ...values,
           });
         }
 
@@ -131,9 +189,11 @@ const TransactionEditDialog: FC<TransactionEditDialogProps> = ({
           <DialogFooter className="mt-8">
             <Button
               type="submit"
-              disabled={isUpdating || !formik.isValid || !formik.dirty}
+              disabled={
+                isUpdatingTransaction || !formik.isValid || !formik.dirty
+              }
               className="w-full sm:w-auto">
-              {isUpdating ? "Updating..." : "Update Transaction"}
+              {isUpdatingTransaction ? "Updating..." : "Update Transaction"}
             </Button>
           </DialogFooter>
         </form>

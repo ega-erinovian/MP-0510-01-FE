@@ -2,6 +2,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Loading from "../dashboard/Loading";
+import { toast } from "react-toastify";
 
 export default function CustomerAuthGuard(Component: any) {
   return function IsAuth(props: any) {
@@ -14,6 +15,13 @@ export default function CustomerAuthGuard(Component: any) {
       }
     }, [status, router]);
 
+    if (session) {
+      if (session.user.role !== "CUSTOMER") {
+        toast.error("You don't have access to this page.");
+        router.push("/dashboard");
+      }
+    }
+
     if (status === "loading") {
       return (
         <div className="h-screen w-full flex items-center justify-center">
@@ -23,7 +31,7 @@ export default function CustomerAuthGuard(Component: any) {
     }
 
     if (!session) {
-      return null; // Prevent rendering until session is confirmed
+      return null;
     }
 
     return <Component {...props} />;
