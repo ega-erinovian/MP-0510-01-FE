@@ -20,6 +20,7 @@ import { useDebounce } from "use-debounce";
 import CreateTransactionModal from "./components/CreateTransactionModal";
 import useGetCoupons from "@/hooks/api/coupon/useGetCoupons";
 import { CouponType } from "@/types/coupon";
+import { cn } from "@/lib/utils";
 import { VoucherType } from "@/types/voucher";
 
 interface EventDetailComponentProps {
@@ -129,74 +130,70 @@ const EventDetailComponent: FC<EventDetailComponentProps> = ({ eventId }) => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Main Content */}
-        <div className="lg:col-span-2">
-          {/* Banner Image */}
-          <div className="relative h-[480px] w-full overflow-hidden rounded-lg">
+    <div className="container mx-auto px-4 py-4 sm:py-6 md:py-8 lg:py-10">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+        <div className="lg:col-span-2 space-y-4 sm:space-y-6 md:space-y-8">
+          <div className="relative aspect-[16/9] sm:aspect-[2/1] lg:aspect-[16/9] w-full overflow-hidden rounded-lg">
             <Image
               src={event.thumbnnail}
-              alt="thumbnail"
+              alt={`${event.title} banner`}
               fill
-              className="object-cover duration-100 hover:scale-105"
+              priority
+              className="object-cover transition-transform duration-300 hover:scale-105"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 66vw"
             />
           </div>
 
-          {/* Event Title & Actions */}
-          <div className="my-8">
-            <div className="flex items-start justify-between mb-4">
-              <div>
-                <p className="text-sm text-muted-foreground mb-2">
+          <div className="space-y-4 sm:space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">
                   {new Intl.DateTimeFormat("en-ID", {
                     dateStyle: "full",
                     timeStyle: "short",
                     timeZone: "Asia/Jakarta",
                   }).format(new Date(event.startDate))}
                 </p>
-                <h1 className="text-3xl font-bold mb-2">{event.title}</h1>
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight">
+                  {event.title}
+                </h1>
               </div>
               <div className="flex gap-2">
-                <Button variant="outline" size="icon">
+                <Button variant="outline" size="icon" className="shrink-0">
                   <Share2 className="h-4 w-4" />
                 </Button>
               </div>
             </div>
 
-            {/* Organizer */}
-            <div className="flex items-center gap-3">
-              <Avatar>
+            <div className="flex flex-wrap items-center gap-3 p-4 bg-muted/50 rounded-lg">
+              <Avatar className="h-12 w-12 border-2 border-background">
                 <AvatarImage
                   src="https://res.cloudinary.com/dpeljv2vu/image/upload/v1735294682/ftlh4vmowuyfx3wdqymu.jpg"
-                  alt="profile-picture"
+                  alt={event.organizer.fullName}
                   className="object-cover"
                 />
-                <AvatarFallback>{event.organizer.fullName}</AvatarFallback>
+                <AvatarFallback className="font-medium">
+                  {event.organizer.fullName.charAt(0)}
+                </AvatarFallback>
               </Avatar>
-              <div>
-                <p className="text-sm font-medium">
-                  By{" "}
-                  <span className="font-semibold">
-                    {event.organizer.fullName}
-                  </span>
-                </p>
+              <div className="flex-grow">
+                <p className="text-sm">Organized by</p>
+                <p className="font-semibold">{event.organizer.fullName}</p>
               </div>
-              <Button variant="outline" size="sm" className="ml-auto">
+              <Button variant="outline" size="sm" className="shrink-0">
                 Visit Profile
               </Button>
             </div>
           </div>
 
-          {/* Event Details */}
-          <div className="space-y-8">
-            {/* Date and Location */}
-            <Card>
+          <div className="space-y-4 sm:space-y-6">
+            <Card className="border-zinc-200">
               <CardHeader className="pb-4">
-                <h2 className="text-xl font-semibold">Date and time</h2>
+                <h2 className="text-xl font-semibold">Date and Location</h2>
               </CardHeader>
-              <CardContent className="grid gap-3">
-                <div className="flex items-center gap-4">
-                  <Calendar className="h-5 w-5 text-muted-foreground" />
+              <CardContent className="grid gap-4">
+                <div className="flex items-start gap-4 p-3 rounded-lg bg-muted/50">
+                  <Calendar className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
                   <div>
                     <p className="font-medium">
                       {new Intl.DateTimeFormat("en-ID", {
@@ -207,8 +204,8 @@ const EventDetailComponent: FC<EventDetailComponentProps> = ({ eventId }) => {
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-4">
-                  <LocateIcon className="h-5 w-5 text-muted-foreground" />
+                <div className="flex items-start gap-4 p-3 rounded-lg bg-muted/50">
+                  <LocateIcon className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
                   <div>
                     <p className="font-medium">
                       {event.address}, {event.city.name}
@@ -218,19 +215,21 @@ const EventDetailComponent: FC<EventDetailComponentProps> = ({ eventId }) => {
               </CardContent>
             </Card>
 
-            {/* About Section */}
-            <Card>
+            <Card className="border-zinc-200">
               <CardHeader className="pb-3">
                 <h2 className="text-xl font-semibold">About this event</h2>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <Markdown content={event.description} />
+              <CardContent className="space-y-6">
+                <div className="prose prose-zinc max-w-none">
+                  <Markdown content={event.description} />
+                </div>
 
-                {/* Tags */}
-                <div className="pt-4">
+                <div>
                   <h3 className="text-sm font-medium mb-2">Tags</h3>
                   <div className="flex flex-wrap gap-2">
-                    <Badge variant="secondary">{event.category.name}</Badge>
+                    <Badge variant="secondary" className="text-sm">
+                      {event.category.name}
+                    </Badge>
                   </div>
                 </div>
               </CardContent>
@@ -238,25 +237,26 @@ const EventDetailComponent: FC<EventDetailComponentProps> = ({ eventId }) => {
           </div>
         </div>
 
-        {/* Sidebar */}
         <div className="lg:col-span-1">
-          <Card className="sticky top-24">
-            <CardContent className="p-6 grid gap-4">
+          <Card className="sticky top-24 border-zinc-200">
+            <CardContent className="p-4 sm:p-6 space-y-4">
               <div>
                 <h2 className="text-xl font-semibold mb-1">{event.title}</h2>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-lg font-bold text-purple-600">
                   {event.price.toLocaleString("id-ID", {
                     style: "currency",
                     currency: "IDR",
                   })}{" "}
-                  / pax
+                  <span className="text-sm font-normal text-muted-foreground">
+                    / pax
+                  </span>
                 </p>
               </div>
 
               {event.availableSeats > 0 ? (
-                <>
-                  <div className="flex justify-between items-center w-full">
-                    <p>Quantity</p>
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
+                    <p className="font-medium">Quantity</p>
                     <QuantitySelector
                       maxValue={event.availableSeats}
                       quantity={quantity}
@@ -264,7 +264,7 @@ const EventDetailComponent: FC<EventDetailComponentProps> = ({ eventId }) => {
                     />
                   </div>
 
-                  <div className="grid gap-2">
+                  <div className="space-y-2">
                     <div className="relative">
                       <Input
                         type="text"
@@ -272,33 +272,29 @@ const EventDetailComponent: FC<EventDetailComponentProps> = ({ eventId }) => {
                         value={voucherCode}
                         onChange={(e) => setVoucherCode(e.target.value)}
                         disabled={!user || event.price <= 0}
-                        className={`${
-                          isVoucherValid === true
-                            ? "border-green-500"
-                            : isVoucherValid === false
-                            ? "border-red-500"
-                            : ""
-                        } w-full`}
+                        className={cn(
+                          "w-full transition-colors",
+                          isVoucherValid === true && "border-green-500",
+                          isVoucherValid === false && "border-red-500"
+                        )}
                       />
                       {isPendingVoucher && (
-                        <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500">
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
                           Checking...
                         </span>
                       )}
                     </div>
                     <p
-                      className={`${
-                        isVoucherValid === true
-                          ? "text-green-500"
-                          : isVoucherValid === false
-                          ? "text-red-500"
-                          : ""
-                      } text-xs`}>
+                      className={cn(
+                        "text-xs",
+                        isVoucherValid === true && "text-green-500",
+                        isVoucherValid === false && "text-red-500"
+                      )}>
                       {voucherMessage}
                     </p>
                   </div>
 
-                  <div className="grid gap-2">
+                  <div className="space-y-2">
                     <div className="relative">
                       <Input
                         type="text"
@@ -306,33 +302,29 @@ const EventDetailComponent: FC<EventDetailComponentProps> = ({ eventId }) => {
                         value={couponCode}
                         onChange={(e) => setCouponCode(e.target.value)}
                         disabled={!user || event.price <= 0}
-                        className={`${
-                          isCouponValid === true
-                            ? "border-green-500"
-                            : isCouponValid === false
-                            ? "border-red-500"
-                            : ""
-                        } w-full`}
+                        className={cn(
+                          "w-full transition-colors",
+                          isCouponValid === true && "border-green-500",
+                          isCouponValid === false && "border-red-500"
+                        )}
                       />
                       {isPendingCoupon && (
-                        <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500">
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
                           Checking...
                         </span>
                       )}
                     </div>
                     <p
-                      className={`${
-                        isCouponValid === true
-                          ? "text-green-500"
-                          : isCouponValid === false
-                          ? "text-red-500"
-                          : ""
-                      } text-xs`}>
+                      className={cn(
+                        "text-xs",
+                        isCouponValid === true && "text-green-500",
+                        isCouponValid === false && "text-red-500"
+                      )}>
                       {couponMessage}
                     </p>
                   </div>
 
-                  <div>
+                  <div className="pt-2">
                     {user && (
                       <CreateTransactionModal
                         userId={user.id}
@@ -343,33 +335,35 @@ const EventDetailComponent: FC<EventDetailComponentProps> = ({ eventId }) => {
                       />
                     )}
 
-                    {!user ? (
-                      <p className="text-sm text-muted-foreground text-center mt-2">
+                    {!user && (
+                      <p className="text-sm text-center text-muted-foreground mt-4">
                         Please{" "}
                         <Link
-                          href={"/login"}
-                          className="text-sky-500 underline underline-offset-2 hover:text-sky-600">
+                          href="/login"
+                          className="text-purple-600 hover:text-purple-700 underline underline-offset-2">
                           Login
                         </Link>{" "}
                         to Book Ticket
                       </p>
-                    ) : null}
+                    )}
 
-                    {user?.role === "ORGANIZER" ? (
-                      <p className="text-sm text-muted-foreground text-center mt-2">
+                    {user?.role === "ORGANIZER" && (
+                      <p className="text-sm text-center text-muted-foreground mt-4">
                         Please{" "}
                         <Link
-                          href={"/login"}
-                          className="text-sky-500 underline underline-offset-2 hover:text-sky-600">
+                          href="/login"
+                          className="text-purple-600 hover:text-purple-700 underline underline-offset-2">
                           Login
                         </Link>{" "}
                         as Customer to Book Ticket
                       </p>
-                    ) : null}
+                    )}
                   </div>
-                </>
+                </div>
               ) : (
-                <p className="text-gray-400">Sold Out</p>
+                <div className="p-4 text-center bg-red-50 text-red-600 rounded-lg">
+                  <p className="font-semibold">Sold Out</p>
+                </div>
               )}
             </CardContent>
           </Card>

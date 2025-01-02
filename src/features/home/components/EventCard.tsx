@@ -11,37 +11,42 @@ interface EventCardProps {
 
 const EventCard: FC<EventCardProps> = ({ event }) => {
   return (
-    <Card className="relative h-full pb-12 hover:shadow-lg transition-all hover:scale-105">
-      <div className="relative w-full h-[200px]">
+    <Card className="group relative h-full pb-14 sm:pb-16 hover:shadow-xl transition-all duration-300 border-zinc-200">
+      <div className="relative w-full h-[180px] sm:h-[200px] overflow-hidden">
         <Image
           src={event.thumbnnail}
-          alt="thumbnail"
+          alt={`${event.title} thumbnail`}
           fill
-          className="object-cover rounded-lg rounded-b-none"
+          className="object-cover rounded-t-lg group-hover:scale-105 transition-transform duration-300"
+          sizes="(max-width: 640px) 100%, (max-width: 768px) 50%, 25%"
         />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
       </div>
-      <CardContent className="pt-4">
-        <div className="flex items-center gap-2 mb-2">
+
+      <CardContent className="pt-4 space-y-3">
+        <div className="flex items-center gap-2">
           <Badge
             variant="outline"
-            className="rounded-sm bg-purple-100 text-purple-700">
+            className="rounded-md bg-purple-100 text-purple-700 px-2.5 py-1 text-xs font-medium hover:bg-purple-200 transition-colors">
             {event.category.name}
           </Badge>
         </div>
 
-        <div className="flex flex-col gap-2">
-          <h2 className="line-clamp-2 text-lg font-bold">{event.title}</h2>
-          <p className="text-sm">
+        <div className="space-y-2">
+          <h2 className="line-clamp-2 text-base sm:text-lg font-bold leading-tight">
+            {event.title}
+          </h2>
+          <p className="text-xs sm:text-sm text-zinc-600">
             {new Intl.DateTimeFormat("en-ID", {
               dateStyle: "full",
               timeStyle: "short",
               timeZone: "Asia/Jakarta",
             }).format(new Date(event.startDate))}
           </p>
-          <p className="text-sm">
+          <p className="text-xs sm:text-sm text-zinc-600 line-clamp-1">
             {event.address}, {event.city.name}
           </p>
-          <p className="font-semibold">
+          <p className="font-semibold text-sm sm:text-base">
             {event.price > 0
               ? event.price.toLocaleString("id-ID", {
                   style: "currency",
@@ -51,23 +56,26 @@ const EventCard: FC<EventCardProps> = ({ event }) => {
           </p>
         </div>
       </CardContent>
-      <p className="absolute bottom-4 left-6">
+
+      <div className="absolute bottom-4 left-6 right-6">
         <div className="flex items-center gap-2">
-          <Avatar className="w-6 h-6">
+          <Avatar className="w-6 h-6 border border-zinc-200">
             <AvatarImage
               src={event.organizer.profilePicture ?? ""}
               alt={event.organizer.fullName}
               className="object-cover"
             />
-            <AvatarFallback>
+            <AvatarFallback className="text-xs bg-purple-100 text-purple-700">
               {event.organizer.fullName.charAt(0)}
             </AvatarFallback>
           </Avatar>
           <div className="flex flex-col">
-            <span className="text-xs">{event.organizer.fullName}</span>
+            <span className="text-xs text-zinc-700 font-medium">
+              {event.organizer.fullName}
+            </span>
           </div>
         </div>
-      </p>
+      </div>
     </Card>
   );
 };

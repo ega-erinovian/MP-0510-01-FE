@@ -28,20 +28,23 @@ const EventByUserCity = () => {
   };
 
   return (
-    <div className="mb-4">
-      <h1 className="text-9xl tracking-tighter mb-8">
+    <div className="mb-8 sm:mb-12 md:mb-16 lg:mb-20">
+      <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-9xl tracking-tighter mb-4 sm:mb-6 md:mb-8 font-bold">
         Events In {user ? "Your City" : "Yogyakarta"}
       </h1>
       {events && events.data.length <= 0 && (
         <DataNotFound text="Data Not Found" />
       )}
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 mb-6">
         {isPending ? (
           <Loading text="Events" />
         ) : (
           events?.data.map((event) => {
             return (
-              <Link href={`/events/${event.id}`} key={event.id}>
+              <Link
+                href={`/events/${event.id}`}
+                key={event.id}
+                className="transition-transform hover:scale-105 duration-200">
                 <EventCard event={event} />
               </Link>
             );
@@ -49,7 +52,7 @@ const EventByUserCity = () => {
         )}
       </div>
       {events && (
-        <div className="w-full flex justify-end items-center">
+        <div className="w-full flex justify-end items-center mt-4 sm:mt-6">
           <PaginationSection
             onChangePage={onChangePage}
             page={Number(page)}

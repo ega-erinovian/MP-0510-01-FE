@@ -1,6 +1,12 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useFormik } from "formik";
@@ -14,6 +20,9 @@ import { UpdatePasswordSchema } from "./schemas";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import CustomerProfileLayout from "./CustomerProfileLayout";
+import { Loader2, Check, X, KeyRound, Eye, EyeOff } from "lucide-react";
+import { cn } from "@/lib/utils";
+import PasswordInput from "@/components/PasswordInput";
 
 interface UpdatePasswordComponentProps {
   id: number;
@@ -44,7 +53,6 @@ const UpdatePasswordComponent: FC<UpdatePasswordComponentProps> = ({ id }) => {
     },
   });
 
-  // Handle old password validation with try/catch
   useEffect(() => {
     const validateOldPassword = async () => {
       if (debouncedOldPassword) {
@@ -62,12 +70,12 @@ const UpdatePasswordComponent: FC<UpdatePasswordComponentProps> = ({ id }) => {
             setCheckPasswordMessage("Invalid current password");
           }
         } catch (error) {
-          console.error("Error checking password:", error); // Log the error for debugging
+          console.error("Error checking password:", error);
           setIsPasswordValid(false);
           setCheckPasswordMessage("Error checking password");
         }
       } else {
-        setIsPasswordValid(null); // Reset state if input is empty
+        setIsPasswordValid(null);
         setCheckPasswordMessage("");
       }
     };
@@ -77,82 +85,80 @@ const UpdatePasswordComponent: FC<UpdatePasswordComponentProps> = ({ id }) => {
 
   return (
     <CustomerProfileLayout>
-      <div className="w-full h-full flex items-center justify-center">
-        <Card className="w-[350px]">
-          <CardHeader>
-            <CardTitle>Reset Password</CardTitle>
+      <div className="w-full min-h-[80vh] flex items-center justify-center p-4">
+        <Card className="w-full max-w-md shadow-lg transform transition-all duration-300 hover:shadow-xl">
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-2xl font-bold flex items-center gap-2">
+              <KeyRound className="w-5 h-5" />
+              Reset Password
+            </CardTitle>
+            <CardDescription>
+              Change your password to keep your account secure
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={formik.handleSubmit}>
-              <div className="grid w-full items-center gap-4">
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="oldPassword">Current Password</Label>
-                  <Input
-                    name="oldPassword"
-                    type="password"
-                    placeholder="Min 8 - 12 Characters"
-                    value={formik.values.oldPassword}
-                    onChange={(e) => {
-                      formik.handleChange(e);
-                      setOldPassword(e.target.value);
-                    }}
-                    onBlur={formik.handleBlur}
-                  />
-                  {!!formik.touched.oldPassword &&
-                  !!formik.errors.oldPassword ? (
-                    <p className="text-xs text-red-500">
-                      {formik.errors.oldPassword}
-                    </p>
-                  ) : null}
-                  {checkPasswordMessage && (
-                    <p
-                      className={`text-xs ${
-                        isPasswordValid ? "text-green-500" : "text-red-500"
-                      }`}>
-                      {checkPasswordMessage}
-                    </p>
-                  )}
+            <form onSubmit={formik.handleSubmit} className="space-y-6">
+              <PasswordInput
+                label="Current Password"
+                name="oldPassword"
+                value={formik.values.oldPassword}
+                onChange={(e) => {
+                  formik.handleChange(e);
+                  setOldPassword(e.target.value);
+                }}
+                onBlur={formik.handleBlur}
+                error={formik.errors.oldPassword}
+                touched={formik.touched.oldPassword}
+              />
+              {checkPasswordMessage && (
+                <div
+                  className={cn(
+                    "text-sm flex items-center gap-1.5 p-2 rounded transition-colors",
+                    isPasswordValid
+                      ? "text-green-500 bg-green-500/10"
+                      : "text-red-500 bg-red-500/10"
+                  )}>
+                  {isPasswordValid ? <Check size={14} /> : <X size={14} />}
+                  {checkPasswordMessage}
                 </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="password">New Password</Label>
-                  <Input
-                    name="password"
-                    type="password"
-                    placeholder="Min 8 - 12 Characters"
-                    value={formik.values.password}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                  />
-                  {!!formik.touched.password && !!formik.errors.password ? (
-                    <p className="text-xs text-red-500">
-                      {formik.errors.password}
-                    </p>
-                  ) : null}
-                </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="confirmPassword">Confirm New Password</Label>
-                  <Input
-                    name="confirmPassword"
-                    placeholder="Min 8 - 12 Characters"
-                    type="password"
-                    value={formik.values.confirmPassword}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                  />
-                  {!!formik.touched.confirmPassword &&
-                  !!formik.errors.confirmPassword ? (
-                    <p className="text-xs text-red-500">
-                      {formik.errors.confirmPassword}
-                    </p>
-                  ) : null}
-                </div>
-                <Button
-                  type="submit"
-                  className="mt-2"
-                  disabled={isPending || !isPasswordValid}>
-                  {isPending ? "Loading..." : "Reset Password"}
-                </Button>
-              </div>
+              )}
+              <PasswordInput
+                label="New Password"
+                name="password"
+                value={formik.values.password}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.errors.password}
+                touched={formik.touched.password}
+                showPasswordStrength
+              />
+              <PasswordInput
+                label="Confirm New Password"
+                name="confirmPassword"
+                value={formik.values.confirmPassword}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.errors.confirmPassword}
+                touched={formik.touched.confirmPassword}
+              />
+              <Button
+                type="submit"
+                className={cn(
+                  "w-full transition-all duration-200",
+                  "hover:translate-y-[-1px] active:translate-y-[1px]",
+                  (isPending || !isPasswordValid) &&
+                    "opacity-50 cursor-not-allowed"
+                )}
+                disabled={isPending || !isPasswordValid}>
+                {isPending ? (
+                  <span className="flex items-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Updating...
+                  </span>
+                ) : (
+                  "Reset Password"
+                )}
+              </Button>
             </form>
           </CardContent>
         </Card>

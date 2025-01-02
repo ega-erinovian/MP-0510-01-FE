@@ -1,17 +1,26 @@
 "use client";
 
 import Loading from "@/components/dashboard/Loading";
+import FormField from "@/components/FormField";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import useGetUser from "@/hooks/api/user/useGetUser";
 import useUpdateUser from "@/hooks/api/user/useUpdateUser";
+import { cn } from "@/lib/utils";
 import { useFormik } from "formik";
-import { Trash2 } from "lucide-react";
+import { Loader2, Mail, Phone, Trash2, Upload, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, FC, useEffect, useRef, useState } from "react";
-import { updateUserSchema } from "./schemas";
 import { toast } from "react-toastify";
+import { updateUserSchema } from "./schemas";
 
 interface UpdateProfileComponentProps {
   id: number;
@@ -97,114 +106,129 @@ const UpdateProfileComponent: FC<UpdateProfileComponentProps> = ({ id }) => {
   }
 
   return (
-    <div className="w-full h-screen flex items-center justify-center">
-      <div className="w-[600px]">
-        <form onSubmit={formik.handleSubmit}>
-          <div className="grid w-full items-center gap-4">
-            {(selectedImage || user?.profilePicture) && (
-              <div className="w-full flex justify-center">
-                <div className="relative h-[150px] w-[150px]">
-                  <img
-                    src={
-                      selectedImage === ""
-                        ? user?.profilePicture || ""
-                        : selectedImage
-                    }
-                    alt="profile-picture-preview"
-                    className="object-cover rounded-full w-full h-full"
-                  />
+    <div className="min-h-screen w-full p-4 flex items-center justify-center">
+      <Card className="w-full max-w-2xl shadow-lg">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-2xl font-bold">Edit Profile</CardTitle>
+          <CardDescription>Update your profile information</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={formik.handleSubmit} className="space-y-6">
+            {/* Profile Picture Section */}
+            <div className="space-y-4">
+              {(selectedImage || user?.profilePicture) && (
+                <div className="flex justify-center">
+                  <div className="relative group">
+                    <img
+                      src={selectedImage || user?.profilePicture || ""}
+                      alt="Profile"
+                      className="h-32 w-32 rounded-full object-cover ring-2 ring-primary/10"
+                    />
+                    <div className="absolute inset-0 bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="text-white hover:text-white hover:bg-black/20"
+                        onClick={() => profilePictureReff.current?.click()}>
+                        <Upload size={20} />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Profile Picture</Label>
+                <div className="flex items-center gap-2">
+                  <div className="relative flex-1">
+                    <Input
+                      ref={profilePictureReff}
+                      type="file"
+                      accept="image/*"
+                      onChange={onChangeProfilePicture}
+                      className="cursor-pointer"
+                    />
+                  </div>
+                  {selectedImage && (
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="icon"
+                      onClick={removeProfilePicture}
+                      className="shrink-0">
+                      <Trash2 size={16} />
+                    </Button>
+                  )}
                 </div>
               </div>
-            )}
-            <div className="grid gap-2">
-              <Label htmlFor="isUsed" className="text-lg font-semibold">
-                Profile Picture
-              </Label>
-              <div className="flex items-center gap-2">
-                <Input
-                  ref={profilePictureReff}
-                  type="file"
-                  accept="image/*"
-                  onChange={onChangeProfilePicture}
-                />
-                {selectedImage && (
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    onClick={removeProfilePicture}
-                    className="py-1 px-2 z-50">
-                    <Trash2 />
-                  </Button>
-                )}
-              </div>
-              {!!formik.touched.profilePicture &&
-              !!formik.errors.profilePicture ? (
-                <p className="text-xs text-red-500">
-                  {formik.errors.profilePicture}
-                </p>
-              ) : null}
             </div>
-            <div className="grid gap-2">
-              <Label htmlFor="fullName" className="text-lg font-semibold">
-                {user?.role === "customer" ? "Full Name" : "Organization Name"}
-              </Label>
-              <Input
+
+            <div className="grid gap-6 md:grid-cols-2">
+              <FormField
+                label={
+                  user?.role === "customer" ? "Full Name" : "Organization Name"
+                }
                 name="fullName"
                 placeholder={`Enter your ${
-                  user?.role === "customer" ? "Full Name" : "Organization Name"
+                  user?.role === "customer" ? "full name" : "organization name"
                 }`}
                 value={formik.values.fullName}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
+                error={formik.errors.fullName}
+                touched={formik.touched.fullName}
+                icon={<User size={16} />}
               />
-              {!!formik.touched.fullName && !!formik.errors.fullName && (
-                <p className="text-xs text-red-500">{formik.errors.fullName}</p>
-              )}
-            </div>
 
-            <div className="grid gap-2">
-              <Label htmlFor="email" className="text-lg font-semibold">
-                Email
-              </Label>
-              <Input
+              <FormField
+                label="Email"
                 name="email"
                 type="email"
                 placeholder="example@email.com"
                 value={formik.values.email}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
+                error={formik.errors.email}
+                touched={formik.touched.email}
+                icon={<Mail size={16} />}
               />
-              {!!formik.touched.email && !!formik.errors.email && (
-                <p className="text-xs text-red-500">{formik.errors.email}</p>
-              )}
-            </div>
 
-            <div className="grid gap-2">
-              <Label htmlFor="phoneNumber" className="text-lg font-semibold">
-                Phone Number
-              </Label>
-              <Input
+              <FormField
+                label="Phone Number"
                 name="phoneNumber"
-                placeholder="+628xxxxxxxxx"
+                placeholder="+628xxxxxxxxxx"
                 value={formik.values.phoneNumber}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
+                error={formik.errors.phoneNumber}
+                touched={formik.touched.phoneNumber}
+                icon={<Phone size={16} />}
               />
-              {!!formik.touched.phoneNumber && !!formik.errors.phoneNumber && (
-                <p className="text-xs text-red-500">
-                  {formik.errors.phoneNumber}
-                </p>
-              )}
             </div>
 
-            <div className="flex justify-end items-center w-full">
-              <Button type="submit" disabled={isUpdating}>
-                {isUpdating ? "Loading..." : "Submit"}
+            {/* Submit Button */}
+            <div className="flex justify-end">
+              <Button
+                type="submit"
+                disabled={isUpdating}
+                className={cn(
+                  "min-w-[120px] transition-all duration-200",
+                  "hover:translate-y-[-1px] active:translate-y-[1px]"
+                )}>
+                {isUpdating ? (
+                  <span className="flex items-center gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Updating...
+                  </span>
+                ) : (
+                  "Update Profile"
+                )}
               </Button>
             </div>
-          </div>
-        </form>
-      </div>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 };

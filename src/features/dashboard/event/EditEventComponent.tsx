@@ -22,7 +22,15 @@ import useUpdateEvent, {
 } from "@/hooks/api/event/useUpdateEvent";
 import { formatISO } from "date-fns";
 import { useFormik } from "formik";
-import { Trash2 } from "lucide-react";
+import {
+  Calendar,
+  Coins,
+  MapPin,
+  Tag,
+  Trash2,
+  Upload,
+  Users,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, FC, useEffect, useRef, useState } from "react";
 import { editEventSchema } from "./schemas";
@@ -184,39 +192,44 @@ const EditEventComponent: FC<UpdateEventComponentProps> = ({ id }) => {
   }
 
   return (
-    <div className="w-full py-20 flex items-center justify-center">
-      <div className="w-[1080px]">
-        <form onSubmit={formik.handleSubmit} className="space-y-6">
+    <div className="w-full py-12 px-4 flex items-center justify-center bg-gray-50">
+      <div className="w-full max-w-[1080px] bg-white rounded-xl shadow-sm p-8">
+        <h1 className="text-2xl font-bold mb-8 text-gray-800">Edit Event</h1>
+        <form onSubmit={formik.handleSubmit} className="space-y-8">
           {/* Image Preview */}
           {(selectedImage || event?.thumbnnail) && (
-            <div className="w-full flex justify-center">
-              <div className="relative h-[480px] w-full overflow-hidden rounded-lg">
+            <div className="w-full">
+              <div className="relative h-[480px] w-full overflow-hidden rounded-xl shadow-md">
                 <Image
                   src={selectedImage || event?.thumbnnail || ""}
                   alt="thumbnail"
                   fill
-                  className="object-cover duration-100 hover:scale-105"
+                  className="object-cover duration-300 hover:scale-105"
                 />
               </div>
             </div>
           )}
 
           {/* Image Upload */}
-          <div className="space-y-2">
-            <Label className="text-lg font-semibold">Thumbnail</Label>
-            <div className="flex items-center gap-2">
+          <div className="p-6 border border-dashed border-purple-200 rounded-lg bg-purple-50/50 space-y-3">
+            <Label className="text-lg font-semibold flex items-center gap-2 text-purple-700">
+              <Upload size={20} />
+              Event Thumbnail
+            </Label>
+            <div className="flex items-center gap-3">
               <Input
                 ref={thumbnailRef}
                 type="file"
                 accept="image/*"
                 onChange={handleImageChange}
+                className="bg-white border-purple-100 focus:border-purple-500 focus:ring-purple-200"
               />
               {selectedImage && (
                 <Button
                   type="button"
                   variant="destructive"
                   onClick={handleImageRemove}
-                  className="py-1 px-2">
+                  className="py-1 px-2 hover:bg-red-600 transition-colors">
                   <Trash2 />
                 </Button>
               )}
@@ -224,29 +237,46 @@ const EditEventComponent: FC<UpdateEventComponentProps> = ({ id }) => {
           </div>
 
           {/* Form Fields */}
-          <div className="space-y-4">
+          <div className="space-y-8">
             {/* Basic Information */}
-            <div className="space-y-4">
+            <div className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="title" className="text-lg font-semibold">
-                  Title
+                <Label
+                  htmlFor="title"
+                  className="text-lg font-semibold flex items-center gap-2 text-gray-700">
+                  <Tag size={18} />
+                  Event Title
                 </Label>
-                <Input {...formik.getFieldProps("title")} />
+                <Input
+                  name="title"
+                  placeholder="Your event title"
+                  value={formik.values.title}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className="border-gray-200 focus:border-purple-500 focus:ring-purple-200"
+                />
                 {formik.touched.title && formik.errors.title && (
-                  <p className="text-xs text-red-500">{formik.errors.title}</p>
+                  <p className="text-sm text-red-500">{formik.errors.title}</p>
                 )}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="address" className="text-lg font-semibold">
-                  Address
+                <Label
+                  htmlFor="address"
+                  className="text-lg font-semibold flex items-center gap-2 text-gray-700">
+                  <MapPin size={18} />
+                  Event Address
                 </Label>
                 <textarea
-                  {...formik.getFieldProps("address")}
-                  className="border rounded-lg p-2 w-full"
+                  name="address"
+                  placeholder="Your event address"
+                  value={formik.values.address}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className="w-full min-h-[100px] rounded-lg border border-gray-200 p-3 focus:border-purple-500 focus:ring-purple-200 outline-none"
                 />
                 {formik.touched.address && formik.errors.address && (
-                  <p className="text-xs text-red-500">
+                  <p className="text-sm text-red-500">
                     {formik.errors.address}
                   </p>
                 )}
@@ -254,65 +284,98 @@ const EditEventComponent: FC<UpdateEventComponentProps> = ({ id }) => {
             </div>
 
             {/* Numbers Section */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label
                   htmlFor="availableSeats"
-                  className="text-lg font-semibold">
+                  className="text-lg font-semibold flex items-center gap-2 text-gray-700">
+                  <Users size={18} />
                   Available Seats
                 </Label>
                 <Input
                   type="number"
-                  {...formik.getFieldProps("availableSeats")}
+                  name="availableSeats"
+                  placeholder="Total seats of the event"
+                  value={formik.values.availableSeats}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className="border-gray-200 focus:border-purple-500 focus:ring-purple-200"
                 />
                 {formik.touched.availableSeats &&
                   formik.errors.availableSeats && (
-                    <p className="text-xs text-red-500">
+                    <p className="text-sm text-red-500">
                       {formik.errors.availableSeats}
                     </p>
                   )}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="price" className="text-lg font-semibold">
-                  Price
+                <Label
+                  htmlFor="price"
+                  className="text-lg font-semibold flex items-center gap-2 text-gray-700">
+                  <Coins size={18} />
+                  Event Price
                 </Label>
-                <Input type="number" {...formik.getFieldProps("price")} />
+                <Input
+                  type="number"
+                  name="price"
+                  placeholder="Price of the ticket"
+                  value={formik.values.price}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className="border-gray-200 focus:border-purple-500 focus:ring-purple-200"
+                />
                 {formik.touched.price && formik.errors.price && (
-                  <p className="text-xs text-red-500">{formik.errors.price}</p>
+                  <p className="text-sm text-red-500">{formik.errors.price}</p>
                 )}
               </div>
             </div>
 
             {/* Dates Section */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="startDate" className="text-lg font-semibold">
-                  Start Date
+                <Label
+                  htmlFor="startDate"
+                  className="text-lg font-semibold flex items-center gap-2 text-gray-700">
+                  <Calendar size={18} />
+                  Start Date & Time
                 </Label>
                 <Input
+                  id="startDate"
+                  name="startDate"
                   type="datetime-local"
-                  {...formik.getFieldProps("startDate")}
+                  value={formik.values.startDate}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
                   disabled={isUpdating}
+                  className="border-gray-200 focus:border-purple-500 focus:ring-purple-200"
                 />
                 {formik.touched.startDate && formik.errors.startDate && (
-                  <p className="text-xs text-red-500">
+                  <p className="text-sm text-red-500">
                     {formik.errors.startDate as string}
                   </p>
                 )}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="endDate" className="text-lg font-semibold">
-                  End Date
+                <Label
+                  htmlFor="endDate"
+                  className="text-lg font-semibold flex items-center gap-2 text-gray-700">
+                  <Calendar size={18} />
+                  End Date & Time
                 </Label>
                 <Input
+                  id="endDate"
+                  name="endDate"
                   type="datetime-local"
-                  {...formik.getFieldProps("endDate")}
+                  value={formik.values.endDate}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
                   disabled={isUpdating}
+                  className="border-gray-200 focus:border-purple-500 focus:ring-purple-200"
                 />
                 {formik.touched.endDate && formik.errors.endDate && (
-                  <p className="text-xs text-red-500">
+                  <p className="text-sm text-red-500">
                     {formik.errors.endDate as string}
                   </p>
                 )}
@@ -320,20 +383,22 @@ const EditEventComponent: FC<UpdateEventComponentProps> = ({ id }) => {
             </div>
 
             {/* Location Section */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="country" className="text-lg font-semibold">
+                <Label
+                  htmlFor="country"
+                  className="text-lg font-semibold flex items-center gap-2 text-gray-700">
+                  <MapPin size={18} />
                   Country
                 </Label>
                 <Select
                   value={selectedCountry}
                   onValueChange={(value) => {
                     setSelectedCountry(value);
-                    // Reset city when country changes
                     setSelectedCity("");
                     formik.setFieldValue("cityId", 0);
                   }}>
-                  <SelectTrigger className="w-full text-black">
+                  <SelectTrigger className="border-gray-200 focus:border-purple-500 focus:ring-purple-200">
                     <SelectValue placeholder="Select Country" />
                   </SelectTrigger>
                   <SelectContent>
@@ -349,7 +414,10 @@ const EditEventComponent: FC<UpdateEventComponentProps> = ({ id }) => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="city" className="text-lg font-semibold">
+                <Label
+                  htmlFor="city"
+                  className="text-lg font-semibold flex items-center gap-2 text-gray-700">
+                  <MapPin size={18} />
                   City
                 </Label>
                 <Select
@@ -359,7 +427,7 @@ const EditEventComponent: FC<UpdateEventComponentProps> = ({ id }) => {
                     formik.setFieldValue("cityId", Number(value));
                   }}
                   disabled={!selectedCountry || citiesLoading}>
-                  <SelectTrigger className="w-full text-black">
+                  <SelectTrigger className="border-gray-200 focus:border-purple-500 focus:ring-purple-200">
                     <SelectValue
                       placeholder={
                         citiesLoading ? "Loading cities..." : "Select City"
@@ -387,15 +455,18 @@ const EditEventComponent: FC<UpdateEventComponentProps> = ({ id }) => {
                   </SelectContent>
                 </Select>
                 {formik.touched.cityId && formik.errors.cityId && (
-                  <p className="text-xs text-red-500">{formik.errors.cityId}</p>
+                  <p className="text-sm text-red-500">{formik.errors.cityId}</p>
                 )}
               </div>
             </div>
 
             {/* Category Section */}
             <div className="space-y-2">
-              <Label htmlFor="categories" className="text-lg font-semibold">
-                Categories
+              <Label
+                htmlFor="categories"
+                className="text-lg font-semibold flex items-center gap-2 text-gray-700">
+                <Tag size={18} />
+                Event Category
               </Label>
               <Select
                 value={selectedCategory}
@@ -403,7 +474,7 @@ const EditEventComponent: FC<UpdateEventComponentProps> = ({ id }) => {
                   setSelectedCategory(value);
                   formik.setFieldValue("categoryId", Number(value));
                 }}>
-                <SelectTrigger className="w-full text-black">
+                <SelectTrigger className="border-gray-200 focus:border-purple-500 focus:ring-purple-200">
                   <SelectValue placeholder="Select Category" />
                 </SelectTrigger>
                 <SelectContent>
@@ -425,28 +496,33 @@ const EditEventComponent: FC<UpdateEventComponentProps> = ({ id }) => {
                 </SelectContent>
               </Select>
               {formik.touched.categoryId && formik.errors.categoryId && (
-                <p className="text-xs text-red-500">
+                <p className="text-sm text-red-500">
                   {formik.errors.categoryId}
                 </p>
               )}
             </div>
 
             {/* Description Section */}
-            <RichTextEditor
-              label="description"
-              value={formik.values.description}
-              onChange={(value: string) =>
-                formik.setFieldValue("description", value)
-              }
-              isTouch={formik.touched.description}
-              setError={formik.setFieldError}
-              setTouch={formik.setFieldTouched}
-            />
+            <div className="space-y-2">
+              <RichTextEditor
+                label="description"
+                value={formik.values.description}
+                onChange={(value: string) =>
+                  formik.setFieldValue("description", value)
+                }
+                isTouch={formik.touched.description}
+                setError={formik.setFieldError}
+                setTouch={formik.setFieldTouched}
+              />
+            </div>
           </div>
 
           {/* Submit Button */}
-          <div className="flex justify-end">
-            <Button type="submit" disabled={isUpdating}>
+          <div className="flex justify-end pt-6">
+            <Button
+              type="submit"
+              disabled={isUpdating}
+              className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-2.5 rounded-lg font-medium transition-colors">
               {isUpdating ? "Updating..." : "Update Event"}
             </Button>
           </div>
