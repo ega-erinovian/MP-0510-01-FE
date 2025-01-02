@@ -22,6 +22,7 @@ import { FC } from "react";
 import { eventTableCols } from "../const";
 import AttendeeListDialog from "./AttendeeListDialog";
 import EventDeleteDialog from "./EventDeleteDialog";
+import DataNotFound from "@/components/dashboard/DataNotFound";
 
 interface EventsTableProps {
   events: EventType[];
@@ -41,14 +42,7 @@ const EventsTable: FC<EventsTableProps> = ({
   take,
 }) => {
   if (!events || events.length === 0) {
-    return (
-      <div className="h-[50vh] w-full flex flex-col items-center justify-center gap-4">
-        <CircleAlert className="fill-red-500 text-white w-16 h-16" />
-        <div className="text-center">
-          <h2 className="text-lg font-semibold mb-2">Data Not Found</h2>
-        </div>
-      </div>
-    );
+    return <DataNotFound text="No events found" />;
   }
 
   return (
@@ -119,7 +113,6 @@ const EventsTable: FC<EventsTableProps> = ({
       </Table>
 
       <div className="mt-6 flex justify-between items-center">
-        {/* Items per page selection */}
         <div>
           <label className="mr-2">Items per page</label>
           <select

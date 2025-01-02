@@ -49,13 +49,8 @@ export const editEventSchema = Yup.object().shape({
   address: Yup.string()
     .required("Address is required")
     .min(3, "Title must be at least 3 characters long"),
-  availableSeats: Yup.number()
-    .required("Available seats are required")
-    .positive("Available seats must be a positive number")
-    .integer("Available seats must be a whole number"),
-  price: Yup.number()
-    .required("Price is required")
-    .positive("Price must be a positive number"),
+  availableSeats: Yup.number().required("Available seats are required"),
+  price: Yup.number().required("Price is required"),
   startDate: Yup.string().required("Start date is required"),
   endDate: Yup.string().required("End date is required"),
   categoryId: Yup.number()

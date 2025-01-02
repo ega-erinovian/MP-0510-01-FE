@@ -2,20 +2,29 @@
 
 import React, { ReactNode } from "react";
 import ProfileSidebar from "./components/ProfileSidebar";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import CustomerAuthGuard from "@/components/hoc/AuthGuardCustomer";
 
-interface LandingPageLayoutProps {
+interface CustomerProfileLayoutProps {
   children: ReactNode;
 }
 
-const CustomerProfileLayout: React.FC<LandingPageLayoutProps> = ({
+const CustomerProfileLayout: React.FC<CustomerProfileLayoutProps> = ({
   children,
 }) => {
   return (
     <SidebarProvider>
-      <ProfileSidebar />
-      <main className="mt-16 w-full">{children}</main>
+      <div className="flex min-h-screen flex-col lg:flex-row bg-background w-full">
+        <div className="w-full lg:w-64 flex-shrink-0">
+          <ProfileSidebar />
+        </div>
+        <main className="flex-1 p-4 lg:p-6 mt-16 lg:mt-20">
+          <div className="fixed bottom-4 right-4 text-xl rounded-full bg-purple-700 text-white shadow-md">
+            <SidebarTrigger className="rounded-full hover:bg-purple-900 " />
+          </div>
+          <div className="max-w-6xl mx-auto">{children}</div>
+        </main>
+      </div>
     </SidebarProvider>
   );
 };

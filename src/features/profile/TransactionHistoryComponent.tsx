@@ -1,10 +1,10 @@
-import TransactionList from "./components/TransactionList";
 import CustomerProfileLayout from "./CustomerProfileLayout";
+import TransactionListWrapper from "./components/TransactionListWrapper";
 
 const TransactionHistoryComponent = () => {
   return (
     <CustomerProfileLayout>
-      <TransactionList />
+      <TransactionListWrapper />
     </CustomerProfileLayout>
   );
 };

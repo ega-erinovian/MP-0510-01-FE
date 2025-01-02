@@ -20,12 +20,28 @@ import useCheckReferral from "@/hooks/api/user/useCheckReferral";
 import useUpdateUser from "@/hooks/api/user/useUpdateUser";
 import useRandomCode from "@/hooks/useRandomCode";
 import { useFormik } from "formik";
-import { Trash2 } from "lucide-react";
+import {
+  CheckCircle,
+  Eye,
+  EyeOff,
+  Gift,
+  Globe,
+  Loader2,
+  Lock,
+  Mail,
+  MapPin,
+  Phone,
+  Trash2,
+  Upload,
+  User,
+  XCircle,
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, FC, useEffect, useRef, useState } from "react";
 import { useDebounce } from "use-debounce";
 import { registerSchema } from "../schemas";
+import { cn } from "@/lib/utils";
 
 interface RegisterFormProps {
   role: string;
@@ -55,6 +71,10 @@ const RegisterForm: FC<RegisterFormProps> = ({ role }) => {
   const { mutateAsync: createCoupon } = useCreateCoupon();
 
   const convertedRole = role.toUpperCase();
+
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] =
+    useState<boolean>(false);
 
   useEffect(() => {
     setSelectedCity("");
@@ -168,260 +188,411 @@ const RegisterForm: FC<RegisterFormProps> = ({ role }) => {
   };
 
   return (
-    <form onSubmit={formik.handleSubmit} className="flex flex-col gap-6">
-      <div className="flex flex-col items-center gap-2 text-center">
-        <h1 className="text-3xl font-bold capitalize">
-          Create {role.toLowerCase()} Account
-        </h1>
-      </div>
-      <div className="grid gap-6">
-        <div className="grid gap-2">
+    <div className="w-full max-w-2xl mx-auto px-4 py-8">
+      <form onSubmit={formik.handleSubmit} className="space-y-8">
+        {/* Header */}
+        <div className="text-center space-y-2">
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight capitalize">
+            Create {role.toLowerCase()} Account
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Fill in your details to create your account
+          </p>
+        </div>
+
+        {/* Profile Picture Section */}
+        <div className="space-y-4">
           {selectedImage && (
-            <div className="w-full flex justify-center">
-              <div className="relative h-[150px] w-[150px]">
+            <div className="flex justify-center">
+              <div className="relative group">
                 <img
                   src={selectedImage}
-                  alt="profile-picture-preview"
-                  className="object-cover rounded-full w-full h-full"
+                  alt="Profile"
+                  className="h-32 w-32 rounded-full object-cover ring-2 ring-primary/10"
                 />
+                <div className="absolute inset-0 bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="text-white hover:text-white hover:bg-black/20"
+                    onClick={() => profilePictureReff.current?.click()}>
+                    <Upload size={20} />
+                  </Button>
+                </div>
               </div>
             </div>
           )}
-          <Label className="text-lg font-semibold">Profile Picture</Label>
-          <div className="flex items-center gap-2">
-            <Input
-              ref={profilePictureReff}
-              type="file"
-              accept="image/*"
-              onChange={onChangeProfilePicture}
-            />
-            {selectedImage && (
-              <Button
-                type="button"
-                variant="destructive"
-                onClick={removeProfilePicture}
-                className="py-1 px-2 z-50">
-                <Trash2 />
-              </Button>
-            )}
-          </div>
-          {!!formik.touched.profilePicture && !!formik.errors.profilePicture ? (
-            <p className="text-xs text-red-500">
-              {formik.errors.profilePicture}
-            </p>
-          ) : null}
-        </div>
-        <div className="grid gap-2">
-          <Label htmlFor="fullName" className="text-lg font-semibold">
-            {role === "customer" ? "Full Name" : "Organization Name"}
-          </Label>
-          <Input
-            name="fullName"
-            placeholder={`Enter your ${
-              role === "customer" ? "Full Name" : "Organization Name"
-            }`}
-            value={formik.values.fullName}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-          />
-          {!!formik.touched.fullName && !!formik.errors.fullName && (
-            <p className="text-xs text-red-500">{formik.errors.fullName}</p>
-          )}
-        </div>
-        <div className="grid gap-2">
-          <Label htmlFor="email" className="text-lg font-semibold">
-            Email
-          </Label>
-          <Input
-            name="email"
-            type="email"
-            placeholder="example@email.com"
-            value={formik.values.email}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-          />
-          {!!formik.touched.email && !!formik.errors.email && (
-            <p className="text-xs text-red-500">{formik.errors.email}</p>
-          )}
-        </div>
-        <div className="grid gap-2">
-          <Label htmlFor="password" className="text-lg font-semibold">
-            Password
-          </Label>
-          <Input
-            name="password"
-            placeholder="Min 8 - 12 Character"
-            type="password"
-            className="text-lg"
-            value={formik.values.password}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-          />
-          {!!formik.touched.password && !!formik.errors.password ? (
-            <p className="text-xs text-red-500">{formik.errors.password}</p>
-          ) : null}
-        </div>
-        <div className="flex flex-col space-y-1.5">
-          <Label htmlFor="confirmPassword" className="text-lg font-semibold">
-            Confirm Password
-          </Label>
-          <Input
-            name="confirmPassword"
-            placeholder="Min 8 - 12 Character"
-            type="password"
-            value={formik.values.confirmPassword}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-          />
-          {!!formik.touched.confirmPassword &&
-          !!formik.errors.confirmPassword ? (
-            <p className="text-xs text-red-500">
-              {formik.errors.confirmPassword}
-            </p>
-          ) : null}
-        </div>
 
-        {role === "CUSTOMER" && (
-          <div className="grid gap-2">
-            <Label htmlFor="referralCode" className="text-lg font-semibold">
-              Referral Code (optional)
+          <div className="space-y-2">
+            <Label className="text-sm font-medium flex items-center gap-2">
+              <User size={16} />
+              Profile Picture
             </Label>
-            <div className="relative">
-              <Input
-                name="referralCode"
-                type="text"
-                placeholder="Input a referral code if you have one"
-                value={referralCode}
-                onChange={(e) => setReferralCode(e.target.value)}
-                className={`${
-                  isReferralValid === true
-                    ? "border-green-500"
-                    : isReferralValid === false
-                    ? "border-red-500"
-                    : ""
-                }`}
-              />
-              {isPendingReferral && (
-                <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500">
-                  Checking...
-                </span>
+            <div className="flex items-center gap-2">
+              <div className="relative flex-1">
+                <Input
+                  ref={profilePictureReff}
+                  type="file"
+                  accept="image/*"
+                  onChange={onChangeProfilePicture}
+                  className="cursor-pointer"
+                />
+              </div>
+              {selectedImage && (
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="icon"
+                  onClick={removeProfilePicture}
+                  className="shrink-0">
+                  <Trash2 size={16} />
+                </Button>
               )}
             </div>
-            <p
-              className={`${
-                isReferralValid === true
-                  ? "text-green-500"
-                  : isReferralValid === false
-                  ? "text-red-500"
-                  : ""
-              } text-xs`}>
-              {referralMessage}
-            </p>
           </div>
-        )}
+        </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          {/* Country Selection */}
-          <div className="flex flex-col space-y-1.5">
-            <Label htmlFor="country" className="text-lg font-semibold">
-              Country
-            </Label>
-            <Select
-              value={selectedCountry}
-              onValueChange={(value) => setSelectedCountry(value)}>
-              <SelectTrigger className="w-full text-black">
-                <SelectValue placeholder="Select Country" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  {countries.map((country) => (
-                    <SelectItem key={country.id} value={country.name}>
-                      {country.name}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+        {/* Form Fields */}
+        <div className="grid gap-6">
+          {/* Personal Info */}
+          <div className="grid md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label
+                htmlFor="fullName"
+                className="text-sm font-medium flex items-center gap-2">
+                <User size={16} />
+                {role === "customer" ? "Full Name" : "Organization Name"}
+              </Label>
+              <Input
+                id="fullName"
+                name="fullName"
+                placeholder={`Enter your ${
+                  role === "customer" ? "full name" : "organization name"
+                }`}
+                value={formik.values.fullName}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                className={cn(
+                  "transition-all duration-200",
+                  "border-muted-foreground/20",
+                  formik.touched.fullName &&
+                    formik.errors.fullName &&
+                    "border-red-500"
+                )}
+              />
+              {formik.touched.fullName && formik.errors.fullName && (
+                <p className="text-xs text-red-500 flex items-center gap-1">
+                  <XCircle size={12} />
+                  {formik.errors.fullName}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label
+                htmlFor="phoneNumber"
+                className="text-sm font-medium flex items-center gap-2">
+                <Phone size={16} />
+                Phone Number
+              </Label>
+              <Input
+                id="phoneNumber"
+                name="phoneNumber"
+                placeholder="+628xxxxxxxxxx"
+                value={formik.values.phoneNumber}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                className={cn(
+                  "transition-all duration-200",
+                  "border-muted-foreground/20",
+                  formik.touched.phoneNumber &&
+                    formik.errors.phoneNumber &&
+                    "border-red-500"
+                )}
+              />
+              {formik.touched.phoneNumber && formik.errors.phoneNumber && (
+                <p className="text-xs text-red-500 flex items-center gap-1">
+                  <XCircle size={12} />
+                  {formik.errors.phoneNumber}
+                </p>
+              )}
+            </div>
           </div>
 
-          {/* City Selection */}
-          <div className="flex flex-col space-y-1.5">
-            <Label htmlFor="city" className="text-lg font-semibold">
-              City
+          {/* Email */}
+          <div className="space-y-2">
+            <Label
+              htmlFor="email"
+              className="text-sm font-medium flex items-center gap-2">
+              <Mail size={16} />
+              Email
             </Label>
-            <Select
-              value={selectedCity}
-              onValueChange={(value) => {
-                const cityId = Number(value);
-                if (!isNaN(cityId) && cityId > 0) {
-                  setSelectedCity(value); // Keep the selected city ID as a string
-                  formik.setFieldValue("cityId", cityId); // Set as a number in Formik
-                } else {
-                  setSelectedCity(""); // Clear selected city if invalid
-                  formik.setFieldValue("cityId", null); // Clear cityId in Formik
-                }
-              }}
-              disabled={!selectedCountry || citiesLoading}>
-              <SelectTrigger className="w-full text-black">
-                <SelectValue placeholder="Select City" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  {citiesLoading && (
-                    <SelectItem value="0" disabled>
-                      Loading cities...
-                    </SelectItem>
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              placeholder="name@example.com"
+              value={formik.values.email}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              className={cn(
+                "transition-all duration-200",
+                "border-muted-foreground/20",
+                formik.touched.email && formik.errors.email && "border-red-500"
+              )}
+            />
+            {formik.touched.email && formik.errors.email && (
+              <p className="text-xs text-red-500 flex items-center gap-1">
+                <XCircle size={12} />
+                {formik.errors.email}
+              </p>
+            )}
+          </div>
+
+          {/* Password Fields */}
+          <div className="grid md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label
+                htmlFor="password"
+                className="text-sm font-medium flex items-center gap-2">
+                <Lock size={16} />
+                Password
+              </Label>
+              <div className="relative">
+                <Input
+                  id="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Min 8 - 12 characters"
+                  value={formik.values.password}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className={cn(
+                    "pr-10 transition-all duration-200",
+                    "border-muted-foreground/20",
+                    formik.touched.password &&
+                      formik.errors.password &&
+                      "border-red-500"
                   )}
-                  {citiesByCountry.length > 0 ? (
-                    citiesByCountry.map((city) => (
-                      <SelectItem key={city.id} value={String(city.id)}>
-                        {city.name}
-                      </SelectItem>
-                    ))
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground/60 hover:text-primary transition-colors">
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+              {formik.touched.password && formik.errors.password && (
+                <p className="text-xs text-red-500 flex items-center gap-1">
+                  <XCircle size={12} />
+                  {formik.errors.password}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label
+                htmlFor="confirmPassword"
+                className="text-sm font-medium flex items-center gap-2">
+                <Lock size={16} />
+                Confirm Password
+              </Label>
+              <div className="relative">
+                <Input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type={showConfirmPassword ? "text" : "password"}
+                  placeholder="Min 8 - 12 characters"
+                  value={formik.values.confirmPassword}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className={cn(
+                    "pr-10 transition-all duration-200",
+                    "border-muted-foreground/20",
+                    formik.touched.confirmPassword &&
+                      formik.errors.confirmPassword &&
+                      "border-red-500"
+                  )}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground/60 hover:text-primary transition-colors">
+                  {showConfirmPassword ? (
+                    <EyeOff size={16} />
                   ) : (
-                    <SelectItem value="-" disabled>
-                      No cities available
-                    </SelectItem>
+                    <Eye size={16} />
                   )}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+                </button>
+              </div>
+              {formik.touched.confirmPassword &&
+                formik.errors.confirmPassword && (
+                  <p className="text-xs text-red-500 flex items-center gap-1">
+                    <XCircle size={12} />
+                    {formik.errors.confirmPassword}
+                  </p>
+                )}
+            </div>
+          </div>
+
+          {/* Location Fields */}
+          <div className="grid md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label
+                htmlFor="country"
+                className="text-sm font-medium flex items-center gap-2">
+                <Globe size={16} />
+                Country
+              </Label>
+              <Select
+                value={selectedCountry}
+                onValueChange={setSelectedCountry}>
+                <SelectTrigger className="border-muted-foreground/20">
+                  <SelectValue placeholder="Select country" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    {countries.map((country) => (
+                      <SelectItem key={country.id} value={country.name}>
+                        {country.name}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label
+                htmlFor="city"
+                className="text-sm font-medium flex items-center gap-2">
+                <MapPin size={16} />
+                City
+              </Label>
+              <Select
+                value={selectedCity}
+                onValueChange={(value) => {
+                  const cityId = Number(value);
+                  if (!isNaN(cityId) && cityId > 0) {
+                    setSelectedCity(value);
+                    formik.setFieldValue("cityId", cityId);
+                  } else {
+                    setSelectedCity("");
+                    formik.setFieldValue("cityId", null);
+                  }
+                }}
+                disabled={!selectedCountry || citiesLoading}>
+                <SelectTrigger className="border-muted-foreground/20">
+                  <SelectValue placeholder="Select city" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    {citiesLoading ? (
+                      <SelectItem value="0" disabled>
+                        <span className="flex items-center gap-2">
+                          <Loader2 size={14} className="animate-spin" />
+                          Loading cities...
+                        </span>
+                      </SelectItem>
+                    ) : citiesByCountry.length > 0 ? (
+                      citiesByCountry.map((city) => (
+                        <SelectItem key={city.id} value={String(city.id)}>
+                          {city.name}
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <SelectItem value="-" disabled>
+                        No cities available
+                      </SelectItem>
+                    )}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {/* Referral Code */}
+          {role === "CUSTOMER" && (
+            <div className="space-y-2">
+              <Label
+                htmlFor="referralCode"
+                className="text-sm font-medium flex items-center gap-2">
+                <Gift size={16} />
+                Referral Code (optional)
+              </Label>
+              <div className="relative">
+                <Input
+                  id="referralCode"
+                  name="referralCode"
+                  placeholder="Enter referral code"
+                  value={referralCode}
+                  onChange={(e) => setReferralCode(e.target.value)}
+                  className={cn(
+                    "transition-all duration-200",
+                    "border-muted-foreground/20",
+                    isReferralValid === true && "border-green-500",
+                    isReferralValid === false && "border-red-500"
+                  )}
+                />
+                {isPendingReferral && (
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                    <Loader2
+                      size={16}
+                      className="animate-spin text-muted-foreground"
+                    />
+                  </div>
+                )}
+              </div>
+              {referralMessage && (
+                <p
+                  className={cn(
+                    "text-xs flex items-center gap-1",
+                    isReferralValid ? "text-green-500" : "text-red-500"
+                  )}>
+                  {isReferralValid ? (
+                    <CheckCircle size={12} />
+                  ) : (
+                    <XCircle size={12} />
+                  )}
+                  {referralMessage}
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* Submit Button */}
+          <Button
+            type="submit"
+            disabled={isPending}
+            className={cn(
+              "w-full transition-all duration-200",
+              "hover:translate-y-[-1px] active:translate-y-[1px]"
+            )}>
+            {isPending ? (
+              <span className="flex items-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Creating account...
+              </span>
+            ) : (
+              "Create Account"
+            )}
+          </Button>
+
+          {/* Login Link */}
+          <div className="text-center space-y-1">
+            <p className="text-sm text-muted-foreground">
+              Already have an account?
+            </p>
+            <Link
+              href="/login"
+              className="text-sm font-semibold text-primary hover:underline">
+              Sign in to your account
+            </Link>
           </div>
         </div>
-        {!!formik.touched.cityId && !!formik.errors.cityId && (
-          <p className="text-xs text-red-500">{formik.errors.cityId}</p>
-        )}
-
-        <div className="grid gap-2">
-          <Label htmlFor="phoneNumber" className="text-lg font-semibold">
-            Phone Number
-          </Label>
-          <Input
-            name="phoneNumber"
-            placeholder="+628xxxxxxxxx"
-            value={formik.values.phoneNumber}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-          />
-          {!!formik.touched.phoneNumber && !!formik.errors.phoneNumber && (
-            <p className="text-xs text-red-500">{formik.errors.phoneNumber}</p>
-          )}
-        </div>
-
-        <Input id="role" type="hidden" value={convertedRole!} />
-
-        <Button type="submit" disabled={isPending}>
-          {isPending ? "Loading..." : "Submit"}
-        </Button>
-
-        <div className="text-center text-lg space-y-2 mt-8">
-          Already Have An Account?{" "}
-          <Link href="/login" className="font-semibold hover:text-purple-700">
-            Sign In
-          </Link>
-        </div>
-      </div>
-    </form>
+      </form>
+    </div>
   );
 };
 

@@ -41,11 +41,9 @@ const EventsComponent = () => {
 
   const { data: categories, isPending: isPendingCategories } =
     useGetCategories();
-
   const { data: cities, isPending: isPendingCities } = useGetCities({
     search: debouncedSearchCity.length > 0 ? debouncedSearchCity : "",
   });
-
   const {
     data: events,
     isPending,
@@ -60,66 +58,58 @@ const EventsComponent = () => {
     cityId: parseInt(cityId),
   });
 
-  const onChangePage = (page: number) => {
-    setPage(page);
-  };
-
+  const onChangePage = (page: number) => setPage(page);
   const onChangeTake = (newTake: number) => {
     setTake(newTake);
     setPage(1);
   };
-
   const onSortChange = (column: string, order: string) => {
     setSortBy(column);
     setSortOrder(order);
   };
-
-  const onSearch = (query: string) => {
-    setSearch(query);
-  };
-
-  const onCategoryChange = (categoryId: string) => {
-    setCategoryId(categoryId);
-  };
-
-  const onCityChange = (cityId: string) => {
-    setCityId(cityId);
-  };
+  const onSearch = (query: string) => setSearch(query);
+  const onCategoryChange = (categoryId: string) => setCategoryId(categoryId);
+  const onCityChange = (cityId: string) => setCityId(cityId);
 
   const showCities = debouncedSearchCity.length > 0 && !isPendingCities;
 
-  if (error) {
-    return <DataNotFound text="Error fetching events" />;
-  }
+  if (error) return <DataNotFound text="Error fetching events" />;
 
   return (
     <HomePageLayout>
-      <h1 className="text-9xl tracking-tighter mb-8">Browse Events</h1>
-      <div className="flex items-center justify-between gap-4 mb-4">
-        <div className="flex justify-between items-center relative w-96 gap-2">
-          <Input
-            value={search}
-            placeholder="Search Title..."
-            onChange={(e) => onSearch(e.target.value)}
-            disabled={isPending}
-          />
-          {search !== "" && (
-            <button
-              onClick={() => {
-                setSearch("");
-                setPage(1); // Reset the page if needed
-              }}
-              className="h-full w-fit font-bold text-red-500 hover:text-red-600">
-              <X />
-            </button>
-          )}
-        </div>
-        <div className="flex gap-4 items-center h-full">
-          <div>
+      <div className="space-y-6 sm:space-y-8 md:space-y-10">
+        <h1 className="text-4xl sm:text-6xl md:text-8xl lg:text-9xl tracking-tighter font-bold">
+          Browse Events
+        </h1>
+
+        <div className="flex flex-col space-y-4 lg:space-y-0 lg:flex-row lg:items-center lg:justify-between">
+          <div className="w-full lg:w-96 relative flex items-center gap-2">
+            <Input
+              value={search}
+              placeholder="Search Title..."
+              onChange={(e) => onSearch(e.target.value)}
+              disabled={isPending}
+              className="h-10"
+            />
+            {search !== "" && (
+              <Button
+                onClick={() => {
+                  setSearch("");
+                  setPage(1);
+                }}
+                variant="ghost"
+                size="icon"
+                className="h-10 w-10 shrink-0 text-red-500 hover:text-red-600 hover:bg-red-50">
+                <X className="h-5 w-5" />
+              </Button>
+            )}
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
             <select
               onChange={(e) => onCategoryChange(e.target.value)}
               value={categoryId || ""}
-              className="p-2 border border-gray-300 rounded"
+              className="h-10 px-3 rounded-md border border-input bg-background hover:bg-accent/50 transition-colors w-full sm:w-auto"
               disabled={isPendingCategories}>
               <option value="">All Categories</option>
               {categories?.map((category: any) => (
@@ -128,118 +118,114 @@ const EventsComponent = () => {
                 </option>
               ))}
             </select>
-          </div>
-          <div className="w-full h-full flex gap-1">
-            <div className="w-full h-full">
-              <Popover open={open} onOpenChange={setOpen}>
-                {isPendingCities && searchCity !== "" ? (
-                  <PopoverTrigger
-                    asChild
-                    disabled={true}
-                    className="w-full justify-between h-full">
-                    <Button>Searching Cities...</Button>
-                  </PopoverTrigger>
-                ) : (
-                  <PopoverTrigger asChild>
-                    <Button
-                      type="button"
-                      role="combobox"
-                      className="w-full justify-between h-full hover:bg-purple-700">
-                      {cityId
-                        ? cities?.find(
-                            (city: any) => city.id.toString() === cityId
-                          )?.name
-                        : "Search City"}
-                    </Button>
-                  </PopoverTrigger>
-                )}
 
-                <PopoverContent
-                  className="w-full min-w-[240px] p-0"
-                  align="start">
-                  <div className="border-b px-3 py-2 relative flex items-center gap-2">
-                    <input
-                      className="w-full bg-transparent outline-none placeholder:text-muted-foreground"
-                      placeholder="Search City"
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <Popover open={open} onOpenChange={setOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    disabled={isPendingCities && searchCity !== ""}
+                    className="w-full sm:w-[200px] h-10">
+                    {isPendingCities && searchCity !== "" ? (
+                      <span className="flex items-center gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Searching...
+                      </span>
+                    ) : cityId ? (
+                      cities?.find((city: any) => city.id.toString() === cityId)
+                        ?.name
+                    ) : (
+                      "Search City"
+                    )}
+                  </Button>
+                </PopoverTrigger>
+
+                <PopoverContent className="w-[250px] p-0" align="end">
+                  <div className="flex items-center border-b p-2">
+                    <Input
+                      className="border-0 focus-visible:ring-0 text-sm"
+                      placeholder="Search city..."
                       value={searchCity}
                       onChange={(e) => setSearchCity(e.target.value)}
                     />
-                    {isPendingCities && debouncedSearchCity.length > 0 && (
-                      <Loader2 className="h-5 w-5 text-muted-foreground animate-spin" />
-                    )}
                   </div>
-                  <div>
-                    {debouncedSearchCity.length > 0 &&
-                      !isPendingCities &&
-                      cities?.length === 0 && (
-                        <p className="p-4 text-sm text-muted-foreground">
-                          No cities found.
-                        </p>
-                      )}
-                    {showCities &&
+                  <div className="max-h-[200px] overflow-y-auto">
+                    {showCities && cities?.length === 0 ? (
+                      <p className="p-3 text-sm text-muted-foreground">
+                        No cities found.
+                      </p>
+                    ) : (
+                      showCities &&
                       cities?.map((city) => (
                         <button
-                          name="cityId"
-                          type="button"
                           key={city.id}
                           onClick={() => {
                             setCityId(city.id.toString());
                             setOpen(false);
                           }}
                           className={cn(
-                            "flex w-full items-center justify-between px-3 py-2 hover:bg-accent",
+                            "w-full px-3 py-2 text-sm text-left hover:bg-accent transition-colors",
                             cityId === city.id.toString() && "bg-accent"
                           )}>
-                          {city.name}
-                          {cityId === city.id.toString() && (
-                            <Check className="h-4 w-4" />
-                          )}
+                          <div className="flex items-center justify-between">
+                            <span>{city.name}</span>
+                            {cityId === city.id.toString() && (
+                              <Check className="h-4 w-4" />
+                            )}
+                          </div>
                         </button>
-                      ))}
+                      ))
+                    )}
                   </div>
                 </PopoverContent>
               </Popover>
+              {cityId && (
+                <Button
+                  onClick={() => {
+                    setCityId("");
+                    setSearchCity("");
+                    setPage(1);
+                  }}
+                  variant="ghost"
+                  size="icon"
+                  className="h-10 w-10 text-red-500 hover:text-red-600 hover:bg-red-50">
+                  <X className="h-5 w-5" />
+                </Button>
+              )}
             </div>
-            {cityId && (
-              <button
-                onClick={() => {
-                  setCityId("");
-                  setSearchCity("");
-                  setPage(1); // Reset the page if needed
-                }}
-                className="h-full w-fit font-bold text-red-500 hover:text-red-600">
-                <X />
-              </button>
-            )}
           </div>
         </div>
-      </div>
-      {events && events.data.length <= 0 && (
-        <DataNotFound text="Data Not Found" />
-      )}
-      <div className="grid gap-4 md:grid-cols-4">
-        {isPending ? (
-          <Loading text="Events" />
+
+        {events && events.data.length <= 0 ? (
+          <DataNotFound text="No events found" />
         ) : (
-          events?.data.map((event) => {
-            return (
-              <Link href={`/events/${event.id}`} key={event.id}>
-                <EventCard event={event} />
-              </Link>
-            );
-          })
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+            {isPending ? (
+              <Loading text="Events" />
+            ) : (
+              events?.data.map((event) => (
+                <Link
+                  href={`/events/${event.id}`}
+                  key={event.id}
+                  className="transition-transform hover:scale-[1.02] duration-200">
+                  <EventCard event={event} />
+                </Link>
+              ))
+            )}
+          </div>
+        )}
+
+        {events && (
+          <div className="w-full flex justify-end items-center pt-4 sm:pt-6">
+            <PaginationSection
+              onChangePage={onChangePage}
+              page={Number(page)}
+              take={events.meta.take || 4}
+              total={events.meta.total}
+            />
+          </div>
         )}
       </div>
-      {events && (
-        <div className="w-full flex justify-end items-center">
-          <PaginationSection
-            onChangePage={onChangePage}
-            page={Number(page)}
-            take={events.meta.take || 4}
-            total={events.meta.total}
-          />
-        </div>
-      )}
     </HomePageLayout>
   );
 };

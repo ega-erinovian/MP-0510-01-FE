@@ -1,7 +1,14 @@
 "use client";
 
 import { useFormik } from "formik";
-import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
+import {
+  Calendar,
+  Check,
+  ChevronsUpDown,
+  Coins,
+  Loader2,
+  Tag,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useDebounce } from "use-debounce";
 
@@ -40,12 +47,11 @@ interface EditVoucherPageProps {
   id: string;
 }
 
-// Constants
 const DEBOUNCE_DELAY = 500;
 
 const EditVoucherPage = ({ id }: EditVoucherPageProps) => {
   const router = useRouter();
-  const { data: sessionData } = useSession(); // dari next-auth
+  const { data: sessionData } = useSession();
   const user = sessionData?.user;
 
   const [selectedEvent, setSelectedEvent] = useState<string>("");
@@ -55,7 +61,6 @@ const EditVoucherPage = ({ id }: EditVoucherPageProps) => {
   const [isFormReady, setIsFormReady] = useState(false);
   const formInitialized = useRef(false);
 
-  // API Hooks
   const { mutateAsync: updateVoucher, isPending: isUpdating } =
     useUpdateVoucher(Number(id));
 
@@ -70,12 +75,12 @@ const EditVoucherPage = ({ id }: EditVoucherPageProps) => {
     isLoading: isEventsLoading,
     error: eventsError,
   } = useGetEvents({
-    search: debouncedSearch.length > 0 ? debouncedSearch : "", // Trigger fetch only after debounce
+    search: debouncedSearch,
     userId: Number(user?.id),
   });
 
   const formik = useFormik({
-    enableReinitialize: false, // Prevent formik from reinitializing
+    enableReinitialize: false,
     initialValues: {
       code: "",
       amount: 0,
@@ -92,7 +97,7 @@ const EditVoucherPage = ({ id }: EditVoucherPageProps) => {
           expiresAt: formattedExpiresAt,
         });
         router.push("/dashboard/vouchers");
-        toast.success("Voucher Updated Successfullly");
+        toast.success("Voucher Updated Successfully");
       } catch (error) {
         console.error("Failed to update voucher: ", error);
         toast.error("Failed to update voucher");
@@ -112,12 +117,9 @@ const EditVoucherPage = ({ id }: EditVoucherPageProps) => {
       !isEventsLoading &&
       !formInitialized.current
     ) {
-      // Format the data
       const formattedDate = new Date(voucher.expiresAt)
         .toISOString()
         .slice(0, 16);
-
-      // Initialize form with data
       formik.resetForm({
         values: {
           code: voucher.code,
@@ -151,187 +153,186 @@ const EditVoucherPage = ({ id }: EditVoucherPageProps) => {
   const showEvents = debouncedSearch.length > 0 && !isEventsLoading;
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center p-4">
-      <form onSubmit={formik.handleSubmit} className="w-full max-w-lg">
-        <div className="space-y-6">
-          <h1 className="text-3xl font-bold">Edit Voucher</h1>
-
-          {/* Event Selection */}
-          <div className="grid gap-2">
-            <Label className="text-lg font-semibold">Select Event</Label>
-            <Popover open={open} onOpenChange={setOpen}>
-              {isUpdating && searchQuery !== "" ? (
-                <PopoverTrigger asChild disabled={true}>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={open}
-                    className="w-full justify-between">
-                    Searching Event...
-                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                  </Button>
-                </PopoverTrigger>
-              ) : (
+    <div className="w-full py-12 px-4 flex items-center justify-center h-full">
+      <div className="w-full max-w-[1080px] bg-white rounded-xl p-8">
+        <h1 className="text-2xl font-bold mb-8 text-gray-800">Edit Voucher</h1>
+        <form onSubmit={formik.handleSubmit}>
+          <div className="space-y-8">
+            <div className="space-y-2">
+              <Label className="text-lg font-semibold flex items-center gap-2 text-gray-700">
+                <Tag size={18} />
+                Select Event
+              </Label>
+              <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     type="button"
                     variant="outline"
                     role="combobox"
                     aria-expanded={open}
-                    className="w-full justify-between">
-                    {selectedEvent
-                      ? events?.data.find(
-                          (event: any) => event.id.toString() === selectedEvent
-                        )?.title
+                    disabled={isUpdating}
+                    className="w-full justify-between border-gray-200 focus:border-purple-500 focus:ring-purple-200">
+                    {isUpdating
+                      ? "Loading..."
+                      : voucher
+                      ? voucher.event.title
                       : "Select event..."}
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                   </Button>
                 </PopoverTrigger>
-              )}
-
-              <PopoverContent className="w-[500px] p-0" align="start">
-                <div className="border-b px-3 py-2 relative">
-                  <input
-                    className="w-full bg-transparent outline-none placeholder:text-muted-foreground"
-                    placeholder="Search events..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                  {/* Loader Spinner */}
-                  {isEventsLoading && debouncedSearch.length > 0 && (
-                    <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground animate-spin" />
-                  )}
-                </div>
-                <div>
-                  {debouncedSearch.length > 0 &&
-                    !isEventsLoading &&
-                    events?.data?.length === 0 && (
-                      <p className="p-4 text-sm text-muted-foreground">
-                        No events found.
-                      </p>
+                <PopoverContent className="w-[1015px] p-0" align="start">
+                  <div className="border-b px-3 py-2 relative">
+                    <input
+                      className="w-full bg-transparent outline-none placeholder:text-muted-foreground"
+                      placeholder="Search events..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                    {isEventsLoading && debouncedSearch.length > 0 && (
+                      <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground animate-spin" />
                     )}
-                  {showEvents &&
-                    events?.data.map((event: any) => (
-                      <button
-                        name="eventId"
-                        type="button"
-                        key={event.id}
-                        onClick={() => {
-                          setSelectedEvent(event.id.toString());
-                          setOpen(false);
-                          formik.setFieldValue("eventId", event.id); // Update Formik field
-                        }}
-                        className={cn(
-                          "flex w-full items-center justify-between px-3 py-2 hover:bg-accent",
-                          selectedEvent === event.id.toString() && "bg-accent"
-                        )}>
-                        {event.title}
-                        {selectedEvent === event.id.toString() && (
-                          <Check className="h-4 w-4" />
-                        )}
-                      </button>
-                    ))}
-                </div>
-              </PopoverContent>
-            </Popover>
-            {!!formik.touched.eventId && selectedEvent === "" ? (
-              <p className="text-xs text-red-500">{formik.errors.eventId}</p>
-            ) : null}
-          </div>
+                  </div>
+                  <div className="max-h-[200px] overflow-y-auto">
+                    {showEvents &&
+                      events?.data.map((event: any) => (
+                        <button
+                          type="button"
+                          key={event.id}
+                          onClick={() => {
+                            setSelectedEvent(event.id.toString());
+                            setOpen(false);
+                            formik.setFieldValue("eventId", event.id);
+                          }}
+                          className={cn(
+                            "flex w-full items-center justify-between px-3 py-2 hover:bg-accent",
+                            selectedEvent === event.id.toString() && "bg-accent"
+                          )}>
+                          {event.title}
+                          {selectedEvent === event.id.toString() && (
+                            <Check className="h-4 w-4" />
+                          )}
+                        </button>
+                      ))}
+                    {debouncedSearch.length > 0 &&
+                      !isEventsLoading &&
+                      events?.data?.length === 0 && (
+                        <p className="p-4 text-sm text-muted-foreground">
+                          No events found.
+                        </p>
+                      )}
+                  </div>
+                </PopoverContent>
+              </Popover>
+              {!!formik.touched.eventId && selectedEvent === "" && (
+                <p className="text-sm text-red-500">{formik.errors.eventId}</p>
+              )}
+            </div>
 
-          {/* Voucher Code */}
-          <div className="grid gap-2">
-            <Label htmlFor="code" className="text-lg font-semibold">
-              Voucher Code
-            </Label>
-            <Input
-              id="code"
-              name="code"
-              placeholder="Enter voucher code"
-              value={formik.values.code}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              disabled={isUpdating}
-            />
-            {formik.touched.code && formik.errors.code && (
-              <p className="text-xs text-red-500">{formik.errors.code}</p>
-            )}
-          </div>
+            <div className="space-y-2">
+              <Label
+                htmlFor="code"
+                className="text-lg font-semibold flex items-center gap-2 text-gray-700">
+                <Tag size={18} />
+                Voucher Code
+              </Label>
+              <Input
+                id="code"
+                name="code"
+                placeholder="Enter voucher code"
+                value={formik.values.code}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                disabled={isUpdating}
+                className="border-gray-200 focus:border-purple-500 focus:ring-purple-200"
+              />
+              {formik.touched.code && formik.errors.code && (
+                <p className="text-sm text-red-500">{formik.errors.code}</p>
+              )}
+            </div>
 
-          {/* Amount */}
-          <div className="grid gap-2">
-            <Label htmlFor="amount" className="text-lg font-semibold">
-              Amount
-            </Label>
-            <Input
-              id="amount"
-              name="amount"
-              type="number"
-              placeholder="Enter amount"
-              value={formik.values.amount}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              disabled={isUpdating}
-            />
-            {formik.touched.amount && formik.errors.amount && (
-              <p className="text-xs text-red-500">{formik.errors.amount}</p>
-            )}
-          </div>
+            <div className="space-y-2">
+              <Label
+                htmlFor="amount"
+                className="text-lg font-semibold flex items-center gap-2 text-gray-700">
+                <Coins size={18} />
+                Amount
+              </Label>
+              <Input
+                id="amount"
+                name="amount"
+                type="number"
+                placeholder="Enter amount"
+                value={formik.values.amount}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                disabled={isUpdating}
+                className="border-gray-200 focus:border-purple-500 focus:ring-purple-200"
+              />
+              {formik.touched.amount && formik.errors.amount && (
+                <p className="text-sm text-red-500">{formik.errors.amount}</p>
+              )}
+            </div>
 
-          {/* Expiration Date */}
-          <div className="grid gap-2">
-            <Label htmlFor="expiresAt" className="text-lg font-semibold">
-              Expiration Date
-            </Label>
-            <Input
-              id="expiresAt"
-              name="expiresAt"
-              type="datetime-local"
-              value={formik.values.expiresAt}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              disabled={isUpdating}
-            />
-            {formik.touched.expiresAt && formik.errors.expiresAt && (
-              <p className="text-xs text-red-500">{formik.errors.expiresAt}</p>
-            )}
-          </div>
+            <div className="space-y-2">
+              <Label
+                htmlFor="expiresAt"
+                className="text-lg font-semibold flex items-center gap-2 text-gray-700">
+                <Calendar size={18} />
+                Expiration Date
+              </Label>
+              <Input
+                id="expiresAt"
+                name="expiresAt"
+                type="datetime-local"
+                value={formik.values.expiresAt}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                disabled={isUpdating}
+                className="border-gray-200 focus:border-purple-500 focus:ring-purple-200"
+              />
+              {formik.touched.expiresAt && formik.errors.expiresAt && (
+                <p className="text-sm text-red-500">
+                  {formik.errors.expiresAt}
+                </p>
+              )}
+            </div>
 
-          {/* Availability Status */}
-          <div className="grid gap-2">
-            <Label htmlFor="isUsed" className="text-lg font-semibold">
-              Status
-            </Label>
-            <Select
-              name="isUsed"
-              onValueChange={handleSelectChange}
-              value={String(formik.values.isUsed)}
-              disabled={isUpdating}>
-              <SelectTrigger>
-                <SelectValue>{formik.values.isUsed}</SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="AVAILABLE">Available</SelectItem>
-                  <SelectItem value="USED">Used</SelectItem>
-                  <SelectItem value="EXPIRED">Expired</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
+            <div className="space-y-2">
+              <Label
+                htmlFor="isUsed"
+                className="text-lg font-semibold flex items-center gap-2 text-gray-700">
+                <Tag size={18} />
+                Status
+              </Label>
+              <Select
+                name="isUsed"
+                onValueChange={handleSelectChange}
+                value={String(formik.values.isUsed)}
+                disabled={isUpdating}>
+                <SelectTrigger className="border-gray-200 focus:border-purple-500 focus:ring-purple-200">
+                  <SelectValue>{formik.values.isUsed}</SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectItem value="AVAILABLE">Available</SelectItem>
+                    <SelectItem value="USED">Used</SelectItem>
+                    <SelectItem value="EXPIRED">Expired</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
 
-          {/* Submit Button */}
-          <div className="flex justify-end">
-            <Button
-              type="submit"
-              disabled={isUpdating || !formik.isValid || !formik.dirty}
-              className="w-full sm:w-auto">
-              {isUpdating ? "Updating..." : "Update Voucher"}
-            </Button>
+            <div className="flex justify-end pt-6">
+              <Button
+                type="submit"
+                disabled={isUpdating || !formik.isValid || !formik.dirty}
+                className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-2.5 rounded-lg font-medium transition-colors">
+                {isUpdating ? "Updating..." : "Update Voucher"}
+              </Button>
+            </div>
           </div>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   );
 };

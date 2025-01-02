@@ -1,5 +1,6 @@
 "use client";
 
+import DataNotFound from "@/components/dashboard/DataNotFound";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -32,14 +33,7 @@ const AttendeeListTable: FC<AttendeeListTableProps> = ({
   take,
 }) => {
   if (!transactions || transactions.length === 0) {
-    return (
-      <div className="h-[50vh] w-full flex flex-col items-center justify-center gap-4">
-        <CircleAlert className="fill-red-500 text-white w-16 h-16" />
-        <div className="text-center">
-          <h2 className="text-lg font-semibold mb-2">Data Not Found</h2>
-        </div>
-      </div>
-    );
+    return <DataNotFound text="No attendees found" />;
   }
   return (
     <div className="w-full">
@@ -71,7 +65,6 @@ const AttendeeListTable: FC<AttendeeListTableProps> = ({
       </Table>
 
       <div className="mt-6 flex justify-between items-center">
-        {/* Items per page selection */}
         <div>
           <label className="mr-2">Items per page</label>
           <select

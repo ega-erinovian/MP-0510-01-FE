@@ -7,14 +7,29 @@ import TicketsSold from "./components/TicketsSold";
 
 const Home = async () => {
   const session = await auth();
+  const userId = Number(session?.user.id);
 
   return (
-    <div className="grid grid-cols-3 grid-rows-4 gap-4 h-full p-8">
-      <TicketsSold id={Number(session?.user.id)} />
-      <Income id={Number(session?.user.id)} />
-      <ActiveEvent id={Number(session?.user.id)} />
-      <SalesRevenue id={Number(session?.user.id)} />
-      <RecentSales id={Number(session?.user.id)} />
+    <div className="h-full grid grid-cols-12 gap-4 p-6">
+      <div className="col-span-4 bg-white rounded-lg shadow-sm border border-gray-100">
+        <TicketsSold id={userId} />
+      </div>
+
+      <div className="col-span-4 bg-white rounded-lg shadow-sm border border-gray-100">
+        <Income id={userId} />
+      </div>
+
+      <div className="col-span-4 bg-white rounded-lg shadow-sm border border-gray-100">
+        <ActiveEvent id={userId} />
+      </div>
+
+      <div className="col-span-8 bg-white rounded-lg shadow-sm border border-gray-100">
+        <SalesRevenue id={userId} />
+      </div>
+
+      <div className="col-span-4 bg-white rounded-lg shadow-sm border border-gray-100">
+        <RecentSales id={userId} />
+      </div>
     </div>
   );
 };
