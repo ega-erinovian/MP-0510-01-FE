@@ -16,7 +16,16 @@ import useGetUser from "@/hooks/api/user/useGetUser";
 import useUpdateUser from "@/hooks/api/user/useUpdateUser";
 import { cn } from "@/lib/utils";
 import { useFormik } from "formik";
-import { Loader2, Mail, Phone, Trash2, Upload, User } from "lucide-react";
+import {
+  DollarSign,
+  IdCard,
+  Loader2,
+  Mail,
+  Phone,
+  Trash2,
+  Upload,
+  User,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, FC, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
@@ -33,6 +42,15 @@ const UpdateProfileComponent: FC<UpdateProfileComponentProps> = ({ id }) => {
   const [selectedImage, setSelectedImage] = useState<string>("");
   const profilePictureReff = useRef<HTMLInputElement>(null);
 
+  // Bank Account
+  const [cardNum, setCardNum] = useState<string>(
+    user?.bankAccount?.split(" ")[1] ?? ""
+  );
+  const [bank, setBank] = useState<string>(
+    user?.bankAccount?.split(" ")[0] ?? ""
+  );
+  const bankAccount = `${bank} ${cardNum}`;
+
   const [isFormReady, setIsFormReady] = useState(false);
   const formInitialized = useRef(false);
 
@@ -43,6 +61,7 @@ const UpdateProfileComponent: FC<UpdateProfileComponentProps> = ({ id }) => {
       email: "",
       profilePicture: null,
       phoneNumber: "",
+      bankAccount: "",
     },
     validationSchema: updateUserSchema,
     onSubmit: async (values) => {
@@ -53,9 +72,10 @@ const UpdateProfileComponent: FC<UpdateProfileComponentProps> = ({ id }) => {
             fullName: values.fullName,
             profilePicture: values.profilePicture,
             phoneNumber: values.phoneNumber,
+            bankAccount,
           });
         } else {
-          await updateUser(values);
+          await updateUser({ ...values, bankAccount });
         }
 
         router.push("/dashboard");
@@ -83,6 +103,14 @@ const UpdateProfileComponent: FC<UpdateProfileComponentProps> = ({ id }) => {
     }
   };
 
+  const onChangeCardNumber = (query: string) => {
+    setCardNum(query);
+  };
+
+  const onChangeBank = (query: string) => {
+    setBank(query);
+  };
+
   useEffect(() => {
     if (user && !isUserLoading && !formInitialized.current) {
       // Initialize form with data
@@ -93,6 +121,7 @@ const UpdateProfileComponent: FC<UpdateProfileComponentProps> = ({ id }) => {
           email: user.email,
           profilePicture: null,
           phoneNumber: user.phoneNumber,
+          bankAccount: (user.bankAccount as string) ?? null,
         },
       });
 
@@ -109,6 +138,7 @@ const UpdateProfileComponent: FC<UpdateProfileComponentProps> = ({ id }) => {
     <div className="min-h-screen w-full p-4 flex items-center justify-center">
       <Card className="w-full max-w-2xl shadow-lg">
         <CardHeader className="space-y-1">
+          <p>{bankAccount}</p>
           <CardTitle className="text-2xl font-bold">Edit Profile</CardTitle>
           <CardDescription>Update your profile information</CardDescription>
         </CardHeader>
@@ -164,23 +194,22 @@ const UpdateProfileComponent: FC<UpdateProfileComponentProps> = ({ id }) => {
               </div>
             </div>
 
+            <FormField
+              label={
+                user?.role === "customer" ? "Full Name" : "Organization Name"
+              }
+              name="fullName"
+              placeholder={`Enter your ${
+                user?.role === "customer" ? "full name" : "organization name"
+              }`}
+              value={formik.values.fullName}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.errors.fullName}
+              touched={formik.touched.fullName}
+              icon={<User size={16} />}
+            />
             <div className="grid gap-6 md:grid-cols-2">
-              <FormField
-                label={
-                  user?.role === "customer" ? "Full Name" : "Organization Name"
-                }
-                name="fullName"
-                placeholder={`Enter your ${
-                  user?.role === "customer" ? "full name" : "organization name"
-                }`}
-                value={formik.values.fullName}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={formik.errors.fullName}
-                touched={formik.touched.fullName}
-                icon={<User size={16} />}
-              />
-
               <FormField
                 label="Email"
                 name="email"
@@ -193,7 +222,6 @@ const UpdateProfileComponent: FC<UpdateProfileComponentProps> = ({ id }) => {
                 touched={formik.touched.email}
                 icon={<Mail size={16} />}
               />
-
               <FormField
                 label="Phone Number"
                 name="phoneNumber"
@@ -205,6 +233,55 @@ const UpdateProfileComponent: FC<UpdateProfileComponentProps> = ({ id }) => {
                 touched={formik.touched.phoneNumber}
                 icon={<Phone size={16} />}
               />
+            </div>
+
+            <div className="grid grid-cols-3 gap-4">
+              <div className="space-y-2 col-span-2">
+                <Label
+                  htmlFor="cardNumber"
+                  className="text-sm font-medium flex items-center gap-2">
+                  <IdCard size={16} />
+                  Card Number
+                </Label>
+                <Input
+                  id="cardNumber"
+                  name="cardNumber"
+                  type="text"
+                  placeholder="12 digits of your card number"
+                  value={cardNum}
+                  onChange={(e) => onChangeCardNumber(e.target.value)}
+                  className={cn(
+                    "transition-all duration-200",
+                    "border-muted-foreground/20",
+                    formik.touched.email &&
+                      formik.errors.email &&
+                      "border-red-500"
+                  )}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label
+                  htmlFor="bank"
+                  className="text-sm font-medium flex items-center gap-2">
+                  <DollarSign size={16} />
+                  Bank
+                </Label>
+                <Input
+                  id="bank"
+                  name="bank"
+                  type="text"
+                  placeholder="Your Bank"
+                  value={bank}
+                  onChange={(e) => onChangeBank(e.target.value)}
+                  className={cn(
+                    "transition-all duration-200",
+                    "border-muted-foreground/20",
+                    formik.touched.email &&
+                      formik.errors.email &&
+                      "border-red-500"
+                  )}
+                />
+              </div>
             </div>
 
             {/* Submit Button */}

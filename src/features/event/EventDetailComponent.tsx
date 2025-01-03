@@ -138,8 +138,8 @@ const EventDetailComponent: FC<EventDetailComponentProps> = ({ eventId }) => {
               src={event.thumbnnail}
               alt={`${event.title} banner`}
               fill
-              priority
               className="object-cover transition-transform duration-300 hover:scale-105"
+              loading="lazy"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 66vw"
             />
           </div>
@@ -168,7 +168,7 @@ const EventDetailComponent: FC<EventDetailComponentProps> = ({ eventId }) => {
             <div className="flex flex-wrap items-center gap-3 p-4 bg-muted/50 rounded-lg">
               <Avatar className="h-12 w-12 border-2 border-background">
                 <AvatarImage
-                  src="https://res.cloudinary.com/dpeljv2vu/image/upload/v1735294682/ftlh4vmowuyfx3wdqymu.jpg"
+                  src={event.organizer.profilePicture}
                   alt={event.organizer.fullName}
                   className="object-cover"
                 />
@@ -180,9 +180,6 @@ const EventDetailComponent: FC<EventDetailComponentProps> = ({ eventId }) => {
                 <p className="text-sm">Organized by</p>
                 <p className="font-semibold">{event.organizer.fullName}</p>
               </div>
-              <Button variant="outline" size="sm" className="shrink-0">
-                Visit Profile
-              </Button>
             </div>
           </div>
 

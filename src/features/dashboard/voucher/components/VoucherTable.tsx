@@ -13,12 +13,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { VoucherType } from "@/types/voucher";
 import { CircleAlert, MoreHorizontal } from "lucide-react";
 import Link from "next/link";
 import { FC } from "react";
 import { voucherTableCols } from "../const";
 import VoucherDeleteDialog from "./VoucherDeleteDialog";
+import DataNotFound from "@/components/dashboard/DataNotFound";
+import { VoucherType } from "@/types/voucher";
 
 interface VoucherTableProps {
   vouchers: VoucherType[];
@@ -38,14 +39,7 @@ const VoucherTable: FC<VoucherTableProps> = ({
   take,
 }) => {
   if (!vouchers || vouchers.length === 0) {
-    return (
-      <div className="h-[50vh] w-full flex flex-col items-center justify-center gap-4">
-        <CircleAlert className="fill-red-500 text-white w-16 h-16" />
-        <div className="text-center">
-          <h2 className="text-lg font-semibold mb-2">Data Not Found</h2>
-        </div>
-      </div>
-    );
+    return <DataNotFound text="No vouchers found" />;
   }
   return (
     <div className="w-full">

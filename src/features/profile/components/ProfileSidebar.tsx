@@ -28,7 +28,7 @@ import { cn } from "@/lib/utils";
 const items = [
   {
     title: "Transaction History",
-    url: "/profile",
+    url: "/profile/transaction-history",
     icon: ClockIcon,
   },
   {

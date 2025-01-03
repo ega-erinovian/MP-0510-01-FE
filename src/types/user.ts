@@ -10,6 +10,7 @@ export interface UserType {
   isDeleted: boolean;
   point: number;
   cityId: number;
+  bankAccount: string | null;
   pointExpired: Date | null;
   referralsUsed: [];
   createdAt: Date;

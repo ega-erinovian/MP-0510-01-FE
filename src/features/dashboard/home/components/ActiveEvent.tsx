@@ -30,7 +30,6 @@ const ActiveEvent: FC<ActiveEventProps> = ({ id }) => {
 
   return (
     <div className="relative h-full bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-6 overflow-hidden">
-      {/* Background Pattern */}
       <div
         className="absolute inset-0 bg-white/5 backdrop-blur-sm"
         style={{
@@ -39,16 +38,13 @@ const ActiveEvent: FC<ActiveEventProps> = ({ id }) => {
         }}
       />
 
-      {/* Content Container */}
       <div className="relative">
-        {/* Header */}
         <div className="flex items-start justify-between mb-6">
           <div className="flex items-center gap-3 text-white">
             <Calendar className="h-6 w-6" />
             <h1 className="text-2xl font-bold">Events</h1>
           </div>
 
-          {/* Time Select */}
           <Select value={selectedTime} onValueChange={setSelectedTime}>
             <SelectTrigger className="w-36 bg-white/10 border-white/20 text-white hover:bg-purple-400/30 transition-colors">
               <SelectValue placeholder="Select Time" />

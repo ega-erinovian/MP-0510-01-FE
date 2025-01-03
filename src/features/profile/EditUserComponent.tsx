@@ -71,7 +71,6 @@ const UpdateProfileComponent: FC<UpdateProfileComponentProps> = ({ id }) => {
     },
     validationSchema: updateUserSchema,
     onSubmit: async (values) => {
-      const referralCode = useRandomCode();
       const couponCode = useRandomCode();
 
       try {
@@ -338,7 +337,9 @@ const UpdateProfileComponent: FC<UpdateProfileComponentProps> = ({ id }) => {
               <div className="flex justify-end">
                 <Button
                   type="submit"
-                  disabled={isUpdating}
+                  disabled={
+                    isUpdating || isReferralValid === false || isPendingReferral
+                  }
                   className={cn(
                     "min-w-[120px] transition-all duration-200",
                     "hover:translate-y-[-1px] active:translate-y-[1px]"

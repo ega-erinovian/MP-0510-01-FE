@@ -1,4 +1,3 @@
-import Navbar from "@/components/Navbar";
 import NextAuthProvider from "@/providers/NextAuthProvider";
 import NuqsProvider from "@/providers/NuqsProvider";
 import ReactQueryProvider from "@/providers/ReactQueryProviders";
@@ -9,9 +8,9 @@ import "react-toastify/dist/ReactToastify.css";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "EventZen",
+  title: "EventIn",
   description:
-    "EventZen - Simplify event ticketing and management with our user-friendly platform. Buy, sell, and manage tickets effortlessly for any event, big or small. Experience seamless event organization today!",
+    "EventIn - Simplify event ticketing and management with our user-friendly platform. Buy, sell, and manage tickets effortlessly for any event, big or small. Experience seamless event organization today!",
 };
 
 export default function RootLayout({

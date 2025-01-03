@@ -30,12 +30,12 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import useGetUser from "@/hooks/api/user/useGetUser";
+import { cn } from "@/lib/utils";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
-import { cn } from "@/lib/utils";
 
 const items = [
   {

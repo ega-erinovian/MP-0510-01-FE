@@ -1,7 +1,6 @@
 import { axiosInstance } from "@/lib/axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { toast } from "react-toastify";
 
 interface RegisterPayload {
   fullName: string;
@@ -12,11 +11,10 @@ interface RegisterPayload {
   phoneNumber: string;
   role: string;
   cityId: number;
+  bankAccount?: string | null;
 }
 
 const useRegister = () => {
-  const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: async (payload: RegisterPayload) => {
       const registerForm = new FormData();
@@ -24,12 +22,14 @@ const useRegister = () => {
       registerForm.append("fullName", payload.fullName);
       registerForm.append("email", payload.email);
       registerForm.append("password", payload.password);
-      if (payload.profilePicture) {
-        registerForm.append("profilePicture", payload.profilePicture);
-      }
+      registerForm.append("profilePicture", payload.profilePicture!);
 
       if (payload.referralCode) {
         registerForm.append("referralCode", payload.referralCode);
+      }
+
+      if (payload.bankAccount) {
+        registerForm.append("bankAccount", payload.bankAccount);
       }
 
       registerForm.append("phoneNumber", payload.phoneNumber);
@@ -40,10 +40,10 @@ const useRegister = () => {
       return data;
     },
     onSuccess: () => {
-      toast.success("Account Created Successfullly");
+      console.log("Account Created Successfullly");
     },
     onError: (error: AxiosError<any>) => {
-      toast.error(error.response?.data);
+      console.error(error.response?.data);
     },
   });
 };

@@ -32,5 +32,9 @@ export interface TransactionType {
     price: number;
     availableSeats: number;
     userId: number;
+    organizer: {
+      fullName: string;
+      bankAccount: string;
+    };
   };
 }

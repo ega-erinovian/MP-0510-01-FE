@@ -2,7 +2,6 @@
 
 import { Ticket } from "lucide-react";
 import LoginForm from "./component/LoginForm";
-import Link from "next/link";
 
 const LoginComponent = () => {
   return (

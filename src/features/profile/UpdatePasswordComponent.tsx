@@ -1,28 +1,25 @@
 "use client";
 
+import PasswordInput from "@/components/PasswordInput";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useFormik } from "formik";
-import { FC, useEffect, useState } from "react";
-import useResetPassword from "@/hooks/api/auth/useResetPassword";
-import { Button } from "@/components/ui/button";
-import useUpdateUser from "@/hooks/api/user/useUpdateUser";
 import useCheckPassword from "@/hooks/api/auth/useCheckPassword";
-import { useDebounce } from "use-debounce";
-import { UpdatePasswordSchema } from "./schemas";
-import { toast } from "react-toastify";
-import { useRouter } from "next/navigation";
-import CustomerProfileLayout from "./CustomerProfileLayout";
-import { Loader2, Check, X, KeyRound, Eye, EyeOff } from "lucide-react";
+import useUpdateUser from "@/hooks/api/user/useUpdateUser";
 import { cn } from "@/lib/utils";
-import PasswordInput from "@/components/PasswordInput";
+import { useFormik } from "formik";
+import { Check, KeyRound, Loader2, X } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { FC, useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import { useDebounce } from "use-debounce";
+import CustomerProfileLayout from "./CustomerProfileLayout";
+import { UpdatePasswordSchema } from "./schemas";
 
 interface UpdatePasswordComponentProps {
   id: number;

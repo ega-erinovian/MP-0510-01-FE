@@ -15,5 +15,7 @@ export const updateVoucherSchema = Yup.object().shape({
   amount: Yup.number().min(1000).required("Amount is required"),
   expiresAt: Yup.date().required("Expire date is required"),
   eventId: Yup.number().required("Event ID is required"),
-  isUsed: Yup.boolean(),
+  isUsed: Yup.string()
+    .oneOf(["AVAILABLE", "USED", "EXPIRED"], "Invalid status")
+    .required("Status is required"),
 });

@@ -7,7 +7,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import useUpdateCoupon from "@/hooks/api/coupon/useUpdateCoupon";
@@ -21,10 +20,8 @@ import { CouponType } from "@/types/coupon";
 import { EventType } from "@/types/event";
 import { VoucherType } from "@/types/voucher";
 import { useFormik } from "formik";
-import { Trash2, Upload } from "lucide-react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ChangeEvent, FC, useEffect, useRef, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 interface CreateTransactionModalProps {
@@ -46,9 +43,6 @@ const CreateTransactionModal: FC<CreateTransactionModalProps> = ({
   const transactionDate = new Date();
   const [totalPrice, setTotalPrice] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
-
-  const [selectedImage, setSelectedImage] = useState<string>("");
-  const paymentProofReff = useRef<HTMLInputElement>(null);
 
   const [isChecked, setIsChecked] = useState(false);
 
@@ -90,9 +84,7 @@ const CreateTransactionModal: FC<CreateTransactionModalProps> = ({
   }, [quantity, event.price, voucher, coupon, isChecked, user]);
 
   const formik = useFormik({
-    initialValues: {
-      paymentProof: null,
-    },
+    initialValues: {},
     onSubmit: async (values) => {
       try {
         const voucherId = voucher[0]?.id;
@@ -136,11 +128,10 @@ const CreateTransactionModal: FC<CreateTransactionModalProps> = ({
         }
 
         await createTransaction({
-          status:
-            selectedImage !== "" || totalPrice <= 0 ? "CONFIRMING" : "UNPAID",
+          status: totalPrice === 0 ? "CONFIRMING" : "UNPAID",
           userId: user?.id || 0,
           eventId: event.id,
-          paymentProof: values.paymentProof,
+          paymentProof: null,
           qty: quantity,
           totalPrice,
           voucherId,
@@ -148,10 +139,12 @@ const CreateTransactionModal: FC<CreateTransactionModalProps> = ({
           isUsePoint: isChecked,
         });
 
-        setIsChecked(false);
-        setSelectedImage("");
+        if (isOpen) {
+          setIsChecked(false);
+        }
+
         toast.success("Transaction Created Successfully");
-        router.push(`/events/${event.id}`);
+        router.push(`/profile/transaction-history`);
       } catch (error) {
         console.log(error);
       } finally {
@@ -159,23 +152,6 @@ const CreateTransactionModal: FC<CreateTransactionModalProps> = ({
       }
     },
   });
-
-  const onChangePaymentProof = (e: ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files && files.length) {
-      formik.setFieldValue("paymentProof", files[0]);
-      setSelectedImage(URL.createObjectURL(files[0]));
-    }
-  };
-
-  const removePaymentProof = () => {
-    formik.setFieldValue("paymentProof", null);
-    setSelectedImage("");
-
-    if (paymentProofReff.current) {
-      paymentProofReff.current.value = "";
-    }
-  };
 
   if (isLoading) <Loading text="User" />;
 
@@ -313,51 +289,6 @@ const CreateTransactionModal: FC<CreateTransactionModalProps> = ({
 
           {/* Payment Form */}
           <form onSubmit={formik.handleSubmit} className="space-y-4">
-            <div className="space-y-3">
-              <Label
-                className={cn(
-                  "text-base font-semibold",
-                  event.price <= 0 && "text-muted-foreground"
-                )}>
-                Payment Proof
-              </Label>
-
-              {selectedImage && (
-                <div className="p-3 bg-muted/50 rounded-lg">
-                  <Link
-                    href={selectedImage}
-                    target="_blank"
-                    className="text-sm text-purple-600 hover:text-purple-700 font-medium">
-                    View Payment Proof
-                  </Link>
-                </div>
-              )}
-
-              <div className="flex items-center gap-2">
-                <div className="relative flex-1">
-                  <Input
-                    ref={paymentProofReff}
-                    type="file"
-                    accept="image/*"
-                    onChange={onChangePaymentProof}
-                    disabled={event.price <= 0}
-                    className="cursor-pointer file:cursor-pointer"
-                  />
-                  <Upload className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-                </div>
-                {selectedImage && (
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    size="icon"
-                    onClick={removePaymentProof}
-                    className="shrink-0">
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                )}
-              </div>
-            </div>
-
             <Button
               type="submit"
               className="w-full"

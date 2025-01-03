@@ -1,10 +1,10 @@
 "use client";
 
+import Loading from "@/components/dashboard/Loading";
+import useGetTransactions from "@/hooks/api/transaction/useGetTransactions";
+import { Receipt } from "lucide-react";
 import { FC } from "react";
 import RecentSalesItem from "./RecentSaleItem";
-import useGetTransactions from "@/hooks/api/transaction/useGetTransactions";
-import Loading from "@/components/dashboard/Loading";
-import { Receipt } from "lucide-react";
 
 interface RecentSalesProps {
   id: number;
@@ -39,7 +39,7 @@ const RecentSales: FC<RecentSalesProps> = ({ id }) => {
           </div>
         ) : transactions?.data.length === 0 ? (
           <div className="text-center py-12 text-gray-500">
-            No recent transactions found
+            No recent transactions
           </div>
         ) : (
           <div className="divide-y divide-gray-100">
