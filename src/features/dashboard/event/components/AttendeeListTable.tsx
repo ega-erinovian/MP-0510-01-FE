@@ -45,6 +45,7 @@ const AttendeeListTable: FC<AttendeeListTableProps> = ({
             <TableHead className="font-semibold capitalize">
               Ticket QTY
             </TableHead>
+            <TableHead className="font-semibold capitalize">Total</TableHead>
             <TableHead className="font-semibold capitalize">Email</TableHead>
             <TableHead className="font-semibold capitalize">
               Phone Number
@@ -56,6 +57,12 @@ const AttendeeListTable: FC<AttendeeListTableProps> = ({
             <TableRow key={idx}>
               <TableCell>{transaction.user.fullName}</TableCell>
               <TableCell>{transaction.qty}</TableCell>
+              <TableCell>
+                {transaction.totalPrice.toLocaleString("id-ID", {
+                  style: "currency",
+                  currency: "IDR",
+                })}
+              </TableCell>
               <TableCell>{transaction.user.email}</TableCell>
               <TableCell>{transaction.user.phoneNumber}</TableCell>
             </TableRow>
