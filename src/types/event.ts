@@ -16,6 +16,7 @@ export interface EventType {
     id: number;
     fullName: string;
     profilePicture: string;
+    bankAccount: string;
   };
   city: {
     name: string;

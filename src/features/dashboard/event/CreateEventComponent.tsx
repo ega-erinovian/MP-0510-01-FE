@@ -15,6 +15,7 @@ import {
 import {
   Calendar,
   Coins,
+  Loader2,
   MapPin,
   Tag,
   Trash2,
@@ -35,6 +36,7 @@ import { useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { createEventSchema } from "./schemas";
+import { Popover, PopoverTrigger } from "@/components/ui/popover";
 
 const CreateEventComponent = () => {
   const { data } = useSession(); // dari next-auth
@@ -155,7 +157,7 @@ const CreateEventComponent = () => {
                   type="file"
                   accept="image/*"
                   onChange={onChangeThumbnail}
-                  className="bg-white border-purple-100 focus:border-purple-500 focus:ring-purple-200"
+                  className="bg-white border-purple-100 focus:border-purple-500 focus:ring-purple-200 hover:cursor-pointer"
                 />
                 {selectedImage && (
                   <Button
@@ -333,7 +335,7 @@ const CreateEventComponent = () => {
                   <SelectTrigger className="border-gray-200 focus:border-purple-500 focus:ring-purple-200">
                     <SelectValue placeholder="Select Country" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="max-h-60 overflow-auto">
                     <SelectGroup>
                       {countries?.map((country) => (
                         <SelectItem key={country.id} value={String(country.id)}>
@@ -354,7 +356,7 @@ const CreateEventComponent = () => {
                 </Label>
                 <Select
                   value={selectedCity}
-                  onValueChange={(value) => {
+                  onValueChange={(value: string) => {
                     const cityId = Number(value);
                     if (!isNaN(cityId) && cityId > 0) {
                       setSelectedCity(value);
@@ -372,20 +374,18 @@ const CreateEventComponent = () => {
                       }
                     />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="max-h-60 overflow-auto">
                     <SelectGroup>
                       {citiesLoading ? (
                         <SelectItem value="0" disabled>
                           Loading cities...
                         </SelectItem>
                       ) : citiesByCountry ? (
-                        citiesByCountry?.map(
-                          (city: { id: number; name: string }) => (
-                            <SelectItem key={city.id} value={String(city.id)}>
-                              {city.name}
-                            </SelectItem>
-                          )
-                        )
+                        citiesByCountry?.map((city) => (
+                          <SelectItem key={city.id} value={String(city.id)}>
+                            {city.name}
+                          </SelectItem>
+                        ))
                       ) : (
                         <SelectItem value="-" disabled>
                           No cities available
@@ -410,14 +410,14 @@ const CreateEventComponent = () => {
               </Label>
               <Select
                 value={selectedCategory}
-                onValueChange={(value) => {
+                onValueChange={(value: string) => {
                   setSelectedCategory(value);
                   formik.setFieldValue("categoryId", Number(value));
                 }}>
                 <SelectTrigger className="border-gray-200 focus:border-purple-500 focus:ring-purple-200">
                   <SelectValue placeholder="Select Category" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="max-h-60 overflow-auto">
                   <SelectGroup>
                     {categories.map(
                       (category: { id: number; name: string }) => (

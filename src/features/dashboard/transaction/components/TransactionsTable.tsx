@@ -22,6 +22,7 @@ import { getStatusColor, transactionTableCols } from "../const";
 import PaymentProofDialog from "./PaymentProofDialog";
 import TransactionDeleteDialog from "./TransactionDeleteDialog";
 import TransactionEditDialog from "./TransactionEditDialog";
+import DataNotFound from "@/components/dashboard/DataNotFound";
 
 interface TransactionsTableProps {
   transactions: TransactionType[];
@@ -41,15 +42,9 @@ const TransactionsTable: FC<TransactionsTableProps> = ({
   take,
 }) => {
   if (!transactions || transactions.length === 0) {
-    return (
-      <div className="h-[50vh] w-full flex flex-col items-center justify-center gap-4">
-        <CircleAlert className="fill-red-500 text-white w-16 h-16" />
-        <div className="text-center">
-          <h2 className="text-lg font-semibold mb-2">Data Not Found</h2>
-        </div>
-      </div>
-    );
+    return <DataNotFound text="No transactions found" />;
   }
+
   return (
     <div className="w-full">
       <Table>

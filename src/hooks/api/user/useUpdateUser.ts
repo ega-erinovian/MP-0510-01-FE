@@ -1,4 +1,4 @@
-import { axiosInstance } from "@/lib/axios";
+import useAxios from "@/hooks/useAxios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { toast } from "react-toastify";
@@ -12,10 +12,12 @@ interface UpdateUserPayload {
   phoneNumber?: string;
   point?: number;
   pointExpired?: Date;
+  bankAccount?: string | null;
 }
 
 const useUpdateUser = () => {
   const queryClient = useQueryClient();
+  const { axiosInstance } = useAxios();
 
   return useMutation({
     mutationFn: async (payload: UpdateUserPayload) => {
@@ -28,6 +30,9 @@ const useUpdateUser = () => {
         updateUserForm.append("phoneNumber", payload.phoneNumber);
       if (payload.profilePicture) {
         updateUserForm.append("profilePicture", payload.profilePicture);
+      }
+      if (payload.bankAccount) {
+        updateUserForm.append("bankAccount", payload.bankAccount);
       }
 
       if (payload.point !== undefined && payload.point !== null) {
@@ -45,6 +50,8 @@ const useUpdateUser = () => {
         `/users/${payload.id}`,
         updateUserForm
       );
+
+      console.log(data);
 
       return data;
     },

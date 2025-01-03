@@ -19,6 +19,8 @@ export const transactionStatus = [
   "CANCELED",
 ];
 
+export const couponStatus = ["AVAILABLE", "USED", "EXPIRED"];
+
 export const getStatusColor = (status: string) => {
   switch (status) {
     case "UNPAID":
@@ -33,6 +35,19 @@ export const getStatusColor = (status: string) => {
       return "bg-purple-500 text-white"; // Purple for expired
     case "CANCELED":
       return "bg-blue-500 text-white"; // Blue for canceled
+    default:
+      return "bg-gray-300 text-black"; // Default fallback
+  }
+};
+
+export const getCouponStatus = (status: string) => {
+  switch (status) {
+    case "AVAILABLE":
+      return "bg-green-500 text-white"; // Red for unpaid
+    case "USED":
+      return "bg-amber-500 text-white"; // Yellow for confirming
+    case "EXPIRED":
+      return "bg-red-500 text-white";
     default:
       return "bg-gray-300 text-black"; // Default fallback
   }

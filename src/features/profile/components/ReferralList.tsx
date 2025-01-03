@@ -1,7 +1,10 @@
 "use client";
 
 import DataNotFound from "@/components/dashboard/DataNotFound";
-import { Button } from "@/components/ui/button";
+import { ReferralType } from "@/types/referrals";
+import { FC } from "react";
+import CouponCard from "./CouponCard";
+import ReferralCard from "./ReferralCard";
 import {
   Select,
   SelectContent,
@@ -9,12 +12,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { TransactionType } from "@/types/transaction";
-import { FC } from "react";
-import TransactionCard from "./TransactionCard";
+import { Button } from "@/components/ui/button";
 
-interface TransactionsTableProps {
-  transactions: TransactionType[];
+interface ReferralListProps {
+  referrals: ReferralType[];
   totalPages: number;
   onChangePage: (page: number) => void;
   page: number;
@@ -22,26 +23,25 @@ interface TransactionsTableProps {
   take: number;
 }
 
-const TransactionsList: FC<TransactionsTableProps> = ({
-  transactions,
+const ReferralList: FC<ReferralListProps> = ({
+  referrals,
   totalPages,
   onChangePage,
   page,
   onChangeTake,
   take,
 }) => {
-  if (!transactions || transactions.length === 0) {
-    return <DataNotFound text="No transactions found" />;
+  if (!referrals || referrals.length === 0) {
+    return <DataNotFound text="No referrals found" />;
   }
 
   return (
     <div className="w-full space-y-4">
       <div className="grid grid-cols-1 gap-4">
-        {transactions.map((transaction) => (
-          <TransactionCard key={transaction.id} transaction={transaction} />
+        {referrals.map((referral) => (
+          <ReferralCard key={referral.id} referral={referral} />
         ))}
       </div>
-
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-6">
         <div className="flex items-center gap-2">
           <span className="text-sm text-muted-foreground">Items per page</span>
@@ -87,4 +87,4 @@ const TransactionsList: FC<TransactionsTableProps> = ({
   );
 };
 
-export default TransactionsList;
+export default ReferralList;

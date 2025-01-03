@@ -13,24 +13,24 @@ import { Input } from "@/components/ui/input";
 import { updateTransactionSchema } from "@/features/dashboard/transaction/schemas";
 import useUpdateTransaction from "@/hooks/api/transaction/useUpdateTransaction";
 import { useFormik } from "formik";
+import { FileImage, Trash2, Upload } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, FC, useRef, useState } from "react";
 import { toast } from "react-toastify";
-import { transactionStatus } from "../const";
-import Link from "next/link";
-import { FileImage, Upload, Trash2, ExternalLink } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 interface TransactionEditDialogProps {
   id: number;
   status: string;
   email: string;
+  event: { organizer: { fullName: string; bankAccount: string } };
 }
 
 const TransactionEditDialog: FC<TransactionEditDialogProps> = ({
   id,
   status,
   email,
+  event,
 }) => {
   const router = useRouter();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -72,8 +72,10 @@ const TransactionEditDialog: FC<TransactionEditDialogProps> = ({
           paymentProof: values.paymentProof,
         });
         setIsDialogOpen(false);
+        setSelectedImage("");
         toast.success("Payment proof uploaded successfully!");
       } catch (error) {
+        setSelectedImage("");
         toast.error("Failed to update transaction. Please try again.");
       }
     },
@@ -92,7 +94,7 @@ const TransactionEditDialog: FC<TransactionEditDialogProps> = ({
       </DialogTrigger>
 
       <DialogContent className="sm:max-w-[425px] p-6 rounded-md">
-        <DialogHeader className="mb-6">
+        <DialogHeader className="mb-4">
           <DialogTitle className="text-xl font-semibold flex items-center gap-2">
             <FileImage className="h-5 w-5" />
             Upload Payment Proof
@@ -100,58 +102,62 @@ const TransactionEditDialog: FC<TransactionEditDialogProps> = ({
         </DialogHeader>
 
         <form onSubmit={formik.handleSubmit} className="space-y-6">
-          <div className="space-y-4">
-            {selectedImage && (
-              <div className="p-4 rounded-lg bg-muted">
-                <div className="flex items-center justify-between gap-2">
-                  <div className="flex-1 truncate">
-                    <p className="text-sm font-medium truncate">
-                      Selected Image
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Link
-                      href={selectedImage}
-                      target="_blank"
-                      className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 transition-colors">
-                      <ExternalLink className="h-4 w-4" />
-                      View
-                    </Link>
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="sm"
-                      onClick={removePaymentProof}
-                      className="h-8 w-8 p-0">
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
+          <div className="space-y-2">
+            <div className="relative">
+              {selectedImage && (
+                <div className="p-3 bg-muted/50 rounded-lg mb-4">
+                  <Link
+                    href={selectedImage}
+                    target="_blank"
+                    className="text-sm text-purple-600 hover:text-purple-700 font-medium">
+                    View Payment Proof
+                  </Link>
                 </div>
-              </div>
-            )}
+              )}
 
-            <div className="space-y-2">
-              <div className="relative">
-                <Input
-                  ref={paymentProofRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={onChangePaymentProof}
-                  className={cn(
-                    "cursor-pointer file:cursor-pointer",
-                    "file:border-0 file:bg-transparent",
-                    "file:text-sm file:font-medium",
-                    "file:mr-4 file:py-2",
-                    "file:text-primary hover:file:text-primary/80"
-                  )}
-                />
-              </div>
-              {!!formik.touched.paymentProof &&
-                !!formik.errors.paymentProof && (
-                  <p className="text-sm text-destructive">
-                    {formik.errors.paymentProof}
-                  </p>
+              <div className="flex items-center gap-2">
+                <div className="relative flex-1">
+                  <Input
+                    ref={paymentProofRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={onChangePaymentProof}
+                    className="cursor-pointer file:cursor-pointer"
+                  />
+                  <Upload className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                </div>
+                {selectedImage && (
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="icon"
+                    onClick={removePaymentProof}
+                    className="shrink-0">
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
                 )}
+              </div>
+            </div>
+            {!!formik.touched.paymentProof && !!formik.errors.paymentProof && (
+              <p className="text-sm text-destructive">
+                {formik.errors.paymentProof}
+              </p>
+            )}
+          </div>
+          <div className="space-y-4">
+            <p className="text-base font-semibold">
+              Payment Account Information
+            </p>
+            <div className="p-3 bg-muted/50 rounded-lg space-y-1">
+              <p className="text-sm">
+                Account Owner: {event.organizer.fullName}
+              </p>
+              <p className="text-sm">
+                Account Number: {event.organizer.bankAccount.split(" ")[1]}
+              </p>
+              <p className="text-sm">
+                Account Bank: {event.organizer.bankAccount.split(" ")[0]}
+              </p>
             </div>
           </div>
 
@@ -166,7 +172,7 @@ const TransactionEditDialog: FC<TransactionEditDialogProps> = ({
             <Button
               type="submit"
               className="w-full sm:w-auto"
-              disabled={isPending}>
+              disabled={isPending || selectedImage === ""}>
               {isPending ? (
                 <span className="flex items-center gap-2">
                   <span className="animate-spin">◌</span>

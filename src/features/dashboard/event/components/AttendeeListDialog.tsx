@@ -2,7 +2,6 @@
 
 import DataNotFound from "@/components/dashboard/DataNotFound";
 import Loading from "@/components/dashboard/Loading";
-import { Button } from "@/components/ui/button";
 import {
   Sheet,
   SheetContent,
@@ -11,11 +10,10 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import useGetTransactions from "@/hooks/api/transaction/useGetTransactions";
+import { useQueryState } from "nuqs";
 import { FC, useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
 import AttendeeListTable from "./AttendeeListTable";
-import { Input } from "@/components/ui/input";
-import { useQueryState } from "nuqs";
 
 interface AttendeeListProps {
   id: number;

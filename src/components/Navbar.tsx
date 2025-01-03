@@ -55,7 +55,7 @@ const Navbar = () => {
               <>
                 {user?.role === "CUSTOMER" ? (
                   <Link
-                    href="/profile"
+                    href="/profile/transaction-history"
                     className="transition-colors hover:text-purple-600">
                     Profile
                   </Link>
@@ -116,7 +116,7 @@ const Navbar = () => {
                     {user?.role === "CUSTOMER" && (
                       <DropdownMenuItem>
                         <Link
-                          href="/profile"
+                          href="/profile/transaction-history"
                           className="text-gray-800 hover:text-purple-600">
                           Profile
                         </Link>

@@ -1,5 +1,6 @@
 "use client";
 
+import DataNotFound from "@/components/dashboard/DataNotFound";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -16,13 +17,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { EventType } from "@/types/event";
-import { CircleAlert, MoreHorizontal } from "lucide-react";
+import { MoreHorizontal } from "lucide-react";
 import Link from "next/link";
 import { FC } from "react";
 import { eventTableCols } from "../const";
 import AttendeeListDialog from "./AttendeeListDialog";
 import EventDeleteDialog from "./EventDeleteDialog";
-import DataNotFound from "@/components/dashboard/DataNotFound";
 
 interface EventsTableProps {
   events: EventType[];

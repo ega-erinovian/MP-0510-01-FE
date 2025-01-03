@@ -11,7 +11,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { TransactionType } from "@/types/transaction";
-import { CircleAlert } from "lucide-react";
 import { FC } from "react";
 
 interface AttendeeListTableProps {

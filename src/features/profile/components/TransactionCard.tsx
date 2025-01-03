@@ -78,11 +78,11 @@ const TransactionCard = ({ transaction }: { transaction: TransactionType }) => (
                   Status Timer
                 </span>
                 <p className="font-medium">
-                  {transaction.status !== "DONE" ||
-                  transaction.totalPrice >= 0 ? (
+                  {transaction.status === "UNPAID" &&
+                  transaction.totalPrice > 0 ? (
                     <CronTimer transactionId={transaction.id} />
                   ) : (
-                    <span className="text-muted-foreground">[DONE]</span>
+                    <span className="text-muted-foreground">N/A</span>
                   )}
                 </p>
               </div>
@@ -113,23 +113,28 @@ const TransactionCard = ({ transaction }: { transaction: TransactionType }) => (
               </Button>
             )}
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-9 w-9 hover:bg-muted transition-colors">
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-[200px]">
-                <TransactionEditDialog
-                  id={transaction.id}
-                  status={transaction.status}
-                  email={transaction.user.email}
-                />
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {transaction.status !== "DONE" &&
+              transaction.status !== "REJECTED" &&
+              transaction.status !== "EXPIRED" && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-9 w-9 hover:bg-muted transition-colors">
+                      <MoreHorizontal className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-[200px]">
+                    <TransactionEditDialog
+                      id={transaction.id}
+                      status={transaction.status}
+                      email={transaction.user.email}
+                      event={transaction.event}
+                    />
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
           </div>
         </div>
       </div>

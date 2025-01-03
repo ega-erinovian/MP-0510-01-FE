@@ -22,10 +22,12 @@ import useRandomCode from "@/hooks/useRandomCode";
 import { useFormik } from "formik";
 import {
   CheckCircle,
+  DollarSign,
   Eye,
   EyeOff,
   Gift,
   Globe,
+  IdCard,
   Loader2,
   Lock,
   Mail,
@@ -42,6 +44,7 @@ import { ChangeEvent, FC, useEffect, useRef, useState } from "react";
 import { useDebounce } from "use-debounce";
 import { registerSchema } from "../schemas";
 import { cn } from "@/lib/utils";
+import { toast } from "react-toastify";
 
 interface RegisterFormProps {
   role: string;
@@ -55,6 +58,11 @@ const RegisterForm: FC<RegisterFormProps> = ({ role }) => {
   const [isReferralValid, setIsReferralValid] = useState<boolean | null>(null);
   const [debouncedReferralCode] = useDebounce(referralCode, 800);
   const [referralMessage, setReferralMessage] = useState<string>("");
+
+  // Bank Account
+  const [cardNum, setCardNum] = useState<string>("");
+  const [bank, setBank] = useState<string>("");
+  const bankAccount = `${bank} ${cardNum}`;
 
   const { data: countries = [] } = useGetCountries();
 
@@ -111,58 +119,74 @@ const RegisterForm: FC<RegisterFormProps> = ({ role }) => {
       password: "",
       confirmPassword: "",
       referralCode: null,
+      bankAccount: null,
       profilePicture: null,
       phoneNumber: "",
       role: convertedRole,
       cityId: null,
     },
     validationSchema: registerSchema,
+    enableReinitialize: false,
     onSubmit: async (values) => {
       const referralCode = useRandomCode();
-      const couponCode = useRandomCode();
+      // Generate the coupon code first and immediately invoke it
+      const newCouponCode = useRandomCode()();
 
       const payload = {
         ...values,
         cityId: Number(values.cityId) ?? 0,
         referralCode: values.role === "CUSTOMER" ? referralCode() : null,
+        bankAccount: values.role === "ORGANIZER" ? bankAccount : null,
       };
 
       try {
         const data = await register(payload);
+        const newUserId = Number(data.id);
+        const threeMonthsAhead = new Date(
+          new Date().setMonth(new Date().getMonth() + 3)
+        );
 
-        if (isReferralValid && data.role === "CUSTOMER") {
-          const referrerId = Number(
-            Array.isArray(existingReferral) && existingReferral[0]?.id
-          );
+        if (
+          isReferralValid &&
+          Array.isArray(existingReferral) &&
+          existingReferral[0]
+        ) {
+          const referrerId = Number(existingReferral[0].id);
+          const referrerPoints = Number(existingReferral[0].point);
 
-          const referrerPoints = Number(
-            Array.isArray(existingReferral) && existingReferral[0]?.point
-          );
+          try {
+            await createReferral({
+              referrerUserId: referrerId,
+              refereeUserId: newUserId,
+            });
 
-          await createReferral({
-            referrerUserId: referrerId,
-            refereeUserId: Number(data.id),
-          });
+            await updateUser({
+              id: referrerId,
+              point: referrerPoints + 10000,
+              pointExpired: threeMonthsAhead,
+            });
 
-          await updateUser({
-            id: referrerId,
-            point: referrerPoints + 10000,
-            pointExpired: new Date(
-              new Date().setMonth(new Date().getMonth() + 3)
-            ),
-          });
+            await createCoupon({
+              userId: newUserId,
+              code: newCouponCode,
+              amount: 10000,
+              expiresAt: threeMonthsAhead,
+            });
 
-          await createCoupon({
-            userId: Number(data.id),
-            code: couponCode(),
-            amount: 10000,
-            expiresAt: new Date(new Date().setMonth(new Date().getMonth() + 3)),
-          });
+            console.log("Referral process completed");
+          } catch (error) {
+            console.error("Error in referral process:", error);
+            toast.error("Failed to process referral benefits");
+            return;
+          }
         }
 
-        router.push("/dashboard/events");
+        setIsReferralValid(false);
+        toast.success("Register Success");
+        router.push("/login");
       } catch (error) {
-        console.log(error);
+        console.error("Registration error:", error);
+        toast.error("Registration failed");
       }
     },
   });
@@ -185,6 +209,14 @@ const RegisterForm: FC<RegisterFormProps> = ({ role }) => {
     if (profilePictureReff.current) {
       profilePictureReff.current.value = "";
     }
+  };
+
+  const onChangeCardNumber = (query: string) => {
+    setCardNum(query);
+  };
+
+  const onChangeBank = (query: string) => {
+    setBank(query);
   };
 
   return (
@@ -262,13 +294,13 @@ const RegisterForm: FC<RegisterFormProps> = ({ role }) => {
                 htmlFor="fullName"
                 className="text-sm font-medium flex items-center gap-2">
                 <User size={16} />
-                {role === "customer" ? "Full Name" : "Organization Name"}
+                {role === "CUSTOMER" ? "Full Name" : "Organization Name"}
               </Label>
               <Input
                 id="fullName"
                 name="fullName"
                 placeholder={`Enter your ${
-                  role === "customer" ? "full name" : "organization name"
+                  role === "CUSTOMER" ? "full name" : "organization name"
                 }`}
                 value={formik.values.fullName}
                 onChange={formik.handleChange}
@@ -512,6 +544,57 @@ const RegisterForm: FC<RegisterFormProps> = ({ role }) => {
             </div>
           </div>
 
+          {role === "ORGANIZER" && (
+            <div className="grid grid-cols-3 gap-4">
+              <div className="space-y-2 col-span-2">
+                <Label
+                  htmlFor="cardNumber"
+                  className="text-sm font-medium flex items-center gap-2">
+                  <IdCard size={16} />
+                  Account Number
+                </Label>
+                <Input
+                  id="cardNumber"
+                  name="cardNumber"
+                  type="text"
+                  placeholder="9 digits of your account number"
+                  value={cardNum}
+                  onChange={(e) => onChangeCardNumber(e.target.value)}
+                  className={cn(
+                    "transition-all duration-200",
+                    "border-muted-foreground/20",
+                    formik.touched.email &&
+                      formik.errors.email &&
+                      "border-red-500"
+                  )}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label
+                  htmlFor="bank"
+                  className="text-sm font-medium flex items-center gap-2">
+                  <DollarSign size={16} />
+                  Bank
+                </Label>
+                <Input
+                  id="bank"
+                  name="bank"
+                  type="text"
+                  placeholder="Your Bank"
+                  value={bank}
+                  onChange={(e) => onChangeBank(e.target.value)}
+                  className={cn(
+                    "transition-all duration-200",
+                    "border-muted-foreground/20",
+                    formik.touched.email &&
+                      formik.errors.email &&
+                      "border-red-500"
+                  )}
+                />
+              </div>
+            </div>
+          )}
+
           {/* Referral Code */}
           {role === "CUSTOMER" && (
             <div className="space-y-2">
@@ -564,7 +647,9 @@ const RegisterForm: FC<RegisterFormProps> = ({ role }) => {
           {/* Submit Button */}
           <Button
             type="submit"
-            disabled={isPending}
+            disabled={
+              isPending || isReferralValid === false || isPendingReferral
+            }
             className={cn(
               "w-full transition-all duration-200",
               "hover:translate-y-[-1px] active:translate-y-[1px]"
