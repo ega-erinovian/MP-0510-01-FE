@@ -30,8 +30,8 @@ const EventsComponent = () => {
   const [search, setSearch] = useQueryState("search", { defaultValue: "" });
   const [debouncedSearch] = useDebounce(search, 1000);
   const [searchCity, setSearchCity] = useState("");
-  const [open, setOpen] = useState(false);
   const [debouncedSearchCity] = useDebounce(searchCity, 500);
+  const [open, setOpen] = useState(false);
   const [categoryId, setCategoryId] = useQueryState("categoryId", {
     defaultValue: "",
   });
@@ -69,7 +69,6 @@ const EventsComponent = () => {
   };
   const onSearch = (query: string) => setSearch(query);
   const onCategoryChange = (categoryId: string) => setCategoryId(categoryId);
-  const onCityChange = (cityId: string) => setCityId(cityId);
 
   const showCities = debouncedSearchCity.length > 0 && !isPendingCities;
 
