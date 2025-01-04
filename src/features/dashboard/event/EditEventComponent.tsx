@@ -24,18 +24,28 @@ import { formatISO } from "date-fns";
 import { useFormik } from "formik";
 import {
   Calendar,
+  Check,
   Coins,
+  Loader2,
   MapPin,
   Tag,
   Trash2,
   Upload,
   Users,
+  X,
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, FC, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { editEventSchema } from "./schemas";
+import { useDebounce } from "use-debounce";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 
 interface UpdateEventComponentProps {
   id: number;
@@ -62,13 +72,21 @@ const EditEventComponent: FC<UpdateEventComponentProps> = ({ id }) => {
     String(event?.categoryId)
   );
 
+  const [searchCity, setSearchCity] = useState("");
+  const [debouncedSearchCity] = useDebounce(searchCity, 1000);
+  const [open, setOpen] = useState(false);
+
   // Fetch required data
   const { data: countries = [] } = useGetCountries();
   const { data: citiesByCountry = [], isLoading: citiesLoading } = useGetCities(
     {
+      search: debouncedSearchCity.length > 0 ? debouncedSearchCity : "",
       countryId: parseInt(selectedCountry) || 0,
     }
   );
+
+  const showCities = debouncedSearchCity.length > 0 && !citiesLoading;
+
   const { data: categories = [] } = useGetCategories();
 
   // Effect to set initial select values when event data is loaded
@@ -188,7 +206,7 @@ const EditEventComponent: FC<UpdateEventComponentProps> = ({ id }) => {
   };
 
   if (isEventLoading || !isFormReady) {
-    return <Loading text="Loading Event Data" />;
+    return <Loading text="Event Data" />;
   }
 
   return (
@@ -417,6 +435,100 @@ const EditEventComponent: FC<UpdateEventComponentProps> = ({ id }) => {
                 <Label
                   htmlFor="city"
                   className="text-lg font-semibold flex items-center gap-2 text-gray-700">
+                  <MapPin size={16} />
+                  City
+                </Label>
+                <div className="flex items-center gap-2">
+                  <Popover open={open} onOpenChange={setOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        disabled={citiesLoading || selectedCountry === ""}
+                        className="w-full h-10 justify-between">
+                        {citiesLoading && searchCity !== "" ? (
+                          <span className="flex items-center gap-2">
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            Searching...
+                          </span>
+                        ) : selectedCity ? (
+                          citiesByCountry?.find(
+                            (city: any) => city.id.toString() === selectedCity
+                          )?.name
+                        ) : (
+                          "Search City"
+                        )}
+                      </Button>
+                    </PopoverTrigger>
+
+                    <PopoverContent className="w-full p-0" align="start">
+                      <div className="flex items-center border-b p-2">
+                        <Input
+                          className="border-0 focus-visible:ring-0 text-sm"
+                          placeholder="Search city..."
+                          value={searchCity}
+                          disabled={citiesLoading || selectedCountry === ""}
+                          onChange={(e) => {
+                            setSearchCity(e.target.value);
+                          }}
+                        />
+                      </div>
+                      <div className="max-h-[200px] overflow-y-auto">
+                        {showCities && citiesByCountry?.length === 0 ? (
+                          <p className="p-3 text-sm text-muted-foreground">
+                            No cities found.
+                          </p>
+                        ) : (
+                          showCities &&
+                          citiesByCountry?.map((city) => (
+                            <button
+                              key={city.id}
+                              onClick={() => {
+                                const cityId = Number(city.id);
+                                if (!isNaN(cityId) && cityId > 0) {
+                                  setSelectedCity(city.id.toString());
+                                  formik.setFieldValue("cityId", cityId);
+                                } else {
+                                  setSelectedCity("");
+                                  formik.setFieldValue("cityId", null);
+                                }
+                                setOpen(false);
+                              }}
+                              className={cn(
+                                "w-full px-3 py-2 text-sm text-left hover:bg-accent transition-colors",
+                                selectedCity === city.id.toString() &&
+                                  "bg-accent"
+                              )}>
+                              <div className="flex items-center justify-between">
+                                <span>{city.name}</span>
+                                {selectedCity === city.id.toString() && (
+                                  <Check className="h-4 w-4" />
+                                )}
+                              </div>
+                            </button>
+                          ))
+                        )}
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                  {selectedCity && (
+                    <Button
+                      onClick={() => {
+                        setSelectedCity("");
+                        setSearchCity("");
+                      }}
+                      variant="ghost"
+                      size="icon"
+                      className="h-10 w-10 text-red-500 hover:text-red-600 hover:bg-red-50">
+                      <X className="h-5 w-5" />
+                    </Button>
+                  )}
+                </div>
+              </div>
+
+              {/* <div className="space-y-2">
+                <Label
+                  htmlFor="city"
+                  className="text-lg font-semibold flex items-center gap-2 text-gray-700">
                   <MapPin size={18} />
                   City
                 </Label>
@@ -454,11 +566,11 @@ const EditEventComponent: FC<UpdateEventComponentProps> = ({ id }) => {
                     </SelectGroup>
                   </SelectContent>
                 </Select>
-                {formik.touched.cityId && formik.errors.cityId && (
-                  <p className="text-sm text-red-500">{formik.errors.cityId}</p>
-                )}
-              </div>
+              </div> */}
             </div>
+            {formik.touched.cityId && formik.errors.cityId && (
+              <p className="text-sm text-red-500">{formik.errors.cityId}</p>
+            )}
 
             {/* Category Section */}
             <div className="space-y-2">

@@ -22,12 +22,16 @@ import { formatISO } from "date-fns";
 import { useFormik } from "formik";
 import {
   Calendar,
+  Check,
   Coins,
+  Globe,
+  Loader2,
   MapPin,
   Tag,
   Trash2,
   Upload,
   Users,
+  X,
 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
@@ -35,6 +39,13 @@ import { useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { createEventSchema } from "./schemas";
+import { useDebounce } from "use-debounce";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 
 const CreateEventComponent = () => {
   const { data } = useSession(); // dari next-auth
@@ -46,12 +57,19 @@ const CreateEventComponent = () => {
   const [selectedImage, setSelectedImage] = useState<string>("");
   const [selectedCity, setSelectedCity] = useState<string>("");
 
-  const [selectedCountry, setSelectedCountry] = useState<string>("");
-  const { data: countries } = useGetCountries();
+  const [searchCity, setSearchCity] = useState("");
+  const [debouncedSearchCity] = useDebounce(searchCity, 1000);
+  const [open, setOpen] = useState(false);
 
-  const { data: citiesByCountry = [], isLoading: citiesLoading } = useGetCities(
-    { countryId: Number(selectedCountry) }
-  );
+  const [selectedCountry, setSelectedCountry] = useState<string>("");
+  const { data: countries = [] } = useGetCountries();
+
+  const { data: cities, isPending: isPendingCities } = useGetCities({
+    search: debouncedSearchCity.length > 0 ? debouncedSearchCity : "",
+    countryId: parseInt(selectedCountry),
+  });
+
+  const showCities = debouncedSearchCity.length > 0 && !isPendingCities;
 
   const { data: categories = [] } = useGetCategories();
 
@@ -319,23 +337,23 @@ const CreateEventComponent = () => {
             </div>
 
             {/* Location */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid md:grid-cols-2 gap-4 w-ful">
               <div className="space-y-2">
                 <Label
                   htmlFor="country"
                   className="text-lg font-semibold flex items-center gap-2 text-gray-700">
-                  <MapPin size={18} />
+                  <Globe size={16} />
                   Country
                 </Label>
                 <Select
                   value={selectedCountry}
                   onValueChange={setSelectedCountry}>
-                  <SelectTrigger className="border-gray-200 focus:border-purple-500 focus:ring-purple-200">
-                    <SelectValue placeholder="Select Country" />
+                  <SelectTrigger className="border-muted-foreground/20">
+                    <SelectValue placeholder="Select country" />
                   </SelectTrigger>
-                  <SelectContent className="max-h-60 overflow-auto">
+                  <SelectContent>
                     <SelectGroup>
-                      {countries?.map((country) => (
+                      {countries.map((country) => (
                         <SelectItem key={country.id} value={String(country.id)}>
                           {country.name}
                         </SelectItem>
@@ -344,54 +362,98 @@ const CreateEventComponent = () => {
                   </SelectContent>
                 </Select>
               </div>
-
               <div className="space-y-2">
                 <Label
                   htmlFor="city"
                   className="text-lg font-semibold flex items-center gap-2 text-gray-700">
-                  <MapPin size={18} />
+                  <MapPin size={16} />
                   City
                 </Label>
-                <Select
-                  value={selectedCity}
-                  onValueChange={(value: string) => {
-                    const cityId = Number(value);
-                    if (!isNaN(cityId) && cityId > 0) {
-                      setSelectedCity(value);
-                      formik.setFieldValue("cityId", cityId);
-                    } else {
-                      setSelectedCity("");
-                      formik.setFieldValue("cityId", null);
-                    }
-                  }}
-                  disabled={!selectedCountry || citiesLoading}>
-                  <SelectTrigger className="border-gray-200 focus:border-purple-500 focus:ring-purple-200">
-                    <SelectValue
-                      placeholder={
-                        citiesLoading ? "Loading cities..." : "Select City"
-                      }
-                    />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-60 overflow-auto">
-                    <SelectGroup>
-                      {citiesLoading ? (
-                        <SelectItem value="0" disabled>
-                          Loading cities...
-                        </SelectItem>
-                      ) : citiesByCountry ? (
-                        citiesByCountry?.map((city) => (
-                          <SelectItem key={city.id} value={String(city.id)}>
-                            {city.name}
-                          </SelectItem>
-                        ))
-                      ) : (
-                        <SelectItem value="-" disabled>
-                          No cities available
-                        </SelectItem>
-                      )}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
+                <div className="flex items-center gap-2">
+                  <Popover open={open} onOpenChange={setOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        disabled={isPendingCities || selectedCountry === ""}
+                        className="w-full h-10 justify-between">
+                        {isPendingCities && searchCity !== "" ? (
+                          <span className="flex items-center gap-2">
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            Searching...
+                          </span>
+                        ) : selectedCity ? (
+                          cities?.find(
+                            (city: any) => city.id.toString() === selectedCity
+                          )?.name
+                        ) : (
+                          "Search City"
+                        )}
+                      </Button>
+                    </PopoverTrigger>
+
+                    <PopoverContent className="w-full p-0" align="start">
+                      <div className="flex items-center border-b p-2">
+                        <Input
+                          className="border-0 focus-visible:ring-0 text-sm"
+                          placeholder="Search city..."
+                          value={searchCity}
+                          disabled={isPendingCities || selectedCountry === ""}
+                          onChange={(e) => {
+                            setSearchCity(e.target.value);
+                          }}
+                        />
+                      </div>
+                      <div className="max-h-[200px] overflow-y-auto">
+                        {showCities && cities?.length === 0 ? (
+                          <p className="p-3 text-sm text-muted-foreground">
+                            No cities found.
+                          </p>
+                        ) : (
+                          showCities &&
+                          cities?.map((city) => (
+                            <button
+                              key={city.id}
+                              onClick={() => {
+                                const cityId = Number(city.id);
+                                if (!isNaN(cityId) && cityId > 0) {
+                                  setSelectedCity(city.id.toString());
+                                  formik.setFieldValue("cityId", cityId);
+                                } else {
+                                  setSelectedCity("");
+                                  formik.setFieldValue("cityId", null);
+                                }
+                                setOpen(false);
+                              }}
+                              className={cn(
+                                "w-full px-3 py-2 text-sm text-left hover:bg-accent transition-colors",
+                                selectedCity === city.id.toString() &&
+                                  "bg-accent"
+                              )}>
+                              <div className="flex items-center justify-between">
+                                <span>{city.name}</span>
+                                {selectedCity === city.id.toString() && (
+                                  <Check className="h-4 w-4" />
+                                )}
+                              </div>
+                            </button>
+                          ))
+                        )}
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                  {selectedCity && (
+                    <Button
+                      onClick={() => {
+                        setSelectedCity("");
+                        setSearchCity("");
+                      }}
+                      variant="ghost"
+                      size="icon"
+                      className="h-10 w-10 text-red-500 hover:text-red-600 hover:bg-red-50">
+                      <X className="h-5 w-5" />
+                    </Button>
+                  )}
+                </div>
               </div>
             </div>
             {!!formik.touched.cityId && !!formik.errors.cityId && (

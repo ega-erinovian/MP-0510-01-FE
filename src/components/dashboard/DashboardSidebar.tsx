@@ -203,7 +203,7 @@ const DashboardSidebar = () => {
               </AvatarFallback>
             </Avatar>
             <div className="flex flex-col flex-1">
-              <span className="font-semibold">{user.fullName}</span>
+              <span className="font-semibold text-sm">{user.fullName}</span>
               <Link
                 href={`/dashboard/profile/edit/${user.id}`}
                 className="text-sm text-muted-foreground hover:text-primary transition-colors relative inline-block group-hover:underline">
