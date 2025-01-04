@@ -5,9 +5,8 @@ import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import { signIn } from "next-auth/react"; // Hanya bisa digunakan di client side comp
+import { signIn } from "next-auth/react";
 
-// Use React Query
 interface LoginPayload {
   email: string;
   password: string;

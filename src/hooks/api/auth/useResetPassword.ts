@@ -6,7 +6,6 @@ import { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
-// Payload u/ request body
 interface ResetPasswordPayload {
   password: string;
 }

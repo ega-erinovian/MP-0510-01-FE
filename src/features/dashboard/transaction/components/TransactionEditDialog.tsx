@@ -46,20 +46,12 @@ const TransactionEditDialog: FC<TransactionEditDialogProps> = ({
   const { mutateAsync: updateVoucher } = useUpdateVoucher(
     transaction.voucherId || 0
   );
-
   const { mutateAsync: updateCoupon } = useUpdateCoupon(
     transaction.couponId || 0
   );
-
   const { mutateAsync: updateUser } = useUpdateUser();
-
-  const { data: existingVoucher, isPending: isPendingVoucher } = useGetVoucher(
-    transaction.voucherId || 0
-  );
-
-  const { data: existingCoupon, isPending: isPendingCoupon } = useGetCoupon(
-    transaction.couponId || 0
-  );
+  const { data: existingVoucher } = useGetVoucher(transaction.voucherId || 0);
+  const { data: existingCoupon } = useGetCoupon(transaction.couponId || 0);
 
   const formik = useFormik({
     initialValues: {
@@ -73,10 +65,10 @@ const TransactionEditDialog: FC<TransactionEditDialogProps> = ({
     validationSchema: updateTransactionSchema,
     onSubmit: async (values) => {
       try {
+        const { status } = values;
+
         if (
-          (values.status === "REJECTED" ||
-            values.status === "EXPIRED" ||
-            values.status === "CANCELED") &&
+          ["REJECTED", "EXPIRED", "CANCELED"].includes(status) &&
           !isUpdatingTransaction
         ) {
           await updateEvent({
@@ -85,33 +77,26 @@ const TransactionEditDialog: FC<TransactionEditDialogProps> = ({
           });
 
           if (transaction.voucherId) {
-            await updateVoucher({
-              isUsed: "AVAILABLE",
-            });
+            await updateVoucher({ isUsed: "AVAILABLE" });
           }
 
           if (transaction.couponId) {
-            await updateCoupon({
-              isUsed: "AVAILABLE",
-            });
+            await updateCoupon({ isUsed: "AVAILABLE" });
           }
 
-          let totalPriceBeforePoint = transaction.event.price * transaction.qty;
+          const totalPriceBeforePoint =
+            transaction.event.price * transaction.qty;
           let usedPoint = 0;
 
           if (transaction.isUsePoint) {
-            if (existingVoucher) {
-              totalPriceBeforePoint -= existingVoucher.amount;
-            }
-
-            if (existingCoupon) {
-              totalPriceBeforePoint -= existingCoupon.amount;
-            }
-
-            usedPoint = totalPriceBeforePoint - transaction.totalPrice;
+            const adjustedPrice =
+              totalPriceBeforePoint -
+              (existingVoucher?.amount || 0) -
+              (existingCoupon?.amount || 0);
+            usedPoint = adjustedPrice - transaction.totalPrice;
           }
 
-          if (transaction.totalPrice < totalPriceBeforePoint) {
+          if (usedPoint > 0) {
             await updateUser({
               id: transaction.userId,
               point: transaction.user.point + usedPoint,
@@ -119,25 +104,21 @@ const TransactionEditDialog: FC<TransactionEditDialogProps> = ({
           }
         }
 
-        if (
-          values.status === "REJECTED" ||
-          values.status === "EXPIRED" ||
-          values.status === "CANCELED"
-        ) {
-          await updateTransaction({
-            ...values,
-            voucherId: null,
-            couponId: null,
-          });
-        } else {
-          await updateTransaction({
-            ...values,
-          });
-        }
+        await updateTransaction({
+          ...values,
+          voucherId: ["REJECTED", "EXPIRED", "CANCELED"].includes(status)
+            ? null
+            : values.voucherId,
+          couponId: ["REJECTED", "EXPIRED", "CANCELED"].includes(status)
+            ? null
+            : values.couponId,
+        });
 
         setIsDialogOpen(false);
+        toast.success("Transaction updated successfully.");
         router.push("/dashboard/transactions");
       } catch (error) {
+        console.error("Error updating transaction:", error);
         toast.error("Failed to update transaction. Please try again.");
       }
     },
