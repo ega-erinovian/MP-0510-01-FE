@@ -4,7 +4,7 @@ import DataNotFound from "@/components/dashboard/DataNotFound";
 import Loading from "@/components/dashboard/Loading";
 import useGetReferrals from "@/hooks/api/referral/useGetReferrals";
 import useGetUser from "@/hooks/api/user/useGetUser";
-import { CheckCircle2, Copy } from "lucide-react";
+import { CheckCircle2, Copy, Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import ReferralList from "./ReferralList";
@@ -78,7 +78,7 @@ const ReferralListWrapper = () => {
             <div className="text-white">
               {isPending ? (
                 <div className="py-8">
-                  <Loading text="" />
+                  <Loader2 />
                 </div>
               ) : (
                 <div className="space-y-2">
@@ -120,7 +120,7 @@ const ReferralListWrapper = () => {
             <div className="text-white">
               {isPending ? (
                 <div className="py-8">
-                  <Loading text="" />
+                  <Loader2 />
                 </div>
               ) : (
                 <div className="space-y-2">

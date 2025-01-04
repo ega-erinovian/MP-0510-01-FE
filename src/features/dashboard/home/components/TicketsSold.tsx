@@ -10,7 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import useGetTransactionsQty from "@/hooks/api/transaction/useGetTransactionsQty";
-import { Ticket } from "lucide-react";
+import { Loader2, Ticket } from "lucide-react";
 import { FC, useState } from "react";
 
 interface TicketsSoldProps {
@@ -65,7 +65,7 @@ const TicketsSold: FC<TicketsSoldProps> = ({ id }) => {
         <div className="text-white">
           {isPending ? (
             <div className="py-8">
-              <Loading text="" />
+              <Loader2 />
             </div>
           ) : (
             <div className="space-y-2">

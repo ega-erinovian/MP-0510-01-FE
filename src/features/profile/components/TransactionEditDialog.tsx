@@ -36,20 +36,23 @@ const TransactionEditDialog: FC<TransactionEditDialogProps> = ({
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { mutateAsync: updateTransaction, isPending } = useUpdateTransaction();
 
-  const [selectedImage, setSelectedImage] = useState<string>("");
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [selectedImageUrl, setSelectedImageUrl] = useState<string>("");
   const paymentProofRef = useRef<HTMLInputElement>(null);
 
   const onChangePaymentProof = (e: ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length) {
       formik.setFieldValue("paymentProof", files[0]);
-      setSelectedImage(URL.createObjectURL(files[0]));
+      setSelectedImage(files[0]);
+      setSelectedImageUrl(URL.createObjectURL(files[0]));
     }
   };
 
   const removePaymentProof = () => {
     formik.setFieldValue("paymentProof", null);
-    setSelectedImage("");
+    setSelectedImage(null);
+    setSelectedImageUrl("");
 
     if (paymentProofRef.current) {
       paymentProofRef.current.value = "";
@@ -68,14 +71,14 @@ const TransactionEditDialog: FC<TransactionEditDialogProps> = ({
       try {
         await updateTransaction({
           ...values,
-          status: selectedImage !== "" ? "CONFIRMING" : "UNPAID",
+          status: selectedImage ? "CONFIRMING" : "UNPAID",
           paymentProof: values.paymentProof,
         });
         setIsDialogOpen(false);
-        setSelectedImage("");
+        setSelectedImage(null);
         toast.success("Payment proof uploaded successfully!");
       } catch (error) {
-        setSelectedImage("");
+        setSelectedImage(null);
         toast.error("Failed to update transaction. Please try again.");
       }
     },
@@ -106,11 +109,15 @@ const TransactionEditDialog: FC<TransactionEditDialogProps> = ({
             <div className="relative">
               {selectedImage && (
                 <div className="p-3 bg-muted/50 rounded-lg mb-4">
+                  <p className="text-sm text-muted-foreground">
+                    Selected file: {selectedImage.name}
+                  </p>
                   <Link
-                    href={selectedImage}
+                    href={selectedImageUrl}
                     target="_blank"
-                    className="text-sm text-purple-600 hover:text-purple-700 font-medium">
-                    View Payment Proof
+                    rel="noopener noreferrer"
+                    className="text-sm text-primary underline">
+                    View Image
                   </Link>
                 </div>
               )}
@@ -172,7 +179,7 @@ const TransactionEditDialog: FC<TransactionEditDialogProps> = ({
             <Button
               type="submit"
               className="w-full sm:w-auto"
-              disabled={isPending || selectedImage === ""}>
+              disabled={isPending || selectedImage === null}>
               {isPending ? (
                 <span className="flex items-center gap-2">
                   <span className="animate-spin">◌</span>

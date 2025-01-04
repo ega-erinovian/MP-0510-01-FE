@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/select";
 import useGetEvents from "@/hooks/api/event/useGetEvents";
 import { FC, useState } from "react";
-import { Calendar } from "lucide-react";
+import { Calendar, Loader2 } from "lucide-react";
 
 interface ActiveEventProps {
   id: number;
@@ -64,7 +64,7 @@ const ActiveEvent: FC<ActiveEventProps> = ({ id }) => {
         <div className="text-white">
           {isPending ? (
             <div className="py-8">
-              <Loading text="" />
+              <Loader2 />
             </div>
           ) : (
             <div className="space-y-2">

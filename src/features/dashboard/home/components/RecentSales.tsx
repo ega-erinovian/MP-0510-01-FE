@@ -2,7 +2,7 @@
 
 import Loading from "@/components/dashboard/Loading";
 import useGetTransactions from "@/hooks/api/transaction/useGetTransactions";
-import { Receipt } from "lucide-react";
+import { Loader2, Receipt } from "lucide-react";
 import { FC } from "react";
 import RecentSalesItem from "./RecentSaleItem";
 
@@ -35,7 +35,7 @@ const RecentSales: FC<RecentSalesProps> = ({ id }) => {
       <div className="space-y-1">
         {isPending ? (
           <div className="flex justify-center items-center h-48">
-            <Loading text="" />
+            <Loader2 />
           </div>
         ) : transactions?.data.length === 0 ? (
           <div className="text-center py-12 text-gray-500">

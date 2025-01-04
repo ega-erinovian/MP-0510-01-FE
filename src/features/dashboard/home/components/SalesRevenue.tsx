@@ -4,6 +4,7 @@ import Loading from "@/components/dashboard/Loading";
 import useGetTransactionsIncomePerMonth from "@/hooks/api/transaction/useGetTransactionsIncomePerMonth";
 import { FC } from "react";
 import SalesChart from "./SalesChart";
+import { Loader2 } from "lucide-react";
 
 interface SalesRevenueProps {
   id: number;
@@ -27,7 +28,7 @@ const SalesRevenue: FC<SalesRevenueProps> = ({ id }) => {
         <p className="text-gray-600 font-medium">{new Date().getFullYear()}</p>
       </div>
       {isPending ? (
-        <Loading text="" />
+        <Loader2 />
       ) : (
         <SalesChart monthlyChart={data ? data.income : 0} />
       )}

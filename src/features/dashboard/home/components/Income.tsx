@@ -12,7 +12,7 @@ import {
 import useGetTransactionsIncome from "@/hooks/api/transaction/useGetTransactionsIncome";
 import { useFormatValue } from "@/hooks/use-format-value";
 import { FC, useState } from "react";
-import { DollarSign, TrendingUp } from "lucide-react";
+import { DollarSign, Loader2, TrendingUp } from "lucide-react";
 
 interface IncomeProps {
   id: number;
@@ -61,7 +61,7 @@ const Income: FC<IncomeProps> = ({ id }) => {
         <div className="text-white">
           {isPending ? (
             <div className="py-8">
-              <Loading text="" />
+              <Loader2 />
             </div>
           ) : (
             <div className="space-y-2">
