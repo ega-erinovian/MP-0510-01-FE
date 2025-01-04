@@ -3,11 +3,11 @@
 import DataNotFound from "@/components/dashboard/DataNotFound";
 import Loading from "@/components/dashboard/Loading";
 import useGetReferrals from "@/hooks/api/referral/useGetReferrals";
-import { useSession } from "next-auth/react";
-import ReferralList from "./ReferralList";
-import { useState } from "react";
-import { Copy, CheckCircle2 } from "lucide-react";
 import useGetUser from "@/hooks/api/user/useGetUser";
+import { CheckCircle2, Copy } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { useState } from "react";
+import ReferralList from "./ReferralList";
 
 const ReferralListWrapper = () => {
   const { data: sessionData } = useSession();

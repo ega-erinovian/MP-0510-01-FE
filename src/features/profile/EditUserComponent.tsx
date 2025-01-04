@@ -1,42 +1,42 @@
 "use client";
 
 import Loading from "@/components/dashboard/Loading";
+import FormField from "@/components/FormField";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Card,
-  CardHeader,
-  CardTitle,
   CardContent,
   CardDescription,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import useCreateCoupon from "@/hooks/api/coupon/useCreateCoupon";
+import useCreateReferral from "@/hooks/api/referral/useCreateReferral";
+import useCheckReferral from "@/hooks/api/user/useCheckReferral";
 import useGetUser from "@/hooks/api/user/useGetUser";
 import useUpdateUser from "@/hooks/api/user/useUpdateUser";
+import useRandomCode from "@/hooks/useRandomCode";
+import { cn } from "@/lib/utils";
 import { useFormik } from "formik";
 import {
+  CheckCircle2,
+  Gift,
+  Loader2,
+  Mail,
+  Phone,
   Trash2,
   Upload,
   User,
-  Mail,
-  Phone,
-  Gift,
-  Loader2,
-  CheckCircle2,
   XCircle,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, FC, useEffect, useRef, useState } from "react";
-import { updateUserSchema } from "./schemas";
-import { useDebounce } from "use-debounce";
-import useCheckReferral from "@/hooks/api/user/useCheckReferral";
-import useCreateReferral from "@/hooks/api/referral/useCreateReferral";
-import useCreateCoupon from "@/hooks/api/coupon/useCreateCoupon";
-import useRandomCode from "@/hooks/useRandomCode";
 import { toast } from "react-toastify";
+import { useDebounce } from "use-debounce";
 import CustomerProfileLayout from "./CustomerProfileLayout";
-import { cn } from "@/lib/utils";
-import FormField from "@/components/FormField";
+import { updateUserSchema } from "./schemas";
 
 interface UpdateProfileComponentProps {
   id: number;

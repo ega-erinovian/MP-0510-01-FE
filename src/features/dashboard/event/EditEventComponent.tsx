@@ -31,11 +31,11 @@ import {
   Upload,
   Users,
 } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, FC, useEffect, useRef, useState } from "react";
-import { editEventSchema } from "./schemas";
-import Image from "next/image";
 import { toast } from "react-toastify";
+import { editEventSchema } from "./schemas";
 
 interface UpdateEventComponentProps {
   id: number;

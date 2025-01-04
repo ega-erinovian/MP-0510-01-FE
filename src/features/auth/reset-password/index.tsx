@@ -1,22 +1,20 @@
 "use client";
 
+import PasswordInput from "@/components/PasswordInput";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useFormik } from "formik";
-import { FC, useState } from "react";
-import { ResetPasswordSchema } from "./schemas";
 import useResetPassword from "@/hooks/api/auth/useResetPassword";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Loader2, KeyRound, Eye, EyeOff, X } from "lucide-react";
-import PasswordInput from "@/components/PasswordInput";
+import { useFormik } from "formik";
+import { KeyRound, Loader2 } from "lucide-react";
+import { FC } from "react";
+import { ResetPasswordSchema } from "./schemas";
 
 interface ResetPasswordComponentProps {
   token: string;

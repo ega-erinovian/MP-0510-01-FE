@@ -9,8 +9,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import useGetCoupons from "@/hooks/api/coupon/useGetCoupons";
 import useGetEvent from "@/hooks/api/event/useGetEvent";
 import useGetVouchers from "@/hooks/api/voucher/useGetVouchers";
+import { cn } from "@/lib/utils";
+import { CouponType } from "@/types/coupon";
+import { VoucherType } from "@/types/voucher";
 import { Calendar, LocateIcon, Share2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
@@ -18,10 +22,6 @@ import Link from "next/link";
 import { FC, useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
 import CreateTransactionModal from "./components/CreateTransactionModal";
-import useGetCoupons from "@/hooks/api/coupon/useGetCoupons";
-import { CouponType } from "@/types/coupon";
-import { cn } from "@/lib/utils";
-import { VoucherType } from "@/types/voucher";
 
 interface EventDetailComponentProps {
   eventId: number;

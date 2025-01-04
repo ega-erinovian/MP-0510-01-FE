@@ -19,6 +19,7 @@ import useCreateReferral from "@/hooks/api/referral/useCreateReferral";
 import useCheckReferral from "@/hooks/api/user/useCheckReferral";
 import useUpdateUser from "@/hooks/api/user/useUpdateUser";
 import useRandomCode from "@/hooks/useRandomCode";
+import { cn } from "@/lib/utils";
 import { useFormik } from "formik";
 import {
   CheckCircle,
@@ -41,10 +42,9 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, FC, useEffect, useRef, useState } from "react";
+import { toast } from "react-toastify";
 import { useDebounce } from "use-debounce";
 import { registerSchema } from "../schemas";
-import { cn } from "@/lib/utils";
-import { toast } from "react-toastify";
 
 interface RegisterFormProps {
   role: string;

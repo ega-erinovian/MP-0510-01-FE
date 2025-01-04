@@ -4,12 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-import Loading from "@/components/dashboard/Loading";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import useGetEvents from "@/hooks/api/event/useGetEvents";
+import useCreateVoucher from "@/hooks/api/voucher/useCreateVoucher";
 import { cn } from "@/lib/utils";
 import { useFormik } from "formik";
 import {
@@ -20,14 +21,12 @@ import {
   Loader2,
   Tag,
 } from "lucide-react"; // Added Loader2 icon for the loader
-import { useState } from "react";
-import { CreateVoucherSchema } from "./schemas";
-import useCreateVoucher from "@/hooks/api/voucher/useCreateVoucher";
-import useGetEvents from "@/hooks/api/event/useGetEvents";
-import { useDebounce } from "use-debounce";
-import { useRouter } from "next/navigation";
-import { toast } from "react-toastify";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "react-toastify";
+import { useDebounce } from "use-debounce";
+import { CreateVoucherSchema } from "./schemas";
 
 const CreateVoucherPage = () => {
   const { data: sessionData } = useSession();
