@@ -107,7 +107,7 @@ const UpdatePasswordComponent: FC<UpdatePasswordComponentProps> = ({ id }) => {
                 error={formik.errors.oldPassword}
                 touched={formik.touched.oldPassword}
               />
-              {checkPasswordMessage && (
+              {checkPasswordMessage && !isChecking ? (
                 <div
                   className={cn(
                     "text-sm flex items-center gap-1.5 p-2 rounded transition-colors",
@@ -117,6 +117,13 @@ const UpdatePasswordComponent: FC<UpdatePasswordComponentProps> = ({ id }) => {
                   )}>
                   {isPasswordValid ? <Check size={14} /> : <X size={14} />}
                   {checkPasswordMessage}
+                </div>
+              ) : (
+                <div
+                  className={cn(
+                    "text-sm flex items-center gap-1.5 p-2 rounded transition-colors bg-gray-200 text-gray-500"
+                  )}>
+                  <Loader2 className="animate-spin" /> Checking Current Password
                 </div>
               )}
               <PasswordInput

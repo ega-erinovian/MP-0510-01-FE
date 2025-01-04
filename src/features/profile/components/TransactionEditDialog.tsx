@@ -35,23 +35,31 @@ const TransactionEditDialog: FC<TransactionEditDialogProps> = ({
   const { mutateAsync: updateTransaction, isPending } = useUpdateTransaction();
 
   const [selectedImage, setSelectedImage] = useState<string>("");
+  const [imageURL, setImageURL] = useState<string | null>(null);
   const paymentProofRef = useRef<HTMLInputElement>(null);
 
   const onChangePaymentProof = (e: ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length) {
+      const file = files[0];
       const reader = new FileReader();
+
+      const url = URL.createObjectURL(file);
+      setImageURL(url);
+
       reader.onload = () => {
-        formik.setFieldValue("paymentProof", files[0]);
+        formik.setFieldValue("paymentProof", file);
         setSelectedImage(reader.result as string);
       };
-      reader.readAsDataURL(files[0]);
+
+      reader.readAsDataURL(file);
     }
   };
 
   const removePaymentProof = () => {
     formik.setFieldValue("paymentProof", null);
     setSelectedImage("");
+    setImageURL(null);
 
     if (paymentProofRef.current) {
       paymentProofRef.current.value = "";
@@ -75,9 +83,11 @@ const TransactionEditDialog: FC<TransactionEditDialogProps> = ({
         });
         setIsDialogOpen(false);
         setSelectedImage("");
+        setImageURL(null);
         toast.success("Payment proof uploaded successfully!");
       } catch (error) {
         setSelectedImage("");
+        setImageURL(null);
         toast.error("Failed to update transaction. Please try again.");
       }
     },
@@ -106,10 +116,10 @@ const TransactionEditDialog: FC<TransactionEditDialogProps> = ({
         <form onSubmit={formik.handleSubmit} className="space-y-6">
           <div className="space-y-2">
             <div className="relative">
-              {selectedImage && (
+              {imageURL && (
                 <div className="p-3 bg-muted/50 rounded-lg mb-4">
                   <Link
-                    href={selectedImage}
+                    href={imageURL}
                     target="_blank"
                     className="text-sm text-purple-600 hover:text-purple-700 font-medium">
                     View Payment Proof
@@ -128,7 +138,7 @@ const TransactionEditDialog: FC<TransactionEditDialogProps> = ({
                   />
                   <Upload className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                 </div>
-                {selectedImage && (
+                {imageURL && (
                   <Button
                     type="button"
                     variant="destructive"
