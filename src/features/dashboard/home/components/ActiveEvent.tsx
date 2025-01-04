@@ -64,7 +64,7 @@ const ActiveEvent: FC<ActiveEventProps> = ({ id }) => {
         <div className="text-white">
           {isPending ? (
             <div className="py-8">
-              <Loader2 />
+              <Loader2 className="animate-spin" />
             </div>
           ) : (
             <div className="space-y-2">
