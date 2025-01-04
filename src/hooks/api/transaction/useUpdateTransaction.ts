@@ -27,7 +27,6 @@ const useUpdateTransaction = () => {
         formData.append("email", payload.email);
       }
       if (payload.paymentProof) {
-        console.log("Appending paymentProof:", payload.paymentProof);
         formData.append("paymentProof", payload.paymentProof);
       }
       if (payload.voucherId !== undefined) {
@@ -42,10 +41,6 @@ const useUpdateTransaction = () => {
           payload.couponId === null ? "null" : `${payload.couponId}`
         );
       }
-
-      formData.forEach((value, key) => {
-        console.log(`FormData key: ${key}, value: ${value}`);
-      });
 
       try {
         const { data } = await axiosInstance.patch(
