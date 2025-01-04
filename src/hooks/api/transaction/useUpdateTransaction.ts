@@ -18,14 +18,16 @@ const useUpdateTransaction = () => {
 
   return useMutation({
     mutationFn: async (payload: UpdateTransactionPayload) => {
-      console.log(payload);
-
       const formData = new FormData();
 
       if (payload.status) formData.append("status", payload.status);
       if (payload.email) formData.append("email", payload.email);
+
       if (payload.paymentProof) {
+        console.log("Appending paymentProof:", payload.paymentProof);
         formData.append("paymentProof", payload.paymentProof);
+      } else {
+        console.warn("paymentProof is null or undefined");
       }
 
       if (payload.voucherId === null) {
@@ -40,16 +42,22 @@ const useUpdateTransaction = () => {
         formData.append("couponId", `${payload.couponId}`);
       }
 
-      const { data } = await axiosInstance.patch(
-        `/transactions/${payload.id}`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data", // Ensure this header is set correctly
-          },
-        }
-      );
-      return data;
+      try {
+        const { data } = await axiosInstance.patch(
+          `/transactions/${payload.id}`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        return data;
+      } catch (error) {
+        console.error("Error during mutation:", error);
+        throw error;
+      }
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["transactions"] });
