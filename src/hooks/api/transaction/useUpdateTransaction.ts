@@ -18,6 +18,8 @@ const useUpdateTransaction = () => {
 
   return useMutation({
     mutationFn: async (payload: UpdateTransactionPayload) => {
+      console.log(payload);
+
       const formData = new FormData();
 
       if (payload.status) formData.append("status", payload.status);

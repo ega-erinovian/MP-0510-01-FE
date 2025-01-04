@@ -40,8 +40,12 @@ const TransactionEditDialog: FC<TransactionEditDialogProps> = ({
   const onChangePaymentProof = (e: ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length) {
-      formik.setFieldValue("paymentProof", files[0]);
-      setSelectedImage(URL.createObjectURL(files[0]));
+      const reader = new FileReader();
+      reader.onload = () => {
+        formik.setFieldValue("paymentProof", files[0]);
+        setSelectedImage(reader.result as string);
+      };
+      reader.readAsDataURL(files[0]);
     }
   };
 
