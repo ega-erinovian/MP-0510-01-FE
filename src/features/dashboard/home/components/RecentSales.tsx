@@ -35,7 +35,7 @@ const RecentSales: FC<RecentSalesProps> = ({ id }) => {
       <div className="space-y-1">
         {isPending ? (
           <div className="flex justify-center items-center h-48">
-            <Loader2 />
+            <Loader2 className="animate-spin" />
           </div>
         ) : transactions?.data.length === 0 ? (
           <div className="text-center py-12 text-gray-500">

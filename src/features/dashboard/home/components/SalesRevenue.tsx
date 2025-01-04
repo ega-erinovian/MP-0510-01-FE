@@ -5,6 +5,7 @@ import useGetTransactionsIncomePerMonth from "@/hooks/api/transaction/useGetTran
 import { FC } from "react";
 import SalesChart from "./SalesChart";
 import { Loader2 } from "lucide-react";
+import DataNotFound from "@/components/dashboard/DataNotFound";
 
 interface SalesRevenueProps {
   id: number;
@@ -28,9 +29,11 @@ const SalesRevenue: FC<SalesRevenueProps> = ({ id }) => {
         <p className="text-gray-600 font-medium">{new Date().getFullYear()}</p>
       </div>
       {isPending ? (
-        <Loader2 />
+        <Loader2 className="animate-spin" />
+      ) : data ? (
+        <SalesChart monthlyChart={data.income} />
       ) : (
-        <SalesChart monthlyChart={data ? data.income : 0} />
+        <DataNotFound text="No data found" />
       )}
     </div>
   );

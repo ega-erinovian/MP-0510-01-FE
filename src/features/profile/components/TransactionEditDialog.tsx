@@ -13,9 +13,8 @@ import { Input } from "@/components/ui/input";
 import { updateTransactionSchema } from "@/features/dashboard/transaction/schemas";
 import useUpdateTransaction from "@/hooks/api/transaction/useUpdateTransaction";
 import { useFormik } from "formik";
-import { FileImage, Trash2, Upload } from "lucide-react";
+import { FileImage, Loader2, Trash2, Upload } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { ChangeEvent, FC, useRef, useState } from "react";
 import { toast } from "react-toastify";
 
@@ -32,7 +31,6 @@ const TransactionEditDialog: FC<TransactionEditDialogProps> = ({
   email,
   event,
 }) => {
-  const router = useRouter();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { mutateAsync: updateTransaction, isPending } = useUpdateTransaction();
 
@@ -175,7 +173,7 @@ const TransactionEditDialog: FC<TransactionEditDialogProps> = ({
               disabled={isPending || selectedImage === ""}>
               {isPending ? (
                 <span className="flex items-center gap-2">
-                  <span className="animate-spin">◌</span>
+                  <Loader2 className="animate-spin" />
                   Uploading...
                 </span>
               ) : (

@@ -1,3 +1,5 @@
+"use client";
+
 import CronTimer from "@/components/TransactionTimer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -15,8 +17,13 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import TransactionEditDialog from "./TransactionEditDialog";
 import { getStatusColor } from "../const";
+import dynamic from "next/dynamic";
+
+const TransactionEditDialog = dynamic(
+  () => import("@/features/profile/components/TransactionEditDialog"),
+  { ssr: false }
+);
 
 const TransactionCard = ({ transaction }: { transaction: TransactionType }) => (
   <Card className="group transition-all hover:shadow-md">
@@ -77,14 +84,14 @@ const TransactionCard = ({ transaction }: { transaction: TransactionType }) => (
                 <span className="text-xs text-muted-foreground">
                   Status Timer
                 </span>
-                <p className="font-medium">
+                <div className="font-medium">
                   {transaction.status === "UNPAID" &&
                   transaction.totalPrice > 0 ? (
                     <CronTimer transactionId={transaction.id} />
                   ) : (
                     <span className="text-muted-foreground">N/A</span>
                   )}
-                </p>
+                </div>
               </div>
             </div>
           </div>
