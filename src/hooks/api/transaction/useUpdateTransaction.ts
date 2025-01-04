@@ -40,7 +40,12 @@ const useUpdateTransaction = () => {
 
       const { data } = await axiosInstance.patch(
         `/transactions/${payload.id}`,
-        formData
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data", // Ensure this header is set correctly
+          },
+        }
       );
       return data;
     },
