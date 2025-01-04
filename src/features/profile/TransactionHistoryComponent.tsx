@@ -1,3 +1,5 @@
+"use client";
+
 import CustomerProfileLayout from "./CustomerProfileLayout";
 import TransactionListWrapper from "./components/TransactionListWrapper";
 
