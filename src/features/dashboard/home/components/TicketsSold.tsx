@@ -70,7 +70,7 @@ const TicketsSold: FC<TicketsSoldProps> = ({ id }) => {
           ) : (
             <div className="space-y-2">
               <p className="text-6xl font-bold tracking-tight">
-                {data.qty ?? 0}
+                {data ? data.qty : 0}
               </p>
               <div className="flex items-center gap-2">
                 <span className="text-lg font-medium text-white/90">

@@ -4,6 +4,7 @@ import Loading from "@/components/dashboard/Loading";
 import useGetEvents from "@/hooks/api/event/useGetEvents";
 import Link from "next/link";
 import EventCard from "./EventCard";
+import DataNotFound from "@/components/dashboard/DataNotFound";
 
 const NewestEvent = () => {
   const { data: events, isPending } = useGetEvents({
@@ -12,6 +13,9 @@ const NewestEvent = () => {
     sortOrder: "desc",
     take: 4,
   });
+
+  if (events?.data.length === 0 || !events)
+    return <DataNotFound text="Event Not Found" />;
 
   return (
     <div className="mb-8 sm:mb-12 md:mb-20 lg:mb-28">

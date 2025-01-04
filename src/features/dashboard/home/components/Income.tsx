@@ -67,7 +67,7 @@ const Income: FC<IncomeProps> = ({ id }) => {
             <div className="space-y-2">
               <div className="flex items-baseline gap-2">
                 <span className="text-5xl font-bold tracking-tight">
-                  + {useFormatValue(data.income ?? 0)}
+                  + {useFormatValue(data ? data.income : 0)}
                 </span>
                 <TrendingUp className="text-green-300 h-5 w-5" />
               </div>

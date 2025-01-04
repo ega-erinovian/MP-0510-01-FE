@@ -30,6 +30,7 @@ import { useRouter } from "next/navigation";
 import { ChangeEvent, FC, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { updateUserSchema } from "./schemas";
+import DataNotFound from "@/components/dashboard/DataNotFound";
 
 interface UpdateProfileComponentProps {
   id: number;
@@ -132,6 +133,10 @@ const UpdateProfileComponent: FC<UpdateProfileComponentProps> = ({ id }) => {
 
   if (isUserLoading || !isFormReady) {
     return <Loading text="User Data" />;
+  }
+
+  if (!user) {
+    <DataNotFound text="User Not Found" />;
   }
 
   return (

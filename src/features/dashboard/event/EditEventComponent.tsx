@@ -46,6 +46,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import DataNotFound from "@/components/dashboard/DataNotFound";
 
 interface UpdateEventComponentProps {
   id: number;
@@ -207,6 +208,10 @@ const EditEventComponent: FC<UpdateEventComponentProps> = ({ id }) => {
 
   if (isEventLoading || !isFormReady) {
     return <Loading text="Event Data" />;
+  }
+
+  if (!event) {
+    <DataNotFound text="Event Data" />;
   }
 
   return (
