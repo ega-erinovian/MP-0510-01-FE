@@ -61,8 +61,8 @@ const TransactionEditDialog: FC<TransactionEditDialogProps> = ({
   const formik = useFormik({
     initialValues: {
       id,
-      status,
-      email,
+      status: status || "UNPAID",
+      email: email || "",
       paymentProof: null,
     },
     validationSchema: updateTransactionSchema,
@@ -174,7 +174,12 @@ const TransactionEditDialog: FC<TransactionEditDialogProps> = ({
             <Button
               type="submit"
               className="w-full sm:w-auto"
-              disabled={isPending || selectedImage === ""}>
+              disabled={
+                isPending ||
+                selectedImage === "" ||
+                !formik.values.email ||
+                !formik.values.status
+              }>
               {isPending ? (
                 <span className="flex items-center gap-2">
                   <Loader2 className="animate-spin" />

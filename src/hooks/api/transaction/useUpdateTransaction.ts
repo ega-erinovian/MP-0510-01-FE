@@ -5,9 +5,9 @@ import { toast } from "react-toastify";
 
 interface UpdateTransactionPayload {
   id: number;
-  status: string;
-  email: string;
-  paymentProof: File | null;
+  status?: string;
+  email?: string;
+  paymentProof?: File | null;
   voucherId?: number | null;
   couponId?: number | null;
 }
@@ -20,27 +20,32 @@ const useUpdateTransaction = () => {
     mutationFn: async (payload: UpdateTransactionPayload) => {
       const formData = new FormData();
 
-      if (payload.status) formData.append("status", payload.status);
-      if (payload.email) formData.append("email", payload.email);
-
+      if (payload.status) {
+        formData.append("status", payload.status);
+      }
+      if (payload.email) {
+        formData.append("email", payload.email);
+      }
       if (payload.paymentProof) {
         console.log("Appending paymentProof:", payload.paymentProof);
         formData.append("paymentProof", payload.paymentProof);
-      } else {
-        console.warn("paymentProof is null or undefined");
+      }
+      if (payload.voucherId !== undefined) {
+        formData.append(
+          "voucherId",
+          payload.voucherId === null ? "null" : `${payload.voucherId}`
+        );
+      }
+      if (payload.couponId !== undefined) {
+        formData.append(
+          "couponId",
+          payload.couponId === null ? "null" : `${payload.couponId}`
+        );
       }
 
-      if (payload.voucherId === null) {
-        formData.append("voucherId", "null");
-      } else if (payload.voucherId !== undefined) {
-        formData.append("voucherId", `${payload.voucherId}`);
-      }
-
-      if (payload.couponId === null) {
-        formData.append("couponId", "null");
-      } else if (payload.couponId !== undefined) {
-        formData.append("couponId", `${payload.couponId}`);
-      }
+      formData.forEach((value, key) => {
+        console.log(`FormData key: ${key}, value: ${value}`);
+      });
 
       try {
         const { data } = await axiosInstance.patch(
