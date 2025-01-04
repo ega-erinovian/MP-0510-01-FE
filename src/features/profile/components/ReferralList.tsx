@@ -1,10 +1,7 @@
 "use client";
 
 import DataNotFound from "@/components/dashboard/DataNotFound";
-import { ReferralType } from "@/types/referrals";
-import { FC } from "react";
-import CouponCard from "./CouponCard";
-import ReferralCard from "./ReferralCard";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -12,7 +9,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
+import { ReferralType } from "@/types/referrals";
+import { FC } from "react";
+import ReferralCard from "./ReferralCard";
 
 interface ReferralListProps {
   referrals: ReferralType[];

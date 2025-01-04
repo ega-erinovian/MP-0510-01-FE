@@ -1,5 +1,6 @@
 "use client";
 
+import DataNotFound from "@/components/dashboard/DataNotFound";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -16,13 +17,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { TransactionType } from "@/types/transaction";
-import { CircleAlert, MoreHorizontal } from "lucide-react";
+import { MoreHorizontal } from "lucide-react";
 import { FC } from "react";
 import { getStatusColor, transactionTableCols } from "../const";
 import PaymentProofDialog from "./PaymentProofDialog";
 import TransactionDeleteDialog from "./TransactionDeleteDialog";
 import TransactionEditDialog from "./TransactionEditDialog";
-import DataNotFound from "@/components/dashboard/DataNotFound";
 
 interface TransactionsTableProps {
   transactions: TransactionType[];

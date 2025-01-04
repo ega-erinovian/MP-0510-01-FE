@@ -1,8 +1,6 @@
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ReferralType } from "@/types/referrals";
 import { Clock, Coins } from "lucide-react";
-import { getCouponStatus } from "../../../../../../event-management-website/app/event-zen/src/features/profile/const";
 
 const ReferralCard = ({ referral }: { referral: ReferralType }) => (
   <Card className="group transition-all hover:shadow-md">

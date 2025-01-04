@@ -10,9 +10,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import useDeleteTransaction from "@/hooks/api/transaction/useDeleteTransaction";
 import useDeleteVoucher from "@/hooks/api/voucher/useDeleteVoucher";
-import { Loader2 } from "lucide-react";
 import { FC } from "react";
 
 interface VoucherDeleteDialogProps {

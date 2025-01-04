@@ -1,3 +1,4 @@
+import DataNotFound from "@/components/dashboard/DataNotFound";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -13,13 +14,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { CircleAlert, MoreHorizontal } from "lucide-react";
+import { VoucherType } from "@/types/voucher";
+import { MoreHorizontal } from "lucide-react";
 import Link from "next/link";
 import { FC } from "react";
 import { voucherTableCols } from "../const";
 import VoucherDeleteDialog from "./VoucherDeleteDialog";
-import DataNotFound from "@/components/dashboard/DataNotFound";
-import { VoucherType } from "@/types/voucher";
 
 interface VoucherTableProps {
   vouchers: VoucherType[];

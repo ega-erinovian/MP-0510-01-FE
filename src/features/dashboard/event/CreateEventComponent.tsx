@@ -12,16 +12,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Calendar,
-  Coins,
-  Loader2,
-  MapPin,
-  Tag,
-  Trash2,
-  Upload,
-  Users,
-} from "lucide-react";
 import useGetCategories from "@/hooks/api/category/useGetCategories";
 import useGetCities from "@/hooks/api/city/useGetCities";
 import useGetCountries from "@/hooks/api/country/useGetCountries";
@@ -30,13 +20,21 @@ import useCreateEvent, {
 } from "@/hooks/api/event/useCreateEvent";
 import { formatISO } from "date-fns";
 import { useFormik } from "formik";
+import {
+  Calendar,
+  Coins,
+  MapPin,
+  Tag,
+  Trash2,
+  Upload,
+  Users,
+} from "lucide-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { createEventSchema } from "./schemas";
-import { Popover, PopoverTrigger } from "@/components/ui/popover";
 
 const CreateEventComponent = () => {
   const { data } = useSession(); // dari next-auth
