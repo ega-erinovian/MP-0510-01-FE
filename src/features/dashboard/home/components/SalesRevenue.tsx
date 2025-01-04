@@ -29,7 +29,7 @@ const SalesRevenue: FC<SalesRevenueProps> = ({ id }) => {
       {isPending ? (
         <Loading text="" />
       ) : (
-        <SalesChart monthlyChart={data.income} />
+        <SalesChart monthlyChart={data.income ?? 0} />
       )}
     </div>
   );

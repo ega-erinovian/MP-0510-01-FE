@@ -69,7 +69,7 @@ const ActiveEvent: FC<ActiveEventProps> = ({ id }) => {
           ) : (
             <div className="space-y-2">
               <p className="text-6xl font-bold tracking-tight">
-                {events?.meta.total}
+                {events?.meta.total ?? 0}
               </p>
               <div className="flex items-center gap-2">
                 <span className="text-lg font-medium text-white/90">
