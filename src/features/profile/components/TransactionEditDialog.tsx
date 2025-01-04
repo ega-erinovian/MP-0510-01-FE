@@ -32,7 +32,6 @@ const TransactionEditDialog: FC<TransactionEditDialogProps> = ({
   email,
   event,
 }) => {
-  const router = useRouter();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { mutateAsync: updateTransaction, isPending } = useUpdateTransaction();
 
@@ -72,13 +71,15 @@ const TransactionEditDialog: FC<TransactionEditDialogProps> = ({
         await updateTransaction({
           ...values,
           status: selectedImage ? "CONFIRMING" : "UNPAID",
-          paymentProof: values.paymentProof,
+          paymentProof: selectedImage,
         });
         setIsDialogOpen(false);
         setSelectedImage(null);
+        setSelectedImageUrl("");
         toast.success("Payment proof uploaded successfully!");
       } catch (error) {
         setSelectedImage(null);
+        setSelectedImageUrl("");
         toast.error("Failed to update transaction. Please try again.");
       }
     },
