@@ -124,12 +124,15 @@ const UpdatePasswordComponent: FC<UpdatePasswordComponentProps> = ({ id }) => {
                   {checkPasswordMessage}
                 </div>
               ) : (
-                <div
-                  className={cn(
-                    "text-sm flex items-center gap-1.5 p-2 rounded transition-colors bg-gray-200 text-gray-500"
-                  )}>
-                  <Loader2 className="animate-spin" /> Checking Current Password
-                </div>
+                oldPassword !== "" && (
+                  <div
+                    className={cn(
+                      "text-sm flex items-center gap-1.5 p-2 rounded transition-colors bg-gray-200 text-gray-500"
+                    )}>
+                    <Loader2 className="animate-spin" /> Checking Current
+                    Password
+                  </div>
+                )
               )}
               <PasswordInput
                 label="New Password"

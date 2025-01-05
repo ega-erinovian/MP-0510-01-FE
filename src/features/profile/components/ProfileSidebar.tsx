@@ -129,7 +129,7 @@ const ProfileSidebar = () => {
             <div className="flex flex-col flex-1">
               <span className="font-semibold">{user.fullName}</span>
               <Link
-                href={`/profile/edit/${user.id}`}
+                href={`/profile/edit`}
                 className="text-sm text-muted-foreground hover:text-primary transition-colors relative inline-block group-hover:underline">
                 Edit Profile
               </Link>

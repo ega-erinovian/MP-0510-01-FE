@@ -105,7 +105,7 @@ const UpdatePasswordComponent: FC<UpdatePasswordComponentProps> = ({ id }) => {
               error={formik.errors.oldPassword}
               touched={formik.touched.oldPassword}
             />
-            {checkPasswordMessage && !isChecking ? (
+            {checkPasswordMessage && !isChecking && oldPassword !== "" ? (
               <div
                 className={cn(
                   "text-sm flex items-center gap-1.5 p-2 rounded transition-colors",
