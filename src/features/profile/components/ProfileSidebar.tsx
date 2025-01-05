@@ -60,8 +60,8 @@ const ProfileSidebar = () => {
   return (
     <Sidebar
       variant="floating"
-      className="lg:pt-20 w-full lg:w-64 min-h-screen ">
-      <SidebarContent className="p-6">
+      className="lg:pt-20 w-full lg:w-64 min-h-screen">
+      <SidebarContent className="p-6 bg-white">
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -114,7 +114,7 @@ const ProfileSidebar = () => {
       </SidebarContent>
 
       {user?.id && (
-        <SidebarFooter className="border-t p-6 mt-auto bg-muted/5">
+        <SidebarFooter className="border-t p-6 mt-auto bg-muted/5 bg-white">
           <div className="flex items-center gap-4 group">
             <Avatar className="h-10 w-10 ring-2 ring-primary/10 transition-transform duration-200 group-hover:scale-105">
               <AvatarImage

@@ -1,5 +1,6 @@
 "use client";
 
+import DataNotFound from "@/components/dashboard/DataNotFound";
 import Loading from "@/components/dashboard/Loading";
 import FormField from "@/components/FormField";
 import { Button } from "@/components/ui/button";
@@ -26,18 +27,16 @@ import {
   Upload,
   User,
 } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { ChangeEvent, FC, useEffect, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { updateUserSchema } from "./schemas";
-import DataNotFound from "@/components/dashboard/DataNotFound";
 
-interface UpdateProfileComponentProps {
-  id: number;
-}
-
-const UpdateProfileComponent: FC<UpdateProfileComponentProps> = ({ id }) => {
+const UpdateProfileComponent = () => {
   const router = useRouter();
+  const { data } = useSession();
+  const id = data?.user.id || 0;
   const { data: user, isLoading: isUserLoading } = useGetUser(id);
   const { mutateAsync: updateUser, isPending: isUpdating } = useUpdateUser();
   const [selectedImage, setSelectedImage] = useState<string>("");
@@ -79,7 +78,7 @@ const UpdateProfileComponent: FC<UpdateProfileComponentProps> = ({ id }) => {
           await updateUser({ ...values, bankAccount });
         }
 
-        router.push("/dashboard");
+        router.push("/dashboard/profile/edit");
         toast.success("User Updated Successfully");
       } catch (error) {
         console.log(error);
@@ -114,7 +113,6 @@ const UpdateProfileComponent: FC<UpdateProfileComponentProps> = ({ id }) => {
 
   useEffect(() => {
     if (user && !isUserLoading && !formInitialized.current) {
-      // Initialize form with data
       formik.resetForm({
         values: {
           id,
@@ -132,18 +130,19 @@ const UpdateProfileComponent: FC<UpdateProfileComponentProps> = ({ id }) => {
   }, [user, isUserLoading]);
 
   if (isUserLoading || !isFormReady) {
-    return <Loading text="User Data" />;
+    return (
+      <div className="h-screen w-full flex items-center justify-center">
+        <Loading text="Profile Data" />
+      </div>
+    );
   }
 
-  if (!user) {
-    <DataNotFound text="User Not Found" />;
-  }
+  if (!user) return <DataNotFound text="Error fetching your data" />;
 
   return (
     <div className="min-h-screen w-full p-4 flex items-center justify-center">
       <Card className="w-full max-w-2xl shadow-lg">
         <CardHeader className="space-y-1">
-          <p>{bankAccount}</p>
           <CardTitle className="text-2xl font-bold">Edit Profile</CardTitle>
           <CardDescription>Update your profile information</CardDescription>
         </CardHeader>

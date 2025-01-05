@@ -33,7 +33,7 @@ const CouponListWrapper = () => {
 
       <div className="">
         {isPending ? (
-          <Loading text="Loading coupons..." />
+          <Loading text="Coupons" />
         ) : (
           <CouponsList coupons={data.data} />
         )}

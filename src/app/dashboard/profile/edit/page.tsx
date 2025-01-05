@@ -1,10 +1,10 @@
 import DashboardLayout from "@/components/DashboardLayout";
 import UpdateProfileComponent from "@/features/dashboard/profile/EditUserComponent";
 
-const EditProfile = ({ params }: { params: { id: string } }) => {
+const EditProfile = () => {
   return (
     <DashboardLayout>
-      <UpdateProfileComponent id={parseInt(params.id)} />
+      <UpdateProfileComponent />
     </DashboardLayout>
   );
 };

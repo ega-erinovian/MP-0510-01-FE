@@ -29,7 +29,7 @@ const SalesRevenue: FC<SalesRevenueProps> = ({ id }) => {
         <p className="text-gray-600 font-medium">{new Date().getFullYear()}</p>
       </div>
       {isPending ? (
-        <Loader2 className="animate-spin" />
+        <Loading text="Chart" />
       ) : data ? (
         <SalesChart monthlyChart={data.income} />
       ) : (

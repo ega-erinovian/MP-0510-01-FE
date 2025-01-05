@@ -123,7 +123,13 @@ const EventDetailComponent: FC<EventDetailComponentProps> = ({ eventId }) => {
     }
   }, [debouncedCoupon, existingCoupon, isPendingCoupon]);
 
-  if (isEventLoading) <Loading text="Event Data" />;
+  if (isEventLoading && !event) {
+    return (
+      <div className="h-screen w-full flex justify-center items-center">
+        <Loading text="Event Data" />
+      </div>
+    );
+  }
 
   if (!event) {
     return <DataNotFound text="Data Not Found" />;

@@ -44,9 +44,14 @@ const UpdatePasswordComponent: FC<UpdatePasswordComponentProps> = ({ id }) => {
     },
     validationSchema: UpdatePasswordSchema,
     onSubmit: async (values) => {
-      await updatePassword({ id, password: values.password });
-      toast.success("Password updated successfully");
-      router.push("/profile");
+      try {
+        await updatePassword({ id, password: values.password });
+        toast.success("Password updated successfully");
+        router.push("/profile/update-password");
+      } catch (error) {
+        toast.error("Failed to update password: ");
+        console.log(error);
+      }
     },
   });
 

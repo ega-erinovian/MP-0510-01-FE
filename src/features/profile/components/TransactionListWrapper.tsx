@@ -118,7 +118,7 @@ const TransactionListWrapper = () => {
       <div className="">
         {isPending ? (
           <div className="flex min-h-[400px] items-center justify-center">
-            <Loading text="transactions..." />
+            <Loading text="Transactions" />
           </div>
         ) : (
           <TransactionsList
