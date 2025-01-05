@@ -80,14 +80,13 @@ const EventsComponent = () => {
         <h1 className="text-4xl sm:text-6xl md:text-8xl lg:text-9xl tracking-tighter font-bold">
           Browse Events
         </h1>
-
         <div className="flex flex-col space-y-4 lg:space-y-0 lg:flex-row lg:items-center lg:justify-between">
           <div className="w-full lg:w-96 relative flex items-center gap-2">
             <Input
               value={search}
               placeholder="Search Title..."
               onChange={(e) => onSearch(e.target.value)}
-              disabled={isPending}
+              disabled={isPending && !events}
               className="h-10"
             />
             {search !== "" && (
@@ -109,7 +108,7 @@ const EventsComponent = () => {
               onChange={(e) => onCategoryChange(e.target.value)}
               value={categoryId || ""}
               className="h-10 px-3 rounded-md border border-input bg-background hover:bg-accent/50 transition-colors w-full sm:w-auto"
-              disabled={isPendingCategories}>
+              disabled={isPending && isPendingCategories && !events}>
               <option value="">All Categories</option>
               {categories?.map((category: any) => (
                 <option key={category.id} value={category.id}>
@@ -120,10 +119,19 @@ const EventsComponent = () => {
 
             <div className="flex items-center gap-2 w-full sm:w-auto">
               <Popover open={open} onOpenChange={setOpen}>
-                <PopoverTrigger asChild>
+                <PopoverTrigger
+                  asChild
+                  disabled={
+                    isPending && isPendingCities && searchCity !== "" && !events
+                  }>
                   <Button
                     variant="outline"
-                    disabled={isPendingCities && searchCity !== ""}
+                    disabled={
+                      isPending &&
+                      isPendingCities &&
+                      searchCity !== "" &&
+                      !events
+                    }
                     className="w-full sm:w-[200px] h-10">
                     {isPendingCities && searchCity !== "" ? (
                       <span className="flex items-center gap-2">
@@ -146,6 +154,12 @@ const EventsComponent = () => {
                       placeholder="Search city..."
                       value={searchCity}
                       onChange={(e) => setSearchCity(e.target.value)}
+                      disabled={
+                        isPending &&
+                        isPendingCities &&
+                        searchCity !== "" &&
+                        !events
+                      }
                     />
                   </div>
                   <div className="max-h-[200px] overflow-y-auto">
@@ -195,26 +209,23 @@ const EventsComponent = () => {
           </div>
         </div>
 
-        {events && events.data.length <= 0 ? (
-          <DataNotFound text="No events found" />
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-            {isPending ? (
-              <Loading text="Events" />
-            ) : (
-              events?.data.map((event) => (
-                <Link
-                  href={`/events/${event.id}`}
-                  key={event.id}
-                  className="transition-transform hover:scale-[1.02] duration-200">
-                  <EventCard event={event} />
-                </Link>
-              ))
-            )}
-          </div>
+        {isPending && <Loading text="Events" />}
+        {events && events.data.length <= 0 && !isPending && (
+          <DataNotFound text="Event Not Found" />
         )}
 
-        {events && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+          {events?.data.map((event) => (
+            <Link
+              href={`/events/${event.id}`}
+              key={event.id}
+              className="transition-transform hover:scale-[1.02] duration-200">
+              <EventCard event={event} />
+            </Link>
+          ))}
+        </div>
+
+        {events && events.data.length > 0 && (
           <div className="w-full flex justify-end items-center pt-4 sm:pt-6">
             <PaginationSection
               onChangePage={onChangePage}

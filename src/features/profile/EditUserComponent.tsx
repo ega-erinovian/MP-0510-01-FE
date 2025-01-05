@@ -1,5 +1,6 @@
 "use client";
 
+import DataNotFound from "@/components/dashboard/DataNotFound";
 import Loading from "@/components/dashboard/Loading";
 import FormField from "@/components/FormField";
 import { Button } from "@/components/ui/button";
@@ -31,19 +32,18 @@ import {
   User,
   XCircle,
 } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { ChangeEvent, FC, useEffect, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { useDebounce } from "use-debounce";
 import CustomerProfileLayout from "./CustomerProfileLayout";
 import { updateUserSchema } from "./schemas";
 
-interface UpdateProfileComponentProps {
-  id: number;
-}
-
-const UpdateProfileComponent: FC<UpdateProfileComponentProps> = ({ id }) => {
+const UpdateProfileComponent = () => {
   const router = useRouter();
+  const { data } = useSession();
+  const id = data?.user.id || 0;
   const { data: user, isLoading: isUserLoading } = useGetUser(id);
   const { mutateAsync: updateUser, isPending: isUpdating } = useUpdateUser();
   const [selectedImage, setSelectedImage] = useState<string>("");
@@ -114,7 +114,7 @@ const UpdateProfileComponent: FC<UpdateProfileComponentProps> = ({ id }) => {
           await updateUser(values);
         }
 
-        router.push("/");
+        router.push("/profile/edit");
         toast.success("Profile Updated Successfully!");
       } catch (error) {
         console.error(error);
@@ -180,10 +180,14 @@ const UpdateProfileComponent: FC<UpdateProfileComponentProps> = ({ id }) => {
   }, [user, isUserLoading]);
 
   if (isUserLoading || !isFormReady) {
-    return <Loading text="Loading Profile Data" />;
+    return (
+      <div className="h-screen w-full flex items-center justify-center">
+        <Loading text="Profile Data" />
+      </div>
+    );
   }
 
-  if (!user) return null;
+  if (!user) return <DataNotFound text="Error fetching your data" />;
 
   return (
     <CustomerProfileLayout>

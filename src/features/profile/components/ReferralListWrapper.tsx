@@ -64,7 +64,7 @@ const ReferralListWrapper = () => {
       <p className="mb-6 lg:mb-8 text-gray-400">
         Invite your friend using your code, and get points!
       </p>
-      <div className="grid grid-cols-2 gap-4 mb-4">
+      <div className="grid md:grid-cols-2 gap-4 mb-4">
         <div className="relative h-full bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-6 overflow-hidden">
           <div
             className="absolute inset-0 bg-white/5 backdrop-blur-sm"
@@ -76,12 +76,12 @@ const ReferralListWrapper = () => {
 
           <div className="relative">
             <div className="text-white">
-              {isPending ? (
-                <div className="py-8">
-                  <Loader2 />
-                </div>
-              ) : (
-                <div className="space-y-2">
+              <div className="space-y-2">
+                {isPending ? (
+                  <div className="py-8">
+                    <Loader2 className="animate-spin" />
+                  </div>
+                ) : (
                   <div className="flex items-end gap-2">
                     <p className="text-6xl font-bold tracking-tight">
                       {userData?.referralCode}
@@ -97,13 +97,13 @@ const ReferralListWrapper = () => {
                       )}
                     </button>
                   </div>
-                  <div className="flex items-center justify-end gap-2">
-                    <span className="text-lg font-medium text-white/90">
-                      Your Referral Code
-                    </span>
-                  </div>
+                )}
+                <div className="flex items-center justify-end gap-2">
+                  <span className="text-lg font-medium text-white/90">
+                    Your Referral Code
+                  </span>
                 </div>
-              )}
+              </div>
             </div>
           </div>
         </div>
@@ -118,22 +118,22 @@ const ReferralListWrapper = () => {
 
           <div className="relative">
             <div className="text-white">
-              {isPending ? (
-                <div className="py-8">
-                  <Loader2 />
-                </div>
-              ) : (
-                <div className="space-y-2">
+              <div className="space-y-2">
+                {isPending ? (
+                  <div className="py-8">
+                    <Loader2 className="animate-spin" />
+                  </div>
+                ) : (
                   <p className="text-6xl font-bold tracking-tight">
                     {userData?.point}
                   </p>
-                  <div className="flex items-center justify-end gap-2">
-                    <span className="text-lg font-medium text-white/90">
-                      Points Accumulated
-                    </span>
-                  </div>
+                )}
+                <div className="flex items-center justify-end gap-2">
+                  <span className="text-lg font-medium text-white/90">
+                    Points Accumulated
+                  </span>
                 </div>
-              )}
+              </div>
             </div>
           </div>
         </div>
@@ -141,7 +141,7 @@ const ReferralListWrapper = () => {
 
       <div className="">
         {isPending ? (
-          <Loading text="Loading referrals..." />
+          <Loading text="Referrals" />
         ) : (
           <ReferralList
             referrals={data.data}

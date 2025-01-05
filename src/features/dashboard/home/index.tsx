@@ -10,7 +10,7 @@ const Home = async () => {
   const userId = Number(session?.user.id);
 
   return (
-    <div className="h-full grid grid-cols-12 gap-4 p-6">
+    <div className="h-full grid grid-cols-12 gap-4 p-6 overflow-y-hidden">
       <div className="col-span-4 bg-white rounded-lg shadow-sm border border-gray-100">
         <TicketsSold id={userId} />
       </div>

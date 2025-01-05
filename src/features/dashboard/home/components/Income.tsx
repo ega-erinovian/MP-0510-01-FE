@@ -59,28 +59,24 @@ const Income: FC<IncomeProps> = ({ id }) => {
         </div>
 
         <div className="text-white">
-          {isPending ? (
-            <div className="py-8">
+          <div className="space-y-2">
+            {isPending ? (
               <Loader2 className="animate-spin" />
-            </div>
-          ) : (
-            <div className="space-y-2">
+            ) : (
               <div className="flex items-baseline gap-2">
                 <span className="text-5xl font-bold tracking-tight">
                   + {useFormatValue(data ? data.income : 0)}
                 </span>
                 <TrendingUp className="text-green-300 h-5 w-5" />
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-lg font-medium text-white/90">
-                  Revenue
-                </span>
-                <span className="px-2 py-1 text-xs font-medium bg-white/20 rounded-full">
-                  {selectedTime === "day" ? "today" : selectedTime}
-                </span>
-              </div>
+            )}
+            <div className="flex items-center gap-2">
+              <span className="text-lg font-medium text-white/90">Revenue</span>
+              <span className="px-2 py-1 text-xs font-medium bg-white/20 rounded-full">
+                {selectedTime === "day" ? "today" : selectedTime}
+              </span>
             </div>
-          )}
+          </div>
         </div>
       </div>
     </div>

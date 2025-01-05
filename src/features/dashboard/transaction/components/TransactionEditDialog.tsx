@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -39,10 +39,9 @@ const TransactionEditDialog: FC<TransactionEditDialogProps> = ({
 }) => {
   const router = useRouter();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const { mutateAsync: updateTransaction, isPending: isUpdatingTransaction } =
-    useUpdateTransaction();
-  const { mutateAsync: updateEvent, isPending: isUpdatingEvent } =
-    useUpdateEvent();
+
+  const { mutateAsync: updateTransaction } = useUpdateTransaction();
+  const { mutateAsync: updateEvent } = useUpdateEvent();
   const { mutateAsync: updateVoucher } = useUpdateVoucher(
     transaction.voucherId || 0
   );
@@ -63,14 +62,12 @@ const TransactionEditDialog: FC<TransactionEditDialogProps> = ({
       couponId: transaction.couponId ?? null,
     },
     validationSchema: updateTransactionSchema,
-    onSubmit: async (values) => {
+    onSubmit: async (values, { setSubmitting }) => {
       try {
         const { status } = values;
 
-        if (
-          ["REJECTED", "EXPIRED", "CANCELED"].includes(status) &&
-          !isUpdatingTransaction
-        ) {
+        // Conditional logic for status change
+        if (["REJECTED", "EXPIRED", "CANCELED"].includes(status)) {
           await updateEvent({
             id: transaction.eventId,
             availableSeats: transaction.event.availableSeats + transaction.qty,
@@ -114,22 +111,32 @@ const TransactionEditDialog: FC<TransactionEditDialogProps> = ({
             : values.couponId,
         });
 
-        setIsDialogOpen(false);
         toast.success("Transaction updated successfully.");
         router.push("/dashboard/transactions");
+        setIsDialogOpen(false);
       } catch (error) {
         console.error("Error updating transaction:", error);
         toast.error("Failed to update transaction. Please try again.");
+      } finally {
+        setSubmitting(false);
       }
     },
   });
 
+  const handleDialogOpenChange = useCallback(
+    (open: boolean) => {
+      setIsDialogOpen(open);
+      if (!open) {
+        formik.resetForm();
+      }
+    },
+    [formik]
+  );
+
   return (
-    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+    <Dialog open={isDialogOpen} onOpenChange={handleDialogOpenChange}>
       <DialogTrigger asChild>
-        <Button className="w-full" onClick={() => setIsDialogOpen(true)}>
-          Update
-        </Button>
+        <Button className="w-full">Update</Button>
       </DialogTrigger>
 
       <DialogContent className="sm:max-w-[425px]">
@@ -170,11 +177,9 @@ const TransactionEditDialog: FC<TransactionEditDialogProps> = ({
           <DialogFooter className="mt-8">
             <Button
               type="submit"
-              disabled={
-                isUpdatingTransaction || !formik.isValid || !formik.dirty
-              }
+              disabled={formik.isSubmitting || !formik.isValid || !formik.dirty}
               className="w-full sm:w-auto">
-              {isUpdatingTransaction ? "Updating..." : "Update Transaction"}
+              {formik.isSubmitting ? "Updating..." : "Update Transaction"}
             </Button>
           </DialogFooter>
         </form>

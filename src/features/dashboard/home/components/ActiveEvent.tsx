@@ -62,25 +62,23 @@ const ActiveEvent: FC<ActiveEventProps> = ({ id }) => {
 
         {/* Event Count */}
         <div className="text-white">
-          {isPending ? (
-            <div className="py-8">
+          <div className="space-y-2">
+            {isPending ? (
               <Loader2 className="animate-spin" />
-            </div>
-          ) : (
-            <div className="space-y-2">
+            ) : (
               <p className="text-6xl font-bold tracking-tight">
                 {events?.meta.total ?? 0}
               </p>
-              <div className="flex items-center gap-2">
-                <span className="text-lg font-medium text-white/90">
-                  Active Events
-                </span>
-                <span className="px-2 py-1 text-xs font-medium bg-white/20 rounded-full">
-                  {selectedTime}
-                </span>
-              </div>
+            )}
+            <div className="flex items-center gap-2">
+              <span className="text-lg font-medium text-white/90">
+                Active Events
+              </span>
+              <span className="px-2 py-1 text-xs font-medium bg-white/20 rounded-full">
+                {selectedTime}
+              </span>
             </div>
-          )}
+          </div>
         </div>
       </div>
     </div>
