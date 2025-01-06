@@ -1,7 +1,7 @@
 "use client";
 
 import DataNotFound from "@/components/dashboard/DataNotFound";
-import Loading from "@/components/dashboard/Loading";
+import ProfileSkeleton from "@/components/skeletons/ProfileSkeleton";
 import useGetCoupons from "@/hooks/api/coupon/useGetCoupons";
 import { useSession } from "next-auth/react";
 import CouponsList from "./CouponList";
@@ -13,6 +13,7 @@ const CouponListWrapper = () => {
   const { data, isPending, error } = useGetCoupons({
     userId: Number(user?.id),
   });
+
   if (error) {
     return (
       <div className="flex min-h-[400px] items-center justify-center">
@@ -33,7 +34,7 @@ const CouponListWrapper = () => {
 
       <div className="">
         {isPending ? (
-          <Loading text="Coupons" />
+          <ProfileSkeleton dataQty={3} />
         ) : (
           <CouponsList coupons={data.data} />
         )}

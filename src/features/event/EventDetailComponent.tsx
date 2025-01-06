@@ -1,9 +1,9 @@
 "use client";
 
 import DataNotFound from "@/components/dashboard/DataNotFound";
-import Loading from "@/components/dashboard/Loading";
 import Markdown from "@/components/Markdown";
 import QuantitySelector from "@/components/QuantitySelector";
+import EventDetailSkeleton from "@/components/skeletons/EventDetailSkeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -28,7 +28,7 @@ interface EventDetailComponentProps {
 }
 
 const EventDetailComponent: FC<EventDetailComponentProps> = ({ eventId }) => {
-  const { data } = useSession(); // dari next-auth
+  const { data } = useSession();
   const user = data?.user;
 
   const { data: event, isLoading: isEventLoading } = useGetEvent(eventId);
@@ -37,12 +37,14 @@ const EventDetailComponent: FC<EventDetailComponentProps> = ({ eventId }) => {
 
   const [voucherCode, setVoucherCode] = useState<string>("");
   const [isVoucherValid, setIsVoucherValid] = useState<boolean | null>(null);
+  const [debouncedVoucher] = useDebounce(voucherCode, 500);
+  const [voucherMessage, setVoucherMessage] = useState<string>("");
+
   const [couponCode, setCouponCode] = useState<string>("");
   const [isCouponValid, setIsCouponValid] = useState<boolean | null>(null);
-  const [debouncedVoucher] = useDebounce(voucherCode, 500);
   const [debouncedCoupon] = useDebounce(couponCode, 500);
-  const [voucherMessage, setVoucherMessage] = useState<string>("");
   const [couponMessage, setCouponMessage] = useState<string>("");
+
   const { data: existingVoucher, isPending: isPendingVoucher } = useGetVouchers(
     { search: debouncedVoucher, eventId: event?.id, isUsed: "AVAILABLE" }
   );
@@ -124,11 +126,7 @@ const EventDetailComponent: FC<EventDetailComponentProps> = ({ eventId }) => {
   }, [debouncedCoupon, existingCoupon, isPendingCoupon]);
 
   if (isEventLoading && !event) {
-    return (
-      <div className="h-screen w-full flex justify-center items-center">
-        <Loading text="Event Data" />
-      </div>
-    );
+    return <EventDetailSkeleton />;
   }
 
   if (!event) {

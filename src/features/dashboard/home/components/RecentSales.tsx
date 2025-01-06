@@ -1,8 +1,8 @@
 "use client";
 
-import Loading from "@/components/dashboard/Loading";
+import RecentSalesItemSkeleton from "@/components/skeletons/RecentSaleItemSkeleton";
 import useGetTransactions from "@/hooks/api/transaction/useGetTransactions";
-import { Loader2, Receipt } from "lucide-react";
+import { Receipt } from "lucide-react";
 import { FC } from "react";
 import RecentSalesItem from "./RecentSaleItem";
 
@@ -15,7 +15,7 @@ const RecentSales: FC<RecentSalesProps> = ({ id }) => {
     page: 1,
     sortBy: "createdAt",
     sortOrder: "desc",
-    take: 5,
+    take: 8,
     userId: id,
     status: "DONE",
   });
@@ -34,7 +34,9 @@ const RecentSales: FC<RecentSalesProps> = ({ id }) => {
 
       <div className="space-y-1">
         {isPending ? (
-          <Loading text="Recent Sales" />
+          [...Array(8)].map((_, index) => (
+            <RecentSalesItemSkeleton key={index} />
+          ))
         ) : transactions?.data.length === 0 ? (
           <div className="text-center py-12 text-gray-500">
             No recent transactions

@@ -24,6 +24,7 @@ import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import ProfileSidebarFooterSkeleton from "@/components/skeletons/ProfileSidebarFooterSkeleton";
 
 const items = [
   {
@@ -50,7 +51,8 @@ const items = [
 
 const ProfileSidebar = () => {
   const { data } = useSession();
-  const { data: user } = useGetUser(data?.user.id!);
+  const { data: user, isPending } = useGetUser(data?.user.id!);
+
   const pathname = usePathname();
 
   const logout = () => {
@@ -60,7 +62,7 @@ const ProfileSidebar = () => {
   return (
     <Sidebar
       variant="floating"
-      className="lg:pt-20 w-full lg:w-64 min-h-screen">
+      className="md:pt-20 w-full md:w-64 min-h-screen">
       <SidebarContent className="p-6 bg-white">
         <SidebarGroup>
           <SidebarGroupContent>
@@ -113,8 +115,8 @@ const ProfileSidebar = () => {
         </SidebarGroup>
       </SidebarContent>
 
-      {user?.id && (
-        <SidebarFooter className="border-t p-6 mt-auto bg-muted/5 bg-white">
+      <SidebarFooter className="border-t p-6 mt-auto bg-muted/5 bg-white">
+        {user && !isPending ? (
           <div className="flex items-center gap-4 group">
             <Avatar className="h-10 w-10 ring-2 ring-primary/10 transition-transform duration-200 group-hover:scale-105">
               <AvatarImage
@@ -127,7 +129,7 @@ const ProfileSidebar = () => {
               </AvatarFallback>
             </Avatar>
             <div className="flex flex-col flex-1">
-              <span className="font-semibold">{user.fullName}</span>
+              <span className="font-semibold break-all">{user.fullName}</span>
               <Link
                 href={`/profile/edit`}
                 className="text-sm text-muted-foreground hover:text-primary transition-colors relative inline-block group-hover:underline">
@@ -135,20 +137,22 @@ const ProfileSidebar = () => {
               </Link>
             </div>
           </div>
-          <Button
-            variant="ghost"
-            className={cn(
-              "w-full justify-start mt-4",
-              "transition-all duration-200",
-              "hover:bg-destructive/10 hover:text-destructive",
-              "group active:scale-98"
-            )}
-            onClick={logout}>
-            <LogOut className="mr-2 h-4 w-4 transition-transform duration-200 group-hover:rotate-12" />
-            Logout
-          </Button>
-        </SidebarFooter>
-      )}
+        ) : (
+          <ProfileSidebarFooterSkeleton />
+        )}
+        <Button
+          variant="ghost"
+          className={cn(
+            "w-full justify-start mt-4",
+            "transition-all duration-200",
+            "hover:bg-destructive/10 hover:text-destructive",
+            "group active:scale-98"
+          )}
+          onClick={logout}>
+          <LogOut className="mr-2 h-4 w-4 transition-transform duration-200 group-hover:rotate-12" />
+          Logout
+        </Button>
+      </SidebarFooter>
     </Sidebar>
   );
 };

@@ -1,6 +1,6 @@
 "use client";
 
-import Loading from "@/components/dashboard/Loading";
+import DashboardStatisticsSkeleton from "@/components/skeletons/DashboardStatisticsSkeleton";
 import {
   Select,
   SelectContent,
@@ -11,8 +11,8 @@ import {
 } from "@/components/ui/select";
 import useGetTransactionsIncome from "@/hooks/api/transaction/useGetTransactionsIncome";
 import { useFormatValue } from "@/hooks/use-format-value";
+import { DollarSign, TrendingUp } from "lucide-react";
 import { FC, useState } from "react";
-import { DollarSign, Loader2, TrendingUp } from "lucide-react";
 
 interface IncomeProps {
   id: number;
@@ -43,7 +43,10 @@ const Income: FC<IncomeProps> = ({ id }) => {
             <h1 className="text-2xl font-bold">Income</h1>
           </div>
 
-          <Select value={selectedTime} onValueChange={setSelectedTime}>
+          <Select
+            value={selectedTime}
+            disabled={isPending}
+            onValueChange={setSelectedTime}>
             <SelectTrigger className="w-36 bg-white/10 border-white/20 text-white hover:bg-purple-400/30 transition-colors">
               <SelectValue placeholder="Select Time" />
             </SelectTrigger>
@@ -61,21 +64,25 @@ const Income: FC<IncomeProps> = ({ id }) => {
         <div className="text-white">
           <div className="space-y-2">
             {isPending ? (
-              <Loader2 className="animate-spin" />
+              <DashboardStatisticsSkeleton />
             ) : (
-              <div className="flex items-baseline gap-2">
-                <span className="text-5xl font-bold tracking-tight">
-                  + {useFormatValue(data ? data.income : 0)}
-                </span>
-                <TrendingUp className="text-green-300 h-5 w-5" />
-              </div>
+              <>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-5xl font-bold tracking-tight">
+                    + {useFormatValue(data ? data.income : 0)}
+                  </span>
+                  <TrendingUp className="text-green-300 h-5 w-5" />
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-lg font-medium text-white/90">
+                    Revenue
+                  </span>
+                  <span className="px-2 py-1 text-xs font-medium bg-white/20 rounded-full">
+                    {selectedTime === "day" ? "today" : selectedTime}
+                  </span>
+                </div>
+              </>
             )}
-            <div className="flex items-center gap-2">
-              <span className="text-lg font-medium text-white/90">Revenue</span>
-              <span className="px-2 py-1 text-xs font-medium bg-white/20 rounded-full">
-                {selectedTime === "day" ? "today" : selectedTime}
-              </span>
-            </div>
           </div>
         </div>
       </div>
