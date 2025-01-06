@@ -206,7 +206,7 @@ const DashboardSidebar = () => {
             <div className="flex flex-col flex-1 w-full">
               <p className="font-semibold break-all">{user.fullName}</p>
               <Link
-                href={`/profile/edit`}
+                href={`/dashboard/profile/edit`}
                 className="text-sm text-muted-foreground hover:text-primary transition-colors relative inline-block group-hover:underline">
                 Edit Profile
               </Link>

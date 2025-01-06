@@ -500,9 +500,6 @@ const CreateEventComponent = () => {
 
             {/* Description */}
             <div className="space-y-2">
-              <Label className="text-lg font-semibold text-gray-700">
-                Event Description
-              </Label>
               <RichTextEditor
                 label="description"
                 value={formik.values.description}

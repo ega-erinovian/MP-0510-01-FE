@@ -272,7 +272,7 @@ const RegisterForm: FC<RegisterFormProps> = ({ role }) => {
           )}
 
           <div className="space-y-2">
-            <Label className="text-sm font-medium flex items-center gap-2">
+            <Label className="text-sm font-semibold flex items-center gap-2">
               <User size={16} />
               Profile Picture
             </Label>
@@ -307,7 +307,7 @@ const RegisterForm: FC<RegisterFormProps> = ({ role }) => {
             <div className="space-y-2">
               <Label
                 htmlFor="fullName"
-                className="text-sm font-medium flex items-center gap-2">
+                className="text-sm font-semibold flex items-center gap-2">
                 <User size={16} />
                 {role === "CUSTOMER" ? "Full Name" : "Organization Name"}
               </Label>
@@ -339,7 +339,7 @@ const RegisterForm: FC<RegisterFormProps> = ({ role }) => {
             <div className="space-y-2">
               <Label
                 htmlFor="phoneNumber"
-                className="text-sm font-medium flex items-center gap-2">
+                className="text-sm font-semibold flex items-center gap-2">
                 <Phone size={16} />
                 Phone Number
               </Label>
@@ -371,7 +371,7 @@ const RegisterForm: FC<RegisterFormProps> = ({ role }) => {
           <div className="space-y-2">
             <Label
               htmlFor="email"
-              className="text-sm font-medium flex items-center gap-2">
+              className="text-sm font-semibold flex items-center gap-2">
               <Mail size={16} />
               Email
             </Label>
@@ -402,7 +402,7 @@ const RegisterForm: FC<RegisterFormProps> = ({ role }) => {
             <div className="space-y-2">
               <Label
                 htmlFor="password"
-                className="text-sm font-medium flex items-center gap-2">
+                className="text-sm font-semibold flex items-center gap-2">
                 <Lock size={16} />
                 Password
               </Label>
@@ -441,7 +441,7 @@ const RegisterForm: FC<RegisterFormProps> = ({ role }) => {
             <div className="space-y-2">
               <Label
                 htmlFor="confirmPassword"
-                className="text-sm font-medium flex items-center gap-2">
+                className="text-sm font-semibold flex items-center gap-2">
                 <Lock size={16} />
                 Confirm Password
               </Label>
@@ -488,7 +488,7 @@ const RegisterForm: FC<RegisterFormProps> = ({ role }) => {
             <div className="space-y-2">
               <Label
                 htmlFor="country"
-                className="text-sm font-medium flex items-center gap-2">
+                className="text-sm font-semibold flex items-center gap-2">
                 <Globe size={16} />
                 Country
               </Label>
@@ -512,7 +512,7 @@ const RegisterForm: FC<RegisterFormProps> = ({ role }) => {
             <div className="space-y-2">
               <Label
                 htmlFor="city"
-                className="text-sm font-medium flex items-center gap-2">
+                className="text-sm font-semibold flex items-center gap-2">
                 <MapPin size={16} />
                 City
               </Label>
@@ -608,7 +608,7 @@ const RegisterForm: FC<RegisterFormProps> = ({ role }) => {
               <div className="space-y-2 col-span-2">
                 <Label
                   htmlFor="cardNumber"
-                  className="text-sm font-medium flex items-center gap-2">
+                  className="text-sm font-semibold flex items-center gap-2">
                   <IdCard size={16} />
                   Account Number
                 </Label>
@@ -631,7 +631,7 @@ const RegisterForm: FC<RegisterFormProps> = ({ role }) => {
               <div className="space-y-2">
                 <Label
                   htmlFor="bank"
-                  className="text-sm font-medium flex items-center gap-2">
+                  className="text-sm font-semibold flex items-center gap-2">
                   <DollarSign size={16} />
                   Bank
                 </Label>

@@ -45,8 +45,8 @@ const Jumbotron = () => {
             </CarouselItem>
           ))}
         </CarouselContent>
-        <CarouselPrevious className="hidden sm:flex" />
-        <CarouselNext className="hidden sm:flex" />
+        <CarouselPrevious className="hidden xl:flex" />
+        <CarouselNext className="hidden xl:flex" />
       </Carousel>
     </div>
   );
