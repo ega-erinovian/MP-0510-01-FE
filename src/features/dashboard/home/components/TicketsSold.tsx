@@ -1,6 +1,6 @@
 "use client";
 
-import Loading from "@/components/dashboard/Loading";
+import DashboardStatisticsSkeleton from "@/components/skeletons/DashboardStatisticsSkeleton";
 import {
   Select,
   SelectContent,
@@ -10,7 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import useGetTransactionsQty from "@/hooks/api/transaction/useGetTransactionsQty";
-import { Loader2, Ticket } from "lucide-react";
+import { Ticket } from "lucide-react";
 import { FC, useState } from "react";
 
 interface TicketsSoldProps {
@@ -46,7 +46,10 @@ const TicketsSold: FC<TicketsSoldProps> = ({ id }) => {
           </div>
 
           {/* Time Select */}
-          <Select value={selectedTime} onValueChange={setselectedTime}>
+          <Select
+            value={selectedTime}
+            disabled={isPending}
+            onValueChange={setselectedTime}>
             <SelectTrigger className="w-36 bg-white/10 border-white/20 text-white hover:bg-purple-400/30 transition-colors">
               <SelectValue placeholder="Select Time" />
             </SelectTrigger>
@@ -65,20 +68,22 @@ const TicketsSold: FC<TicketsSoldProps> = ({ id }) => {
         <div className="text-white">
           <div className="space-y-2">
             {isPending ? (
-              <Loader2 className="animate-spin" />
+              <DashboardStatisticsSkeleton />
             ) : (
-              <p className="text-6xl font-bold tracking-tight">
-                {data ? data.qty : 0}
-              </p>
+              <>
+                <p className="text-6xl font-bold tracking-tight">
+                  {data ? data.qty : 0}
+                </p>
+                <div className="flex items-center gap-2">
+                  <span className="text-lg font-medium text-white/90">
+                    Tickets Sold
+                  </span>
+                  <span className="px-2 py-1 text-xs font-medium bg-white/20 rounded-full">
+                    {selectedTime}
+                  </span>
+                </div>
+              </>
             )}
-            <div className="flex items-center gap-2">
-              <span className="text-lg font-medium text-white/90">
-                Tickets Sold
-              </span>
-              <span className="px-2 py-1 text-xs font-medium bg-white/20 rounded-full">
-                {selectedTime}
-              </span>
-            </div>
           </div>
         </div>
       </div>

@@ -1,8 +1,8 @@
 "use client";
 
 import DataNotFound from "@/components/dashboard/DataNotFound";
-import Loading from "@/components/dashboard/Loading";
 import PaginationSection from "@/components/dashboard/PaginationSection";
+import EventSkeleton from "@/components/skeletons/EventSkeleton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -24,9 +24,6 @@ import EventCard from "../home/components/EventCard";
 
 const EventsComponent = () => {
   const [page, setPage] = useState<number>(1);
-  const [sortBy, setSortBy] = useState<string>("id");
-  const [sortOrder, setSortOrder] = useState<string>("desc");
-  const [take, setTake] = useState<number>(8);
   const [search, setSearch] = useQueryState("search", { defaultValue: "" });
   const [debouncedSearch] = useDebounce(search, 1000);
   const [searchCity, setSearchCity] = useState("");
@@ -50,23 +47,15 @@ const EventsComponent = () => {
     error,
   } = useGetEvents({
     page,
-    sortBy,
-    sortOrder,
+    sortBy: "id",
+    sortOrder: "desc",
     search: debouncedSearch || "",
-    take,
+    take: 12,
     categoryId: parseInt(categoryId),
     cityId: parseInt(cityId),
   });
 
   const onChangePage = (page: number) => setPage(page);
-  const onChangeTake = (newTake: number) => {
-    setTake(newTake);
-    setPage(1);
-  };
-  const onSortChange = (column: string, order: string) => {
-    setSortBy(column);
-    setSortOrder(order);
-  };
   const onSearch = (query: string) => setSearch(query);
   const onCategoryChange = (categoryId: string) => setCategoryId(categoryId);
 
@@ -132,7 +121,7 @@ const EventsComponent = () => {
                       searchCity !== "" &&
                       !events
                     }
-                    className="w-full sm:w-[200px] h-10">
+                    className="w-full sm:w-[200px] h-10 justify-between">
                     {isPendingCities && searchCity !== "" ? (
                       <span className="flex items-center gap-2">
                         <Loader2 className="h-4 w-4 animate-spin" />
@@ -147,7 +136,7 @@ const EventsComponent = () => {
                   </Button>
                 </PopoverTrigger>
 
-                <PopoverContent className="w-[250px] p-0" align="end">
+                <PopoverContent className="w-full p-0" align="end">
                   <div className="flex items-center border-b p-2">
                     <Input
                       className="border-0 focus-visible:ring-0 text-sm"
@@ -209,22 +198,24 @@ const EventsComponent = () => {
           </div>
         </div>
 
-        {isPending && <Loading text="Events" />}
         {events && events.data.length <= 0 && !isPending && (
           <DataNotFound text="Event Not Found" />
         )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-          {events?.data.map((event) => (
-            <Link
-              href={`/events/${event.id}`}
-              key={event.id}
-              className="transition-transform hover:scale-[1.02] duration-200">
-              <EventCard event={event} />
-            </Link>
-          ))}
-        </div>
-
+        {isPending && !events ? (
+          <EventSkeleton dataQty={8} />
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+            {events.data.map((event) => (
+              <Link
+                href={`/events/${event.id}`}
+                key={event.id}
+                className="transition-transform hover:scale-[1.02] duration-200">
+                <EventCard event={event} />
+              </Link>
+            ))}
+          </div>
+        )}
         {events && events.data.length > 0 && (
           <div className="w-full flex justify-end items-center pt-4 sm:pt-6">
             <PaginationSection

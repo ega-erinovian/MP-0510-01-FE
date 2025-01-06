@@ -1,7 +1,7 @@
 "use client";
 
 import DataNotFound from "@/components/dashboard/DataNotFound";
-import Loading from "@/components/dashboard/Loading";
+import ProfileSkeleton from "@/components/skeletons/ProfileSkeleton";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -11,15 +11,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import useGetTransactions from "@/hooks/api/transaction/useGetTransactions";
+import { useSession } from "next-auth/react";
+import { useQueryState } from "nuqs";
 import { useState } from "react";
 import { useDebounce } from "use-debounce";
-import { useQueryState } from "nuqs";
-import { useSession } from "next-auth/react";
 import TransactionsList from "./TransactionsList";
 
 const TransactionListWrapper = () => {
   const { data: sessionData } = useSession();
   const user = sessionData?.user;
+
   const [page, setPage] = useState<number>(1);
   const [sortBy, setSortBy] = useState<string>("id");
   const [sortOrder, setSortOrder] = useState<string>("desc");
@@ -80,7 +81,7 @@ const TransactionListWrapper = () => {
         </div>
 
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-          <div className="flex items-center gap-2">
+          <div className="md:flex items-center gap-2 w-full">
             <span className="text-sm font-medium text-muted-foreground">
               Sort By:
             </span>
@@ -88,7 +89,7 @@ const TransactionListWrapper = () => {
               value={sortBy}
               onValueChange={(value) => onSortChange(value, sortOrder)}
               disabled={isPending}>
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-full md:w-[180px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -104,7 +105,7 @@ const TransactionListWrapper = () => {
             value={sortOrder}
             onValueChange={(value) => onSortChange(sortBy, value)}
             disabled={isPending}>
-            <SelectTrigger className="w-[140px]">
+            <SelectTrigger className="w-full md:w-[140px]">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -117,9 +118,7 @@ const TransactionListWrapper = () => {
 
       <div className="">
         {isPending ? (
-          <div className="flex min-h-[400px] items-center justify-center">
-            <Loading text="Transactions" />
-          </div>
+          <ProfileSkeleton dataQty={3} />
         ) : (
           <TransactionsList
             transactions={data.data}

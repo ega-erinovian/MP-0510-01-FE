@@ -1,11 +1,10 @@
 "use client";
 
-import Loading from "@/components/dashboard/Loading";
+import DataNotFound from "@/components/dashboard/DataNotFound";
+import BarChartSkeleton from "@/components/skeletons/BarChartSkeleton";
 import useGetTransactionsIncomePerMonth from "@/hooks/api/transaction/useGetTransactionsIncomePerMonth";
 import { FC } from "react";
 import SalesChart from "./SalesChart";
-import { Loader2 } from "lucide-react";
-import DataNotFound from "@/components/dashboard/DataNotFound";
 
 interface SalesRevenueProps {
   id: number;
@@ -29,7 +28,7 @@ const SalesRevenue: FC<SalesRevenueProps> = ({ id }) => {
         <p className="text-gray-600 font-medium">{new Date().getFullYear()}</p>
       </div>
       {isPending ? (
-        <Loading text="Chart" />
+        <BarChartSkeleton />
       ) : data ? (
         <SalesChart monthlyChart={data.income} />
       ) : (

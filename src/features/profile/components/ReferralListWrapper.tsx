@@ -1,10 +1,11 @@
 "use client";
 
 import DataNotFound from "@/components/dashboard/DataNotFound";
-import Loading from "@/components/dashboard/Loading";
+import ProfileSkeleton from "@/components/skeletons/ProfileSkeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 import useGetReferrals from "@/hooks/api/referral/useGetReferrals";
 import useGetUser from "@/hooks/api/user/useGetUser";
-import { CheckCircle2, Copy, Loader2 } from "lucide-react";
+import { CheckCircle2, Copy } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import ReferralList from "./ReferralList";
@@ -12,6 +13,7 @@ import ReferralList from "./ReferralList";
 const ReferralListWrapper = () => {
   const { data: sessionData } = useSession();
   const user = sessionData?.user;
+
   const [copied, setCopied] = useState(false);
 
   const { data: userData } = useGetUser(Number(user?.id));
@@ -64,7 +66,7 @@ const ReferralListWrapper = () => {
       <p className="mb-6 lg:mb-8 text-gray-400">
         Invite your friend using your code, and get points!
       </p>
-      <div className="grid md:grid-cols-2 gap-4 mb-4">
+      <div className="grid lg:grid-cols-2 gap-4 mb-4">
         <div className="relative h-full bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-6 overflow-hidden">
           <div
             className="absolute inset-0 bg-white/5 backdrop-blur-sm"
@@ -78,9 +80,7 @@ const ReferralListWrapper = () => {
             <div className="text-white">
               <div className="space-y-2">
                 {isPending ? (
-                  <div className="py-8">
-                    <Loader2 className="animate-spin" />
-                  </div>
+                  <Skeleton className="h-12 w-72" />
                 ) : (
                   <div className="flex items-end gap-2">
                     <p className="text-6xl font-bold tracking-tight">
@@ -120,9 +120,7 @@ const ReferralListWrapper = () => {
             <div className="text-white">
               <div className="space-y-2">
                 {isPending ? (
-                  <div className="py-8">
-                    <Loader2 className="animate-spin" />
-                  </div>
+                  <Skeleton className="h-12 w-72" />
                 ) : (
                   <p className="text-6xl font-bold tracking-tight">
                     {userData?.point}
@@ -141,7 +139,7 @@ const ReferralListWrapper = () => {
 
       <div className="">
         {isPending ? (
-          <Loading text="Referrals" />
+          <ProfileSkeleton dataQty={2} />
         ) : (
           <ReferralList
             referrals={data.data}

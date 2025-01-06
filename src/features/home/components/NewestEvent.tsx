@@ -1,10 +1,10 @@
 "use client";
 
-import Loading from "@/components/dashboard/Loading";
+import DataNotFound from "@/components/dashboard/DataNotFound";
+import EventSkeleton from "@/components/skeletons/EventSkeleton";
 import useGetEvents from "@/hooks/api/event/useGetEvents";
 import Link from "next/link";
 import EventCard from "./EventCard";
-import DataNotFound from "@/components/dashboard/DataNotFound";
 
 const NewestEvent = () => {
   const { data: events, isPending } = useGetEvents({
@@ -19,7 +19,7 @@ const NewestEvent = () => {
       <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-9xl tracking-tighter font-bold mb-4 sm:mb-6 md:mb-8">
         Newest Events
       </h1>
-      {isPending && <Loading text="Events" />}
+      {isPending && <EventSkeleton dataQty={4} />}
       {events && events.data.length <= 0 && !isPending && (
         <DataNotFound text="Event Not Found" />
       )}
