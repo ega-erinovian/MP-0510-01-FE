@@ -43,7 +43,7 @@ const PasswordInput: FC<{
     <div className="flex flex-col space-y-1.5 relative group">
       <Label
         htmlFor={name}
-        className="text-sm font-medium transition-colors group-focus-within:text-primary">
+        className="text-sm font-semibold transition-colors group-focus-within:text-primary">
         {label}
       </Label>
       <div className="relative">

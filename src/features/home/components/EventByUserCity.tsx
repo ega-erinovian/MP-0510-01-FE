@@ -36,7 +36,7 @@ const EventByUserCity = () => {
       {events && events.data.length <= 0 && !isPending && (
         <DataNotFound text="Event Not Found" />
       )}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6">
         {events &&
           events.data.map((event) => {
             return (

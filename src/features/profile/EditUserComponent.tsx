@@ -224,7 +224,9 @@ const UpdateProfileComponent = () => {
                 )}
 
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium">Profile Picture</Label>
+                  <Label className="text-sm font-semibold">
+                    Profile Picture
+                  </Label>
                   <div className="flex items-center gap-2">
                     <div className="relative flex-1">
                       <Input
@@ -294,7 +296,7 @@ const UpdateProfileComponent = () => {
 
                 {user.referralsUsed.length === 0 && (
                   <div className="grid gap-2">
-                    <Label className="text-sm font-medium flex items-center gap-2">
+                    <Label className="text-sm font-semibold flex items-center gap-2">
                       <Gift size={16} />
                       Referral Code (optional)
                     </Label>

@@ -148,7 +148,6 @@ const UpdateProfileComponent = () => {
         </CardHeader>
         <CardContent>
           <form onSubmit={formik.handleSubmit} className="space-y-6">
-            {/* Profile Picture Section */}
             <div className="space-y-4">
               {(selectedImage || user?.profilePicture) && (
                 <div className="flex justify-center">
@@ -173,7 +172,7 @@ const UpdateProfileComponent = () => {
               )}
 
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Profile Picture</Label>
+                <Label className="text-sm font-semibold">Profile Picture</Label>
                 <div className="flex items-center gap-2">
                   <div className="relative flex-1">
                     <Input
@@ -243,7 +242,7 @@ const UpdateProfileComponent = () => {
               <div className="space-y-2 col-span-2">
                 <Label
                   htmlFor="cardNumber"
-                  className="text-sm font-medium flex items-center gap-2">
+                  className="text-sm font-semibold flex items-center gap-2">
                   <IdCard size={16} />
                   Card Number
                 </Label>
@@ -266,7 +265,7 @@ const UpdateProfileComponent = () => {
               <div className="space-y-2">
                 <Label
                   htmlFor="bank"
-                  className="text-sm font-medium flex items-center gap-2">
+                  className="text-sm font-semibold flex items-center gap-2">
                   <DollarSign size={16} />
                   Bank
                 </Label>
