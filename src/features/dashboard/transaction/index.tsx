@@ -17,7 +17,7 @@ const TransactionList = () => {
   const [sortBy, setSortBy] = useState<string>("id");
   const [sortOrder, setSortOrder] = useState<string>("desc");
   const [search, setSearch] = useQueryState("search", { defaultValue: "" });
-  const [debouncedSearch] = useDebounce(search, 1000);
+  const [debouncedSearch] = useDebounce(search, 500);
   const [take, setTake] = useState<number>(10);
 
   const { data, isPending, error } = useGetTransactions({

@@ -25,7 +25,7 @@ import EventCard from "../home/components/EventCard";
 const EventsComponent = () => {
   const [page, setPage] = useState<number>(1);
   const [search, setSearch] = useQueryState("search", { defaultValue: "" });
-  const [debouncedSearch] = useDebounce(search, 1000);
+  const [debouncedSearch] = useDebounce(search, 500);
   const [searchCity, setSearchCity] = useState("");
   const [debouncedSearchCity] = useDebounce(searchCity, 500);
   const [open, setOpen] = useState(false);
@@ -216,16 +216,18 @@ const EventsComponent = () => {
             ))}
           </div>
         )}
-        {events && events.data.length > 0 && (
-          <div className="w-full flex justify-end items-center pt-4 sm:pt-6">
-            <PaginationSection
-              onChangePage={onChangePage}
-              page={Number(page)}
-              take={events.meta.take || 4}
-              total={events.meta.total}
-            />
-          </div>
-        )}
+        {events &&
+          events.data.length > 0 &&
+          events.meta.total > events.meta.take && (
+            <div className="w-full flex justify-end items-center pt-4 sm:pt-6">
+              <PaginationSection
+                onChangePage={onChangePage}
+                page={Number(page)}
+                take={events.meta.take || 4}
+                total={events.meta.total}
+              />
+            </div>
+          )}
       </div>
     </HomePageLayout>
   );

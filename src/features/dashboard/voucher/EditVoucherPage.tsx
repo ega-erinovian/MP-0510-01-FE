@@ -47,8 +47,6 @@ interface EditVoucherPageProps {
   id: string;
 }
 
-const DEBOUNCE_DELAY = 500;
-
 const EditVoucherPage = ({ id }: EditVoucherPageProps) => {
   const router = useRouter();
   const { data: sessionData } = useSession();
@@ -57,7 +55,7 @@ const EditVoucherPage = ({ id }: EditVoucherPageProps) => {
   const [selectedEvent, setSelectedEvent] = useState<string>("");
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [debouncedSearch] = useDebounce(searchQuery, DEBOUNCE_DELAY);
+  const [debouncedSearch] = useDebounce(searchQuery, 500);
   const [isFormReady, setIsFormReady] = useState(false);
   const formInitialized = useRef(false);
 

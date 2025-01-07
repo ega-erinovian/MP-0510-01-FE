@@ -36,12 +36,16 @@ const PaginationSection: FC<PaginationSectionProps> = ({
   return (
     <Pagination className="my-12">
       <PaginationContent>
-        <PaginationItem>
-          <PaginationPrevious onClick={handlePrev} />
-        </PaginationItem>
+        {page > 1 && (
+          <PaginationItem>
+            <PaginationPrevious onClick={handlePrev} />
+          </PaginationItem>
+        )}
 
         <PaginationItem>
-          <PaginationLink>{page}</PaginationLink>
+          <PaginationLink className="font-bold text-purple-500">
+            {page}
+          </PaginationLink>
         </PaginationItem>
 
         <PaginationItem>
