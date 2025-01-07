@@ -138,11 +138,21 @@ const EventDetailComponent: FC<EventDetailComponentProps> = ({ eventId }) => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
         <div className="lg:col-span-2 space-y-4 sm:space-y-6 md:space-y-8">
           <div className="relative aspect-[16/9] sm:aspect-[2/1] lg:aspect-[16/9] w-full overflow-hidden rounded-lg">
+            <div className="absolute inset-0">
+              <Image
+                src={event.thumbnnail}
+                alt={`${event.title} background`}
+                fill
+                className="object-cover blur-md scale-105"
+                loading="lazy"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 66vw"
+              />
+            </div>
             <Image
               src={event.thumbnnail}
               alt={`${event.title} banner`}
               fill
-              className="object-cover transition-transform duration-300 hover:scale-105"
+              className="relative object-contain z-10 transition-transform duration-300 hover:scale-105"
               loading="lazy"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 66vw"
             />
@@ -254,7 +264,8 @@ const EventDetailComponent: FC<EventDetailComponentProps> = ({ eventId }) => {
                 </p>
               </div>
 
-              {event.availableSeats > 0 ? (
+              {event.availableSeats > 0 &&
+              new Date(event.startDate) > new Date() ? (
                 <div className="space-y-4">
                   <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
                     <p className="font-medium">Quantity</p>
@@ -360,6 +371,10 @@ const EventDetailComponent: FC<EventDetailComponentProps> = ({ eventId }) => {
                       </p>
                     )}
                   </div>
+                </div>
+              ) : new Date(event.startDate) <= new Date() ? (
+                <div className="p-4 text-center bg-red-50 text-red-600 rounded-lg">
+                  <p className="font-semibold">Campaign Ended</p>
                 </div>
               ) : (
                 <div className="p-4 text-center bg-red-50 text-red-600 rounded-lg">

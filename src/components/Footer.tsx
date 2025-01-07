@@ -31,13 +31,6 @@ const Footer = () => {
                   Browse
                 </Link>
               </li>
-              <li>
-                <Link
-                  href="/profile"
-                  className="hover:text-white transition-all">
-                  Profile
-                </Link>
-              </li>
             </ul>
           </div>
           <div>

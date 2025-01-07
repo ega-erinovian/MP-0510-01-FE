@@ -63,11 +63,11 @@ const RegisterForm: FC<RegisterFormProps> = ({ role }) => {
   const [selectedCity, setSelectedCity] = useState<string>("");
   const [referralCode, setReferralCode] = useState<string>("");
   const [isReferralValid, setIsReferralValid] = useState<boolean | null>(null);
-  const [debouncedReferralCode] = useDebounce(referralCode, 800);
+  const [debouncedReferralCode] = useDebounce(referralCode, 500);
   const [referralMessage, setReferralMessage] = useState<string>("");
 
   const [searchCity, setSearchCity] = useState("");
-  const [debouncedSearchCity] = useDebounce(searchCity, 1000);
+  const [debouncedSearchCity] = useDebounce(searchCity, 500);
   const [open, setOpen] = useState(false);
 
   // Bank Account

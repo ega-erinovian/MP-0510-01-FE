@@ -74,7 +74,7 @@ const EditEventComponent: FC<UpdateEventComponentProps> = ({ id }) => {
   );
 
   const [searchCity, setSearchCity] = useState("");
-  const [debouncedSearchCity] = useDebounce(searchCity, 1000);
+  const [debouncedSearchCity] = useDebounce(searchCity, 500);
   const [open, setOpen] = useState(false);
 
   // Fetch required data
@@ -152,10 +152,20 @@ const EditEventComponent: FC<UpdateEventComponentProps> = ({ id }) => {
     ) {
       // Ensure we have the event data
       const startDate = event.startDate
-        ? new Date(event.startDate).toISOString().slice(0, 16)
+        ? new Date(
+            new Date(event.startDate).getTime() -
+              new Date().getTimezoneOffset() * 60000
+          )
+            .toISOString()
+            .slice(0, 16)
         : "";
       const endDate = event.endDate
-        ? new Date(event.endDate).toISOString().slice(0, 16)
+        ? new Date(
+            new Date(event.endDate).getTime() -
+              new Date().getTimezoneOffset() * 60000
+          )
+            .toISOString()
+            .slice(0, 16)
         : "";
 
       formik.resetForm({
@@ -529,49 +539,6 @@ const EditEventComponent: FC<UpdateEventComponentProps> = ({ id }) => {
                   )}
                 </div>
               </div>
-
-              {/* <div className="space-y-2">
-                <Label
-                  htmlFor="city"
-                  className="text-lg font-semibold flex items-center gap-2 text-gray-700">
-                  <MapPin size={18} />
-                  City
-                </Label>
-                <Select
-                  value={selectedCity}
-                  onValueChange={(value) => {
-                    setSelectedCity(value);
-                    formik.setFieldValue("cityId", Number(value));
-                  }}
-                  disabled={!selectedCountry || citiesLoading}>
-                  <SelectTrigger className="border-gray-200 focus:border-purple-500 focus:ring-purple-200">
-                    <SelectValue
-                      placeholder={
-                        citiesLoading ? "Loading cities..." : "Select City"
-                      }
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {citiesLoading ? (
-                        <SelectItem value="loading" disabled>
-                          Loading cities...
-                        </SelectItem>
-                      ) : citiesByCountry && citiesByCountry.length > 0 ? (
-                        citiesByCountry.map((city: any) => (
-                          <SelectItem key={city.id} value={String(city.id)}>
-                            {city.name}
-                          </SelectItem>
-                        ))
-                      ) : (
-                        <SelectItem value="none" disabled>
-                          No cities available
-                        </SelectItem>
-                      )}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div> */}
             </div>
             {formik.touched.cityId && formik.errors.cityId && (
               <p className="text-sm text-red-500">{formik.errors.cityId}</p>

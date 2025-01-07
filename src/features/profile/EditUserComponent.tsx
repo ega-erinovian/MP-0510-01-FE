@@ -53,7 +53,7 @@ const UpdateProfileComponent = () => {
 
   const [referralCode, setReferralCode] = useState<string>("");
   const [isReferralValid, setIsReferralValid] = useState<boolean | null>(null);
-  const [debouncedReferralCode] = useDebounce(referralCode, 800);
+  const [debouncedReferralCode] = useDebounce(referralCode, 500);
   const [referralMessage, setReferralMessage] = useState<string>("");
 
   const { data: existingReferral, isPending: isPendingReferral } =

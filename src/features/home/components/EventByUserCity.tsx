@@ -20,7 +20,7 @@ const EventByUserCity = () => {
     sortBy: "createdAt",
     sortOrder: "desc",
     take: 4,
-    cityId: user?.cityId ?? 2,
+    cityId: user?.cityId || 3,
   });
 
   const onChangePage = (page: number) => {

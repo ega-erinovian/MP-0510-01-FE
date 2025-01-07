@@ -46,8 +46,14 @@ const EventCard: FC<EventCardProps> = ({ event }) => {
           <p className="text-xs sm:text-sm text-zinc-600 line-clamp-1">
             {event.address}, {event.city.name}
           </p>
-          <p className="font-semibold text-sm sm:text-base">
-            {event.price > 0
+          <p
+            className={
+              "font-semibold text-sm sm:text-base" +
+              (new Date(event.startDate) <= new Date() && " text-red-500")
+            }>
+            {new Date(event.startDate) <= new Date()
+              ? "Campaign Ended"
+              : event.price > 0
               ? event.price.toLocaleString("id-ID", {
                   style: "currency",
                   currency: "IDR",

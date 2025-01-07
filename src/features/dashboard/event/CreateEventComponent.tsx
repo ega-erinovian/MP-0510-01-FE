@@ -58,7 +58,7 @@ const CreateEventComponent = () => {
   const [selectedCity, setSelectedCity] = useState<string>("");
 
   const [searchCity, setSearchCity] = useState("");
-  const [debouncedSearchCity] = useDebounce(searchCity, 1000);
+  const [debouncedSearchCity] = useDebounce(searchCity, 500);
   const [open, setOpen] = useState(false);
 
   const [selectedCountry, setSelectedCountry] = useState<string>("");

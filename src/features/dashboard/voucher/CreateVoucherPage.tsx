@@ -37,7 +37,7 @@ const CreateVoucherPage = () => {
   const [selectedEvent, setSelectedEvent] = useState<string>("");
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [debouncedSearch] = useDebounce(searchQuery, 1000);
+  const [debouncedSearch] = useDebounce(searchQuery, 500);
 
   const { data: events, isLoading } = useGetEvents({
     search: debouncedSearch.length > 0 ? debouncedSearch : "",
